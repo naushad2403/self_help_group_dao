@@ -2,7 +2,7 @@ struct MemberProposal {
     address member_address;
     address proposar;
    string reason;
-    address[] approvedAddress;
+    address[] approver;
     uint8 status;
 }
 
