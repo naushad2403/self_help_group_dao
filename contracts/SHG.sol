@@ -15,14 +15,7 @@ contract SHG  is Member, BorrowContract{
         balances[msg.sender] = Balance(msg.sender);
         totalDeposit += msg.value;
     }   
-    
-    function distributeProposal ( ) public returns(bool)  {
 
-    }
-
-    function cancelDistributeProposal () public returns(bool)  {
-
-    }
 
     function withdrawAmount () public {
         

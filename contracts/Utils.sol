@@ -19,17 +19,32 @@ enum Status {
 
 
 
-struct Borrow {
+struct BorrowProposal {
     uint amount;
+    address borrower;
     uint startDate;
     uint interestRate;
+    string purpose;
+    uint depositDate;
+    uint delayInterestRate;
     uint8 status;
+    address[] approver;
+
 }
 
+struct Loan {
+    uint amount;
+    uint approvedDate;
+    uint interestRate;
+    uint proposalId;
+    uint depositDate;
+    uint postDepositInterest;
+}
 struct Balance {
     uint deposit;
     uint withdraw;
     uint remaining;
-    uint loan;
+    Loan[] loan;
     uint interest;
 }
+

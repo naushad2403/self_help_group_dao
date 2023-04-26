@@ -26,6 +26,7 @@ contract Member{
 
     function cancelMemberProposal (uint _proposalId, string _reason) public returns (bool) {
         membersProposal[_proposalId].status = Status.cancelled;
+        emit NewMember_ProposalCancelled(msg.sender, embersProposal[_proposalId].member, _reason);
         return true;
     }
 
@@ -35,6 +36,7 @@ contract Member{
              members.push(membersProposal[_proposalId].member);
              membersProposal[_proposalId].status = Status.approved;
         }
+        emit NewMember_ProposalApproved(msg.sender, embersProposal[_proposalId].member, _reason);
         return true;
     }
 
@@ -42,6 +44,8 @@ contract Member{
         require( membersProposal[_proposalId].status != Status.rejected, "Already Rejected");
          membersProposal[_proposalId].status = Status.rejected;
          return true;
+        emit NewMember_ProposalRejected(msg.sender, embersProposal[_proposalId].member, _reason);
+
     }
 
     modifier alreadyApproved (uint _proposalId) {
