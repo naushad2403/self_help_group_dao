@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Borrow",
+  "sourceName": "contracts/Borrow.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212204a67d0bdf521713b31c57a2a339d80f622b71bdbf7c9e6939e31a92a216a374964736f6c63430008090033",
+  "deployedBytecode": "0x6080604052600080fdfea26469706673582212204a67d0bdf521713b31c57a2a339d80f622b71bdbf7c9e6939e31a92a216a374964736f6c63430008090033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

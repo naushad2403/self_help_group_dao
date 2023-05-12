@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div>
       <main className={styles.main}>
-        <InstructionsComponent></InstructionsComponent>
+        {/* <InstructionsComponent></InstructionsComponent> */}
       </main>
     </div>
   );

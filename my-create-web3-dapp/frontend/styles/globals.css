@@ -2,20 +2,22 @@
 
 html,
 body {
-	background-color: black;
+	background-color: rgb(67, 35, 35);
 	font-family: 'Rubik';
 	font-weight: normal;
 }
-h1{
+
+h1 {
 	margin-bottom: 1rem;
 }
-h2{
+
+h2 {
 	margin-bottom: .5rem;
 	font-weight: normal;
 
 }
 
-p{
+p {
 	line-height: 1.5rem;
 	font-weight: lighter;
 
@@ -33,6 +35,5 @@ a {
 }
 
 @media (prefers-color-scheme: dark) {
-	html {
-	}
+	html {}
 }

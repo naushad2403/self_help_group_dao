@@ -1,0 +1,217 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/naushad/Documents/Blockchain/shg_git/my-create-web3-dapp/backend/contracts/Borrow.sol": {
+      "lastModificationDate": 1683813179027,
+      "contentHash": "37aaa27c209772685762607ee69323d5",
+      "sourceName": "contracts/Borrow.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./Utils.sol"
+      ],
+      "versionPragmas": [
+        ">=0.7.0 <0.9.0"
+      ],
+      "artifacts": [
+        "Borrow"
+      ]
+    },
+    "/Users/naushad/Documents/Blockchain/shg_git/my-create-web3-dapp/backend/contracts/Utils.sol": {
+      "lastModificationDate": 1683806510766,
+      "contentHash": "0b3d9455da52a4d84509c2fc85a04566",
+      "sourceName": "contracts/Utils.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": []
+    },
+    "/Users/naushad/Documents/Blockchain/shg_git/my-create-web3-dapp/backend/contracts/Member.sol": {
+      "lastModificationDate": 1683813140764,
+      "contentHash": "aecb2a84e8947b7bb51bb8db2f86a51d",
+      "sourceName": "contracts/Member.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./Utils.sol"
+      ],
+      "versionPragmas": [
+        ">=0.7.0 <0.9.0"
+      ],
+      "artifacts": [
+        "Member"
+      ]
+    },
+    "/Users/naushad/Documents/Blockchain/shg_git/my-create-web3-dapp/backend/contracts/Groups.sol": {
+      "lastModificationDate": 1683812992298,
+      "contentHash": "d043146dc3912e4ee6f07438c8d5ed15",
+      "sourceName": "contracts/Groups.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./SHG.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.9"
+      ],
+      "artifacts": [
+        "Groups"
+      ]
+    },
+    "/Users/naushad/Documents/Blockchain/shg_git/my-create-web3-dapp/backend/contracts/SHG.sol": {
+      "lastModificationDate": 1683813290340,
+      "contentHash": "f1546aaffd0e740fb7066ad86d901822",
+      "sourceName": "contracts/SHG.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.7.0 <0.9.0"
+      ],
+      "artifacts": [
+        "SHG"
+      ]
+    },
+    "/Users/naushad/Documents/Blockchain/shg_git/my-create-web3-dapp/backend/contracts/Lock.sol": {
+      "lastModificationDate": 1683806510734,
+      "contentHash": "ae66265769cc28ebdaa34881df95bc5e",
+      "sourceName": "contracts/Lock.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.9"
+      ],
+      "artifacts": [
+        "Lock"
+      ]
+    }
+  }
+}
