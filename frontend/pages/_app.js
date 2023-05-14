@@ -20,6 +20,16 @@ import { publicProvider } from "wagmi/providers/public";
 import MainLayout from "../layout/mainLayout";
 import { useRouter } from "next/router";
 
+import { InjectedConnector } from "wagmi/connectors/injected";
+
+const connector = new InjectedConnector({
+  options: {
+    name: "My Injected Wallet",
+    getProvider: () =>
+      typeof window !== "undefined" ? window.myInjectedWallet : undefined,
+  },
+});
+
 const { chains, provider } = configureChains(
   [
     mainnet,
