@@ -2,6 +2,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
+import CreateGroup from "../components/CreateGroup";
 
 const Home: NextPage = () => {
   return (
@@ -21,8 +22,9 @@ const Home: NextPage = () => {
             <ConnectButton />
           </div>
         </div>
-        <div className={styles.group}>
+        <div className={`${styles.group} ${styles.createGroup}`}>
           <h2> Create Group</h2>
+          <CreateGroup></CreateGroup>
         </div>
         <div className={styles.group}>
           <h2> My Group</h2>
