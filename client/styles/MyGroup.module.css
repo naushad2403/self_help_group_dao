@@ -31,8 +31,19 @@
         justify-content: space-around;
     }
 
+                                                                                                                                .MyGroupItem>* {
+                                                                                                                                    width: 17%;
+                                                                                                                                    /* background-color: blueviolet; */
+                                                                                                                                    margin-left: 10px;
+                                                                                                                                    margin-right: 10px;
+                                                                                                                                    text-align: center;
+                                                                                                                                }
     .myGroup {
         width: 98%;
         margin-left: 1%;
         margin-right: 1%;
+        display: grid;
+            grid-template-columns: 5;
+            gap: '5px';
+            background-color: rgb(240, 248, 248);
     }

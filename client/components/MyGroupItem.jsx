@@ -18,17 +18,24 @@ export default function MyGroupItem({ address }) {
 
   return (
     <div className={Styles.MyGroupItem}>
-      <a href="https://www.w3schools.com/${}">
-        {"Address: ..." + address.substr(-5)}
+      <a
+        target="_blank"
+        href={`https://etherscan.io/address/${address}`}
+        rel="noreferrer"
+      >
+        {"..." + address.substr(-5)}
       </a>
-      <p>Name: {nameInfo?.data}</p>
+      <p>{nameInfo?.data}</p>
       <p>
-        {" "}
-        Balance: {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
+        {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
       </p>
-      <p>Persons: 100</p>
-      <button> Withdraw money</button>
-      <button> View/Submit proposals</button>
+      <p>{Math.floor(Math.random() * 100)}</p>
+      {Math.random() < 0.5 ? (
+        <button>Join Group</button>
+      ) : (
+        <p>You are member</p>
+      )}
+      {<button> View Group</button>}
     </div>
   );
 }

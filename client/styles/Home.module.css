@@ -104,7 +104,8 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   height: 10vh;
   border-radius: 10px;
-  flex-direction: row-reverse;
+  flex-direction: row;
+    justify-content: space-between;
   align-content: center;
   align-items: center;
   background-color: rgb(220, 245, 245)

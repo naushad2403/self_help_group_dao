@@ -16,18 +16,24 @@ export default function CreateGroup() {
     write({
       args: [name],
     });
+    setName("");
   });
-
-  console.log("name", name);
+  console.log(`Transaction Completed, Please check the transaction hash: 
+     ${JSON.stringify(data)}
+        or Refresh the Groups to see newly created group`);
 
   return (
-    <div>
-      <div class={Styles.componentContainer}>
+    <div className={Styles.root}>
+      <div className={Styles.componentContainer}>
+        <h4>Create a new group by entering a name</h4>
+      </div>
+      <div className={Styles.componentContainer}>
         <input
           type="text"
           class={Styles.nameInput}
           id="name-input"
           placeholder="Enter group name"
+          value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <button
@@ -38,8 +44,27 @@ export default function CreateGroup() {
           Create
         </button>
       </div>
-      {isLoading && <div>Check Wallet</div>}
-      {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}
+      <div className={Styles.componentContainer}>
+        {isLoading && (
+          <h5>Please check wallet and sign the pending transaction </h5>
+        )}
+
+        {isSuccess && (
+          <h5 className={Styles.SuccessfulMessage}>
+            Transaction Completed Please check the transaction hash:
+            <a
+              target="_blank"
+              className={Styles.HashStyle}
+              href={`https://etherscan.io/tx/${data.hash}`}
+              rel="noreferrer"
+            >
+              {" "}
+              {data.hash}
+            </a>
+            or Refresh the Groups to see newly created group
+          </h5>
+        )}
+      </div>
     </div>
   );
 }
