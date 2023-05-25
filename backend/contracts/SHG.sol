@@ -19,9 +19,13 @@ contract SHG {
     }
 
     constructor(string memory _name) payable {
-        members.push(msg.sender);
-        balances[msg.sender] = msg.value;
+        members.push(tx.origin);
+        balances[tx.origin] = msg.value;
         name = _name;
+    }
+
+    function getAllMembers() external view returns (address[] memory) {
+        return members;
     }
 
     event Withdraw(address _member, uint _amount);

@@ -24,17 +24,17 @@ contract Groups {
         return address(shg);
     }
 
-    function getMyGroup() public view returns(address[] memory){
-       address[] memory contractAddress = new address[](0);
-       uint[] memory ids = userGroups[msg.sender];
-       for(uint i =0; i <ids.length; i++) {
-            contractAddress[i] = (groups[ids[i]]);
-       }
-       return contractAddress;
-    }
+    // function getMyGroup() public view returns(address[] memory){
+    //    address[] memory contractAddress = new address[](0);
+    //    uint[] memory ids = userGroups[msg.sender];
+    //    for(uint i =0; i <ids.length; i++) {
+    //         contractAddress[i] = (groups[ids[i]]);
+    //    }
+    //    return contractAddress;
+    // }
 
     function getAllGroup() public view returns(address[] memory) {
-       address[] memory contractAddress= new address[](0);
+       address[] memory contractAddress= new address[](groupIds.length);
        for(uint i =0; i <groupIds.length; i++) {
             contractAddress[i] = (groups[groupIds[i]]);
        }

@@ -13,6 +13,7 @@ import {
   localhost,
 } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import MainLayout from "../layout/mainLayout";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
@@ -28,8 +29,8 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 console.log("Test network", process.env.NEXT_PUBLIC_ENABLE_TESTNETS);
 
 const { connectors } = getDefaultWallets({
-  appName: 'RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  appName: "RainbowKit App",
+  projectId: "YOUR_PROJECT_ID",
   chains,
 });
 
@@ -44,7 +45,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
-        <Component {...pageProps} />
+        <MainLayout>
+          <Component {...pageProps} />
+        </MainLayout>
       </RainbowKitProvider>
     </WagmiConfig>
   );

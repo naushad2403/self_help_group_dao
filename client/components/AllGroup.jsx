@@ -6,7 +6,7 @@ import MyGroupItem from "./MyGroupItem";
 
 export default function AllGroup({ address }) {
   const { data, isLoading, isSuccess } = useContractRead({
-    address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+    address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
     abi: group_abi,
     functionName: "getAllGroup",
   });

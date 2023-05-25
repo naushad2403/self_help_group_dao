@@ -6,7 +6,7 @@ import MyGroupItem from "./MyGroupItem";
 
 export default function MyGroup() {
   const { data, isLoading, isSuccess } = useContractRead({
-    address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
     abi: group_abi,
     functionName: "getAllGroup",
   });

@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 
 export default function CreateGroup() {
   const { data, isLoading, isSuccess, write } = useContractWrite({
-    address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
     abi: group_abi,
     functionName: "createNewGroup",
   });
