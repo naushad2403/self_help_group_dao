@@ -6,13 +6,15 @@ import {
 } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
 import { shg_abi } from "../util";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { updateGroup } from "../state_management/slices/group";
 
 export default function MyGroupItem({ address }) {
+  const dispatch = useDispatch();
   const accountInfo = useAccount();
   const router = useRouter();
-
   const nameInfo = useContractRead({
     address: address,
     abi: shg_abi,
@@ -29,9 +31,19 @@ export default function MyGroupItem({ address }) {
     address: address,
   });
 
-  console.log(memberInfo);
-  console.log(!memberInfo?.data?.includes(accountInfo.address));
-  console.log(accountInfo.address);
+  useEffect(() => {
+    nameInfo &&
+      dispatch(
+        updateGroup({
+          address,
+          info: {
+            name: nameInfo?.data,
+            members: memberInfo?.data,
+            balance: balanceInfo?.data,
+          },
+        })
+      );
+  }, [nameInfo, memberInfo, balanceInfo]);
 
   return (
     <div className={Styles.MyGroupItem}>

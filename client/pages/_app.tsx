@@ -14,6 +14,8 @@ import {
 } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import MainLayout from "../layout/mainLayout";
+import { Provider } from "react-redux";
+import { store } from "./../state_management/store";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
@@ -45,9 +47,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
-        <MainLayout>
-          <Component {...pageProps} />
-        </MainLayout>
+        <Provider store={store}>
+          <MainLayout>
+            <Component {...pageProps} />
+          </MainLayout>
+        </Provider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

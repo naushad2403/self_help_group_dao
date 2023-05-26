@@ -1,8 +1,10 @@
 import { useContractRead, useContractWrite } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
 import { group_abi } from "../util";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import MyGroupItem from "./MyGroupItem";
+import { useDispatch } from "react-redux";
+import { updateGroup } from "../state_management/slices/group";
 
 export default function MyGroup() {
   const { data, isLoading, isSuccess } = useContractRead({
@@ -10,6 +12,14 @@ export default function MyGroup() {
     abi: group_abi,
     functionName: "getAllGroup",
   });
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (data) {
+      dispatch(updateGroup(data));
+    }
+  }, [data, dispatch]);
 
   // console.log(data, isLoading, isSuccess);
 
