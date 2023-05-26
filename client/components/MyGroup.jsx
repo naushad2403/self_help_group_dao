@@ -26,11 +26,11 @@ export default function MyGroup() {
   return (
     <div class={Styles.myGroup}>
       <div className={Styles.MyGroupItem}>
-        <h3>Address</h3>
-        <h3>Name</h3>
-        <h3>Balance</h3>
-        <h3>Person</h3>
-        <h3>Status</h3>
+        <h4>Address</h4>
+        <h4>Name</h4>
+        <h4>Balance</h4>
+        <h4>Person</h4>
+        <h4>Status</h4>
         <h3></h3>
       </div>
       {data?.map((x) => {

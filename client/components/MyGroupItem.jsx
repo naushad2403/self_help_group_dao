@@ -31,19 +31,19 @@ export default function MyGroupItem({ address }) {
     address: address,
   });
 
-  useEffect(() => {
-    nameInfo &&
-      dispatch(
-        updateGroup({
-          address,
-          info: {
-            name: nameInfo?.data,
-            members: memberInfo?.data,
-            balance: balanceInfo?.data,
-          },
-        })
-      );
-  }, [nameInfo, memberInfo, balanceInfo]);
+  // useEffect(() => {
+  //   nameInfo &&
+  //     dispatch(
+  //       updateGroup({
+  //         address,
+  //         info: {
+  //           name: nameInfo?.data,
+  //           members: memberInfo?.data,
+  //           balance: balanceInfo?.data,
+  //         },
+  //       })
+  //     );
+  // }, [nameInfo, memberInfo, balanceInfo]);
 
   return (
     <div className={Styles.MyGroupItem}>

@@ -22,10 +22,11 @@
 
     .MyGroupItem {
         border-radius: 10px;
-        background-color: rgb(199, 225, 208);
+        /* background-color: rgb(199, 225, 208); */
         padding: 10px;
         width: 100%;
         margin-top: 5px;
+        color: white;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
@@ -45,5 +46,5 @@
         display: grid;
             grid-template-columns: 5;
             gap: '5px';
-            background-color: rgb(240, 248, 248);
+            /* background-color: rgb(2, 2, 2); */
     }
