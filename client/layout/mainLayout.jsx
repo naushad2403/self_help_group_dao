@@ -17,7 +17,7 @@ export default function MainLayout({ children }) {
         <div className={styles.navigation}>
           <h1
             style={{
-              marginLeft: "10px",
+              marginLeft: "0px",
               color: "black",
               backgroundColor: "white",
               padding: "10px",

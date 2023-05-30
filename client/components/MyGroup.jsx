@@ -1,7 +1,7 @@
-import { useContractRead, useContractWrite } from "wagmi";
+import { useContractEvent, useContractRead, useContractWrite } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
 import { group_abi } from "../util";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MyGroupItem from "./MyGroupItem";
 import { useDispatch } from "react-redux";
 import { updateGroup } from "../state_management/slices/group";
@@ -13,6 +13,14 @@ export default function MyGroup() {
     functionName: "getAllGroup",
   });
 
+  useContractEvent({
+    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+    abi: group_abi,
+    eventName: "NewGroupCreated",
+    listener(log) {
+      console.log("NewGroupCreated", log);
+    },
+  });
   const dispatch = useDispatch();
 
   useEffect(() => {

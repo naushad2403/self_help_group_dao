@@ -15,13 +15,17 @@ contract Groups {
         selfdestruct(payable(msg.sender));
     }
 
+    event NewGroupCreated(address, string, uint, uint);
+
     function createNewGroup(string memory _name) external returns (address  addr) {
         SHG shg  = new SHG(_name); 
         uint ts = block.timestamp;
         groupIds.push(ts);
         groups[ts] = address(shg);
         userGroups[msg.sender].push(ts);
+        emit NewGroupCreated(address(shg), _name, 1, 0);
         return address(shg);
+
     }
 
     // function getMyGroup() public view returns(address[] memory){
