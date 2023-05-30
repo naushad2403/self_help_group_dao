@@ -1,0 +1,50 @@
+    .componentContainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .nameInput {
+        margin-right: 10px;
+        width: 200px;
+        height: 40px;
+        border-radius: 10px;
+    }
+
+    .createButton {
+        width: 150px;
+        height: 40px;
+        border-radius: 10px;
+        background-color: rgb(8, 238, 85);
+    }
+
+    .MyGroupItem {
+        border-radius: 10px;
+        /* background-color: rgb(199, 225, 208); */
+        padding: 10px;
+        width: 100%;
+        margin-top: 5px;
+        color: white;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+                                                                                                                                .MyGroupItem>* {
+                                                                                                                                    width: 17%;
+                                                                                                                                    /* background-color: blueviolet; */
+                                                                                                                                    margin-left: 10px;
+                                                                                                                                    margin-right: 10px;
+                                                                                                                                    text-align: center;
+                                                                                                                                }
+    .myGroup {
+        width: 98%;
+        margin-left: 1%;
+        margin-right: 1%;
+        display: grid;
+            grid-template-columns: 5;
+            gap: '5px';
+            /* background-color: rgb(2, 2, 2); */
+    }

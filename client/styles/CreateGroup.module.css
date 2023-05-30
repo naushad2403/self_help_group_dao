@@ -1,0 +1,63 @@
+    .componentContainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+        padding: 20px;
+    }
+
+    .nameInput {
+        margin-right: 10px;
+        width: 200px;
+        height: 40px;
+        border-radius: 10px;
+    }
+
+    .createButton {
+        width: 150px;
+        height: 40px;
+        border-radius: 10px;
+        background-color: rgb(8, 238, 85);
+    }
+.root {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: row;
+    padding: 20px;
+    width: 100%;
+}
+
+.root>* {
+    width: 33%;
+    color: white;
+    /* background-color: cadetblue; */
+}
+
+.SuccessfulMessage {
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow-wrap: break-word;
+}
+
+.HashStyle {
+    color: green;
+    text-decoration: underline;
+}
+
+@media screen and (max-width: 800px) {
+    .root {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        align-content: baseline;
+    }
+
+    .root>* {
+        width: 100%;
+
+        /* background-color: cadetblue; */
+    }
+
+
+}
