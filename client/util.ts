@@ -30,18 +30,6 @@ const group_abi = [
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
       "name": "NewGroupCreated",

@@ -13,7 +13,17 @@ const Home: NextPage = () => {
         <CreateGroup></CreateGroup>
       </div>
       <div className={styles.group}>
-        <h2> Groups</h2>
+        <h2
+          style={{
+            color: "black",
+            fontSize: "50px",
+            textShadow:
+              "0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5)",
+          }}
+        >
+          {" "}
+          Groups
+        </h2>
         <MyGroup></MyGroup>
       </div>
     </>

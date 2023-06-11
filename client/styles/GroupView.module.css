@@ -49,3 +49,8 @@
     color: white;
         /* background-color: rgb(212, 242, 247); */
 }
+.amountInput {
+    height: 40px;
+    border-radius: 10px;
+    align-self: center;
+}
