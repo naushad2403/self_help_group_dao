@@ -146,7 +146,7 @@ const group_abi = [
     }
   ];
 
-    const shg_abi =  [
+    const shg_abi = [
     {
       "inputs": [
         {
@@ -174,7 +174,26 @@ const group_abi = [
           "type": "uint256"
         }
       ],
-      "name": "Withdraw",
+      "name": "Deposited",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdrawn",
       "type": "event"
     },
     {
@@ -411,5 +430,4 @@ const group_abi = [
       "type": "receive"
     }
   ]
-
     export  {group_abi, shg_abi};

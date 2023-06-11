@@ -3,13 +3,14 @@ import styles from "./../../styles/GroupView.module.css";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { parseEther, parseGwei } from "viem";
-import { useBalance, useContractWrite } from "wagmi";
+import { useBalance, useContractEvent, useContractWrite } from "wagmi";
 import { shg_abi } from "../../util";
 
 export default function Group() {
   const router = useRouter();
   const info = useSelector((state) => state.info);
   const [depositVal, setDepositVal] = useState(0);
+  const [balance, setBalance] = useState();
   const [withdrawVal, setWithdrawVal] = useState(0);
 
   const depositObj = useContractWrite({
@@ -32,8 +33,32 @@ export default function Group() {
     },
   });
 
+  useContractEvent({
+    address: router.query.address,
+    abi: shg_abi,
+    eventName: "Withdrawn",
+    listener(log) {
+      //  console.log("NewGroupCreated", log);
+      setBalance((prev) => prev - parseInt(log[0].args._amount));
+    },
+  });
+
+  useContractEvent({
+    address: router.query.address,
+    abi: shg_abi,
+    eventName: "Deposited",
+    listener(log) {
+      console.log("Deposited", log);
+      setBalance((prev) => prev + parseInt(log[0].args._amount));
+    },
+  });
+
   const balanceInfo = useBalance({
     address: router.query.address,
+    onSuccess(data) {
+      // console.log("balance Success", data);
+      setBalance(parseInt(data?.value));
+    },
   });
 
   console.log(
@@ -54,9 +79,7 @@ export default function Group() {
         <div className={styles.basicDetail}>
           <h3>Address: {router.query.address}</h3>
           <h3>Name: G1</h3>
-          <h3>
-            Balance: {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
-          </h3>
+          <h3>Balance: {balance}</h3>
           <input
             type="text"
             className={styles.amountInput}
