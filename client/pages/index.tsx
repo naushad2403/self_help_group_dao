@@ -4,7 +4,6 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import CreateGroup from "../components/CreateGroup";
 import MyGroup from "../components/MyGroup";
-import AllGroup from "../components/AllGroup";
 
 const Home: NextPage = () => {
   return (

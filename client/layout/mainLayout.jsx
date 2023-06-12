@@ -1,7 +1,9 @@
+import { useRouter } from "next/router";
 import styles from "./../styles/Home.module.css";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 export default function MainLayout({ children }) {
+  const router = useRouter();
   return (
     <>
       {/* <head>
@@ -19,10 +21,13 @@ export default function MainLayout({ children }) {
               style={{
                 marginLeft: "0px",
                 color: "black",
-                backgroundColor: "white",
                 padding: "10px",
                 borderRadius: "10px",
+                fontSize: "50px",
+                textShadow:
+                  "0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5)",
               }}
+              onClick={() => router.push("/")}
             >
               S
               <sup

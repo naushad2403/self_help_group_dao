@@ -90,7 +90,16 @@ export default function Group() {
     <>
       <div className={styles.container}>
         <div className={styles.basicDetail}>
-          <h3>Address: {router.query.address}</h3>
+          <h3>
+            Address:{" "}
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={`${process.env.NEXT_PUBLIC_BLOXPLORER}address/${router.query.address}`}
+            >
+              {router.query.address}
+            </a>
+          </h3>
           <h3>Name: G1</h3>
           <h3>Balance: {balance}</h3>
           <input
@@ -131,22 +140,42 @@ export default function Group() {
             <div>
               {(memberBal || []).map((x) => {
                 return (
-                  <p key={x.address}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      marginBottom: "30px",
+                      justifyContent: "flex-start",
+                    }}
+                    key={x.address}
+                  >
                     {" "}
-                    {x.address}: {x.balance}
-                  </p>
+                    <a
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ width: "60%", textAlign: "left" }}
+                      href={`${process.env.NEXT_PUBLIC_BLOXPLORER}address/${x.address}`}
+                    >
+                      {x.address}:
+                    </a>{" "}
+                    <span style={{ marginRight: "20px" }}>
+                      {x.balance} ETH{" "}
+                    </span>
+                  </div>
                 );
               })}
             </div>
           </div>
-          <div
+          {/* <div
             style={{
-              width: "1px",
+              width: "5px",
               height: "500px",
-              backgroundColor: "white",
-              margin: "0 10px",
+              boxShadow:
+                "0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5)",
+              backgroundColor: "black",
+              margin: "0 0 10px",
             }}
-          ></div>
+          ></div> */}
           <div>
             <h2
               style={{
@@ -159,62 +188,6 @@ export default function Group() {
               {" "}
               Proposals
             </h2>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-              }}
-            >
-              <div>
-                <p>Need 1ETH for personal use</p>
-              </div>
-              <button style={{ width: "80px" }}> View </button>
-              <button style={{ width: "80px" }}>Approve</button>
-              <button style={{ width: "80px" }}>Reject </button>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-              }}
-            >
-              <div>
-                <p>Need 1ETH for personal use</p>
-              </div>
-              <button style={{ width: "80px" }}> View </button>
-              <button style={{ width: "80px" }}>Approve</button>
-              <button style={{ width: "80px" }}>Reject </button>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-              }}
-            >
-              <div>
-                <p>Need 1ETH for personal use</p>
-              </div>
-              <button style={{ width: "80px" }}> View </button>
-              <button style={{ width: "80px" }}>Approve</button>
-              <button style={{ width: "80px" }}>Reject </button>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-              }}
-            >
-              <div>
-                <p>Need 1ETH for personal use</p>
-              </div>
-              <button style={{ width: "80px" }}> View </button>
-              <button style={{ width: "80px" }}>Approve</button>
-              <button style={{ width: "80px" }}>Reject </button>
-            </div>
             <div
               style={{
                 display: "flex",
