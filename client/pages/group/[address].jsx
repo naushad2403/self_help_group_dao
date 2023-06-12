@@ -3,7 +3,12 @@ import styles from "./../../styles/GroupView.module.css";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { parseEther, parseGwei } from "viem";
-import { useBalance, useContractEvent, useContractWrite } from "wagmi";
+import {
+  useBalance,
+  useContractEvent,
+  useContractRead,
+  useContractWrite,
+} from "wagmi";
 import { shg_abi } from "../../util";
 
 export default function Group() {
@@ -11,6 +16,7 @@ export default function Group() {
   const info = useSelector((state) => state.info);
   const [depositVal, setDepositVal] = useState(0);
   const [balance, setBalance] = useState();
+  const [memberBal, setMemberBal] = useState();
   const [withdrawVal, setWithdrawVal] = useState(0);
 
   const depositObj = useContractWrite({
@@ -29,7 +35,8 @@ export default function Group() {
     functionName: "withdrawAmount",
     args: [withdrawVal],
     onSuccess(data) {
-      console.log("withdrawAmount Success", data);
+      // console.log("withdrawAmount Success", data);
+      //  setBalance((prev) => prev - parseInt(log[0].args._amount));
     },
   });
 
@@ -48,8 +55,24 @@ export default function Group() {
     abi: shg_abi,
     eventName: "Deposited",
     listener(log) {
-      console.log("Deposited", log);
       setBalance((prev) => prev + parseInt(log[0].args._amount));
+    },
+  });
+
+  const memberBalance = useContractRead({
+    address: router.query.address,
+    abi: shg_abi,
+    functionName: "getMemberWithBalance",
+    onSettled(data, error) {
+      console.log(" memberBalance Settled", { data, error });
+      if (!data) return;
+      setMemberBal(
+        data[0].map((addr, balIdx) => {
+          return { address: addr, balance: parseInt(data[1][balIdx]) };
+        })
+      );
+
+      // setGroups((prev) => [...prev, ...(data || [])]);
     },
   });
 
@@ -61,17 +84,7 @@ export default function Group() {
     },
   });
 
-  console.log(
-    "Group view info",
-    balanceInfo,
-    balanceInfo?.data?.value,
-    balanceInfo?.data?.formatted,
-    balanceInfo?.data?.symbol
-  );
-
-  const depositAmount = () => {};
-
-  const withdrawAmount = () => {};
+  console.log("memberBal", memberBal);
 
   return (
     <>
@@ -116,37 +129,14 @@ export default function Group() {
               Members
             </h2>
             <div>
-              <a href="">0xsdffafasfasdfasfd</a>
-              <span> ETH 200</span>
-            </div>
-            <div>
-              <a href="">0xsdffafasfasdfasfd</a>
-              <span> ETH 200</span>
-            </div>
-            <div>
-              <a href="">0xsdffafasfasdfasfd</a>
-              <span> ETH 200</span>
-            </div>
-            <div>
-              <a href="">0xsdffafasfasdfasfd</a>
-              <span> ETH 200</span>
-            </div>
-            <div>
-              <a href="">0xsdffafasfasdfasfd</a>
-              <span> ETH 200</span>
-            </div>
-            <div>
-              <a href="">0xsdffafasfasdfasfd</a>
-              <span> ETH 200</span>
-            </div>
-
-            <div>
-              <a href="">0xsdffafasfasdfasfd</a>
-              <span> ETH 200</span>
-            </div>
-            <div>
-              <a href="">0xsdffafasfasdfasfd</a>
-              <span> ETH 200</span>
+              {(memberBal || []).map((x) => {
+                return (
+                  <p key={x.address}>
+                    {" "}
+                    {x.address}: {x.balance}
+                  </p>
+                );
+              })}
             </div>
           </div>
           <div

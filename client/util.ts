@@ -146,7 +146,7 @@ const group_abi = [
     }
   ];
 
-    const shg_abi = [
+    const shg_abi =  [
     {
       "inputs": [
         {
@@ -343,6 +343,24 @@ const group_abi = [
           "internalType": "address[]",
           "name": "",
           "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMemberWithBalance",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
         }
       ],
       "stateMutability": "view",

@@ -14,7 +14,7 @@ export default function MyGroup() {
     functionName: "getAllGroup",
     onSettled(data, error) {
       // console.log("Settled", { data, error });
-      setGroups((prev) => [...prev, ...data]);
+      setGroups((prev) => [...prev, ...(data || [])]);
     },
   });
 

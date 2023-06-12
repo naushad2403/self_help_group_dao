@@ -28,6 +28,14 @@ contract SHG {
         return members;
     }
 
+    function getMemberWithBalance () external view returns (address[] memory, uint[]  memory) {
+         uint[] memory  bal= new uint[](members.length);
+         for(uint i = 0; i < members.length; i++) {
+            bal[i] = balances[members[i]];
+         }
+        return (members, bal);
+    }
+
     event Withdrawn(address _member, uint _amount);
     event Deposited(address _member, uint _amount);
 
