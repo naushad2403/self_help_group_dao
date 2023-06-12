@@ -56,7 +56,7 @@ export default function MyGroupItem({ address }) {
     <div className={Styles.MyGroupItem}>
       <a
         target="_blank"
-        href={`https://etherscan.io/address/${address}`}
+        href={`${process.env.NEXT_PUBLIC_BLOXPLORER}address/${address}`}
         rel="noreferrer"
       >
         {"..." + address.substr(-5)}
