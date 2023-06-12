@@ -28,13 +28,23 @@ contract SHG {
         return members;
     }
 
-    event Withdraw(address _member, uint _amount);
+    function getMemberWithBalance () external view returns (address[] memory, uint[]  memory) {
+         uint[] memory  bal= new uint[](members.length);
+         for(uint i = 0; i < members.length; i++) {
+            bal[i] = balances[members[i]];
+         }
+        return (members, bal);
+    }
+
+    event Withdrawn(address _member, uint _amount);
+    event Deposited(address _member, uint _amount);
+
     function withdrawAmount(uint _amount) public {
         require(_amount <= balances[msg.sender], "Insufficient balance, please create a borrow proposal");
         balances[msg.sender] -= _amount;
         (bool success, ) = payable(msg.sender).call{value: _amount}("");
         require(success, "Payment failed");
-        emit Withdraw(msg.sender, _amount);
+        emit Withdrawn(msg.sender, _amount);
     }
 
     function join() external returns (bool) {
@@ -87,13 +97,17 @@ contract SHG {
 
     receive() external payable {
         balances[msg.sender] += msg.value;
+         emit Deposited(msg.sender, msg.value);
     }
 
     fallback() external payable {
         balances[msg.sender] += msg.value;
+         emit Deposited(msg.sender, msg.value);
     }
 
     function deposit() external payable {
-        balances[msg.sender] += msg.value;
+     balances[msg.sender] += msg.value;
+     emit Deposited(msg.sender, msg.value);
+
     }
 }

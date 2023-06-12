@@ -30,18 +30,6 @@ const group_abi = [
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
       "name": "NewGroupCreated",
@@ -186,7 +174,26 @@ const group_abi = [
           "type": "uint256"
         }
       ],
-      "name": "Withdraw",
+      "name": "Deposited",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdrawn",
       "type": "event"
     },
     {
@@ -343,6 +350,24 @@ const group_abi = [
     },
     {
       "inputs": [],
+      "name": "getMemberWithBalance",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "join",
       "outputs": [
         {
@@ -423,5 +448,4 @@ const group_abi = [
       "type": "receive"
     }
   ]
-
     export  {group_abi, shg_abi};

@@ -3,6 +3,7 @@ import {
   useBalance,
   useContractRead,
   useContractWrite,
+  usePrepareContractWrite,
 } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
 import { shg_abi } from "../util";
@@ -29,6 +30,12 @@ export default function MyGroupItem({ address }) {
 
   const balanceInfo = useBalance({
     address: address,
+  });
+
+  const joiningGroup = useContractWrite({
+    address: address,
+    abi: shg_abi,
+    functionName: "join",
   });
 
   // useEffect(() => {
@@ -60,7 +67,7 @@ export default function MyGroupItem({ address }) {
       </p>
       <p>{memberInfo?.data?.length}</p>
       {!memberInfo?.data?.includes(accountInfo.address) ? (
-        <button>Join Group</button>
+        <button onClick={joiningGroup.write}>Join Group</button>
       ) : (
         <p>You are member</p>
       )}

@@ -30,7 +30,7 @@ export default function CreateGroup() {
       <div className={Styles.componentContainer}>
         <input
           type="text"
-          class={Styles.nameInput}
+          className={Styles.nameInput}
           id="name-input"
           placeholder="Enter group name"
           value={name}
