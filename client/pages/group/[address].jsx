@@ -10,6 +10,7 @@ import {
   useContractWrite,
 } from "wagmi";
 import { shg_abi } from "../../util";
+import CreateProposal from '../../components/CreateProposal';
 
 export default function Group() {
   const router = useRouter();
@@ -151,7 +152,6 @@ export default function Group() {
             </button>
           </div>
         </div>
-
         <div
           style={{
             display: "flex",
@@ -235,11 +235,13 @@ export default function Group() {
               {" "}
               Proposals
             </h2>
+            <CreateProposal></CreateProposal>
             <div
               style={{
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-around",
+                marginTop: "20px"
               }}
             >
               <div>
