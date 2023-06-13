@@ -9,6 +9,6 @@ typechain-types
 cache
 artifacts
 
+.next
 client/.next
-
 client/.next/cache/webpack/client-development/10.pack
