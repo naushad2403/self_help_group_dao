@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from '../styles/CreateProposal.module.css'
 import { shg_abi } from "../util";
+import { useContractWrite } from "wagmi";
 
 const CreateProposal = ({address}) => {
   const [amount, setAmount] = useState("");
@@ -23,6 +24,9 @@ const CreateProposal = ({address}) => {
       setTxHash(data.hash);
     },
   });
+
+  
+
 
 
   const handleAmountChange = (event) => {
@@ -112,6 +116,12 @@ const CreateProposal = ({address}) => {
       >
         SEND PROPOSAL
       </button>
+      {message && <p>
+        {message}
+        <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
+          {txHash}
+        </a>
+      </p>}
     </div>
   );
 };

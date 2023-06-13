@@ -11,6 +11,8 @@ import {
 } from "wagmi";
 import { shg_abi } from "../../util";
 import CreateProposal from '../../components/CreateProposal';
+import Proposals from '../../components/Proposals';
+
 
 export default function Group() {
   const router = useRouter();
@@ -164,12 +166,14 @@ export default function Group() {
             // border: "1px solid",
           }}
         >
-          <p>
-            {message}
-            <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
-              {txHash}
-            </a>
-          </p>
+          {message && (
+            <p>
+              {message}
+              <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
+                {txHash}
+              </a>
+            </p>
+          )}
         </div>
 
         <div className={styles.allDetail}>
@@ -235,22 +239,9 @@ export default function Group() {
               {" "}
               Proposals
             </h2>
-            <CreateProposal></CreateProposal>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-                marginTop: "20px"
-              }}
-            >
-              <div>
-                <p>Need 1ETH for personal use</p>
-              </div>
-              <button style={{ width: "80px" }}> View </button>
-              <button style={{ width: "80px" }}>Approve</button>
-              <button style={{ width: "80px" }}>Reject </button>
-            </div>
+            {/* <CreateProposal address={router.query.address}></CreateProposal>
+            Proposals */}
+            <Proposals address={router.query.address}></Proposals>
           </div>
         </div>
       </div>
