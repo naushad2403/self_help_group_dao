@@ -264,9 +264,29 @@ const group_abi = [
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "purpose",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "monthlyInterestRate",
+          "type": "uint256"
+        },
+        {
           "internalType": "bool",
           "name": "claimed",
           "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "loanDurationInMonth",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "proposalTime",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -332,7 +352,7 @@ const group_abi = [
           "type": "uint256"
         }
       ],
-      "name": "getApprovers",
+      "name": "getApproversAndRejecters",
       "outputs": [
         {
           "internalType": "address[]",
@@ -416,6 +436,21 @@ const group_abi = [
         {
           "internalType": "uint256",
           "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_purpose",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_interestRatePerMonth",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_loanDurationInMonth",
           "type": "uint256"
         }
       ],
