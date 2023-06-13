@@ -13,8 +13,13 @@ contract SHG {
         uint amount;
         address proposer;
         uint proposalId;
+        string purpose;
+        uint monthlyInterestRate;
         bool claimed;
-        mapping(address=>bool) votes;
+        uint loanDurationInMonth;
+        address[] approvers;
+        address[] rejecters;
+        uint proposalTime;
        
     }
 
@@ -52,31 +57,27 @@ contract SHG {
         return true;
     }
 
-    function submitLoanProposal(uint _amount) external returns (uint) {
+
+    function submitLoanProposal(uint _amount, string memory _purpose, uint _interestRatePerMonth, 
+    uint _loanDurationInMonth) external returns (uint) {
         BorrowProposal storage proposal = borrowProposal[counter];
         proposal.amount = _amount;
         proposal.proposer = msg.sender;
         proposal.proposalId = counter;
+        proposal.monthlyInterestRate= _interestRatePerMonth;
+        proposal.loanDurationInMonth = _loanDurationInMonth;
+        proposal.purpose = _purpose;
+        proposal.proposalTime = block.timestamp;
         counter += 1;
         return counter - 1; 
     }
 
-    function getApprovers(uint _proposalId) public view returns(address[] memory, address[] memory) {
-        address[] memory approvers = new address[](0);
-        address[] memory notApproveOrReject = new address[](0);
-        BorrowProposal storage proposal =  borrowProposal[_proposalId];
-        for(uint i = 0; i < members.length; i++) {
-                if(proposal.votes[members[i]]) {
-                    approvers[approvers.length] = members[i];
-                }else{
-                    notApproveOrReject[notApproveOrReject.length] = members[i];
-                }
-        }
-        return (approvers, notApproveOrReject);
+    function getApproversAndRejecters(uint _proposalId) public view returns(address[] memory, address[] memory) {
+        return (borrowProposal[_proposalId].approvers, borrowProposal[_proposalId].rejecters);
     }
 
     function claimApprovedAmount (uint _proposalId) public returns(bool) {
-      (address[] memory approvers, )  =  getApprovers(_proposalId);
+      (address[] memory approvers, )  =  getApproversAndRejecters(_proposalId);
       if(approvers.length > (members.length / 2)){
           (bool success,)=  borrowProposal[_proposalId].proposer.call{value: borrowProposal[_proposalId].amount}("");
           return success;
@@ -86,12 +87,12 @@ contract SHG {
     }
 
     function approveBorrowProposal(uint _proposalId) external returns (bool) {
-        borrowProposal[_proposalId].votes[msg.sender] = true;
+        borrowProposal[_proposalId].approvers[borrowProposal[_proposalId].approvers.length] = msg.sender;
         return true;
     }
 
      function rejectBorrowProposal(uint _proposalId) external returns (bool) {
-        borrowProposal[_proposalId].votes[msg.sender] = false;
+        borrowProposal[_proposalId].rejecters[borrowProposal[_proposalId].rejecters.length] = msg.sender;
         return true;
     }
 
