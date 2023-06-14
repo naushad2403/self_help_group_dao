@@ -1,0 +1,28 @@
+.countdown {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.animation {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+
+.digitAnimation {
+    position: relative;
+    animation: dropAnimation 1s ease-in;
+    animation-fill-mode: forwards;
+}
+
+@keyframes dropAnimation {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}

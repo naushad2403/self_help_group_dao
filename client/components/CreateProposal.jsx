@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import styles from '../styles/CreateProposal.module.css'
+import styles from "../styles/CreateProposal.module.css";
 import { shg_abi } from "../util";
+import { useContractWrite } from "wagmi";
 
-const CreateProposal = ({address}) => {
+const CreateProposal = ({ address }) => {
   const [amount, setAmount] = useState("");
   const [duration, setDuration] = useState("");
   const [interestRate, setInterestRate] = useState("");
@@ -24,7 +25,6 @@ const CreateProposal = ({address}) => {
     },
   });
 
-
   const handleAmountChange = (event) => {
     setAmount(event.target.value);
   };
@@ -42,15 +42,41 @@ const CreateProposal = ({address}) => {
   };
 
   const handleSubmit = () => {
-    console.log(amount, duration, purpose, interestRate)
-    proposalMethod.write();
-    setAmount("");
-    setDuration("");
-    setInterestRate("");
-
-    setPurpose("");
-    // Handle submission logic here
+    if (
+      isValidInput(amount) &&
+      isValidInput(duration) &&
+      isValidInput(interestRate) &&
+      isValidInput(purpose)
+    ) {
+      console.log(amount, duration, purpose, interestRate);
+      proposalMethod.write();
+      setAmount("");
+      setDuration("");
+      setInterestRate("");
+      setPurpose("");
+    } else {
+      console.log("Invalid input");
+    }
   };
+
+  const isValidInput = (value) => {
+    return !isNaN(value) || value.trim() != "";
+  };
+
+  const isSubmitDisabled =
+    !( amount > 0) ||
+    !(duration > 0) ||
+    !( interestRate > 0) ||
+    !(purpose.length > 0) 
+
+
+    console.log("isSubmitDisabled", isSubmitDisabled);
+    console.log("isValidInput(amount)", isValidInput(amount), "-", amount);
+    console.log("isValidInput(duration)", isValidInput(duration),"-", duration);
+      console.log("isValidInput(interestRate)", isValidInput(interestRate),"-", interestRate);
+      console.log("isValidInput(purpose)", isValidInput(purpose), "-",purpose);
+
+  const buttonStyle = isSubmitDisabled ? { opacity: 0.5 } : {};
 
   return (
     <div className={styles.container}>
@@ -89,7 +115,7 @@ const CreateProposal = ({address}) => {
         value={purpose}
         onChange={handlePurposeChange}
         placeholder="Explain your purpose here..."
-        rows={4} // Adjust the number of rows as per your requirement
+        rows={4}
         style={{
           width: "98%",
           padding: "10px",
@@ -107,14 +133,23 @@ const CreateProposal = ({address}) => {
           width: "98%",
           marginLeft: "1%",
           marginBottom: "1%",
+          ...buttonStyle, // Apply the buttonStyle dynamically
         }}
         onClick={handleSubmit}
+        disabled={isSubmitDisabled}
       >
         SEND PROPOSAL
       </button>
+      {message && (
+        <p>
+          {message}
+          <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
+            {txHash}
+          </a>
+        </p>
+      )}
     </div>
   );
 };
-
 
 export default CreateProposal;

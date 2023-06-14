@@ -274,9 +274,9 @@ const group_abi = [
           "type": "uint256"
         },
         {
-          "internalType": "bool",
-          "name": "claimed",
-          "type": "bool"
+          "internalType": "enum SHG.status",
+          "name": "currentStatus",
+          "type": "uint8"
         },
         {
           "internalType": "uint256",
@@ -290,6 +290,25 @@ const group_abi = [
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancelProposal",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -407,6 +426,19 @@ const group_abi = [
           "internalType": "string",
           "name": "",
           "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "proposalVotingPeriod",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",

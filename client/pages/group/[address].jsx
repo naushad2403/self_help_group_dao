@@ -164,12 +164,14 @@ export default function Group() {
             // border: "1px solid",
           }}
         >
-          <p>
-            {message}
-            <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
-              {txHash}
-            </a>
-          </p>
+          {message && (
+            <p>
+              {message}
+              <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
+                {txHash}
+              </a>
+            </p>
+          )}
         </div>
 
         <div className={styles.allDetail}>
@@ -234,23 +236,17 @@ export default function Group() {
             >
               {" "}
               Proposals
+              <button
+              style={{marginLeft: "20px", height: "40px"}}
+                onClick={() => {
+                  console.log(`/proposal/${router.query.address}`);
+                  router.push(`/proposal/${router.query.address}`);
+                }}
+              >
+                View Proposals
+              </button>
             </h2>
-            <CreateProposal></CreateProposal>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-                marginTop: "20px"
-              }}
-            >
-              <div>
-                <p>Need 1ETH for personal use</p>
-              </div>
-              <button style={{ width: "80px" }}> View </button>
-              <button style={{ width: "80px" }}>Approve</button>
-              <button style={{ width: "80px" }}>Reject </button>
-            </div>
+            {<CreateProposal address={router.query.address}></CreateProposal>}
           </div>
         </div>
       </div>
