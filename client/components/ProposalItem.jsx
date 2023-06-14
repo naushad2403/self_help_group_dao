@@ -10,6 +10,8 @@ const ProposalItem = ({ address, proposalId }) => {
   const [voterDetails, setVoter] = useState({});
 const accountInfo = useAccount();  
 
+
+
   useContractRead({
     address: address,
     abi: shg_abi,
@@ -22,8 +24,36 @@ const accountInfo = useAccount();
     },
   });
 
+
+  useContractRead({
+    address: address,
+    abi: shg_abi,
+    functionName: "getApproversAndRejecters",
+    args: [proposalId],
+    onSettled(data, error) {
+      console.log(" setVoter Settled", { data, error });
+      setVoter(data);
+      // setGroups((prev) => [...prev, ...(data || [])]);
+    },
+  });
+
+    const memberInfo = useContractRead({
+      address: address,
+      abi: shg_abi,
+      functionName: "getAllMembers",
+    });
+
+
   const isOwner = proposalInfo[1] == accountInfo?.address;
-  const remainingSecond = Math.floor(Date.now()/1000) - parseInt(proposalInfo[9])
+  const remainingSecond =   parseInt(proposalInfo[7]) - Math.floor(Date.now()/1000);
+
+  console.log(
+    "remainingSecond",
+    remainingSecond,
+    proposalInfo[7],
+    Math.floor(Date.now() / 1000)
+  );
+
 
   const claimReq = useContractWrite({
     address: address,
@@ -128,12 +158,12 @@ const accountInfo = useAccount();
         <h4>Duration: ${parseInt(proposalInfo[6])} Month</h4>
         <h4>
           {
-            ["Voting period", "Cancelled", "Settled", "Rejected"][
-              Math.floor(Math.random() * 3)
+            ["Voting period", "Cancelled", "Approved", "Rejected", "Settled"][
+              proposalInfo[5]
             ]
           }
         </h4>
-        <h4>Votes: 0 / 7</h4>
+        <h4>Votes: 0 / {memberInfo?.data?.length - 1}</h4>
       </div>
 
       <div className={styles.purposeContainer}>
