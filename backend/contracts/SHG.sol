@@ -8,6 +8,14 @@ contract SHG {
     mapping(uint => BorrowProposal) public borrowProposal;
     uint public counter = 0;
     string public name;
+    uint public proposalVotingPeriod = 259200;//72 hours in second;
+    enum status{
+        Voting,
+        Cancelled,
+        Approved,
+        Rejected,
+        Setteled
+    }
 
     struct BorrowProposal {
         uint amount;
@@ -15,7 +23,7 @@ contract SHG {
         uint proposalId;
         string purpose;
         uint monthlyInterestRate;
-        bool claimed;
+        status currentStatus;
         uint loanDurationInMonth;
         address[] approvers;
         address[] rejecters;
@@ -67,7 +75,7 @@ contract SHG {
         proposal.monthlyInterestRate= _interestRatePerMonth;
         proposal.loanDurationInMonth = _loanDurationInMonth;
         proposal.purpose = _purpose;
-        proposal.proposalTime = block.timestamp;
+        proposal.proposalTime = block.timestamp + proposalVotingPeriod;
         counter += 1;
         return counter - 1; 
     }
@@ -93,6 +101,11 @@ contract SHG {
 
      function rejectBorrowProposal(uint _proposalId) external returns (bool) {
         borrowProposal[_proposalId].rejecters[borrowProposal[_proposalId].rejecters.length] = msg.sender;
+        return true;
+    }
+
+    function cancelProposal(uint _proposalId) external returns (bool) {
+        borrowProposal[_proposalId].currentStatus = status.Cancelled;
         return true;
     }
 

@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import styles from './../styles/ProposalItem.module.css'
-import { useContractRead } from "wagmi";
+import styles from "./../styles/ProposalItem.module.css";
+import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { Router, useRouter } from "next/router";
 import { shg_abi } from "../util";
+import Timer from "./Timer";
 
 const ProposalItem = ({ address, proposalId }) => {
-console.log('proposal item', address, proposalId)
   const [proposalInfo, setProposalInfo] = useState("");
+  const [voterDetails, setVoter] = useState({});
+const accountInfo = useAccount();  
+
   useContractRead({
     address: address,
     abi: shg_abi,
@@ -18,6 +21,71 @@ console.log('proposal item', address, proposalId)
       // setGroups((prev) => [...prev, ...(data || [])]);
     },
   });
+
+  const isOwner = proposalInfo[1] == accountInfo?.address;
+  const remainingSecond = Math.floor(Date.now()/1000) - parseInt(proposalInfo[9])
+
+  const claimReq = useContractWrite({
+    address: address,
+    abi: shg_abi,
+    functionName: "claimApprovedAmount",
+    args: [proposalId],
+    onSuccess(data) {
+      // console.log("withdrawAmount Success", data);
+      //  setBalance((prev) => prev - parseInt(log[0].args._amount=);
+      setMessage(
+        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
+      );
+      setTxHash(data.hash);
+    },
+  });
+
+  const approveReq = useContractWrite({
+    address: address,
+    abi: shg_abi,
+    functionName: "approveBorrowProposal",
+    args: [proposalId],
+    onSuccess(data) {
+      // console.log("withdrawAmount Success", data);
+      //  setBalance((prev) => prev - parseInt(log[0].args._amount));
+      setMessage(
+        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
+      );
+      setTxHash(data.hash);
+    },
+  });
+
+  const rejectReq = useContractWrite({
+    address: address,
+    abi: shg_abi,
+    functionName: "rejectBorrowProposal",
+    args: [proposalId],
+    onSuccess(data) {
+      // console.log("withdrawAmount Success", data);
+      //  setBalance((prev) => prev - parseInt(log[0].args._amount));
+      setMessage(
+        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
+      );
+      setTxHash(data.hash);
+    },
+  });
+
+  const cancelReq = useContractWrite({
+    address: address,
+    abi: shg_abi,
+    functionName: "cancelProposal",
+    args: [proposalId],
+    onSuccess(data) {
+      // console.log("withdrawAmount Success", data);
+      //  setBalance((prev) => prev - parseInt(log[0].args._amount));
+      setMessage(
+        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
+      );
+      setTxHash(data.hash);
+    },
+  });
+
+
 
   //   uint amount;
   // address proposer;
@@ -35,20 +103,64 @@ console.log('proposal item', address, proposalId)
         style={{
           display: "flex",
           flexDirection: "row",
-          justifyContent: "space-between",
+          justifyContent: "space-evenly",
+          alignContent: "center",
+          // alignItems:"baseline",
+          // backgroundColor:"gray",
+          marginTop: "0px",
         }}
       >
-        <h2>Amount(wei): {parseInt(proposalInfo[0])}</h2>
-        <h2>Interest rate/Month(wei): {parseInt(proposalInfo[4])}</h2>
-        <h2>Duration: ${parseInt(proposalInfo[6])} Month</h2>
+        <h4>Amount(wei): {parseInt(proposalInfo[0])}</h4>
+        <h4>Interest rate/Month(wei): {parseInt(proposalInfo[4])}</h4>
+        {remainingSecond > 0 && (
+          <h4
+            style={{
+              // marginLeft: "40px",
+              border: "1px solid",
+              borderRadius: "5px",
+              padding: "10px",
+              verticalAlign: "top",
+            }}
+          >
+            Voting closes in: <Timer seconds={remainingSecond}></Timer>
+          </h4>
+        )}
+        <h4>Duration: ${parseInt(proposalInfo[6])} Month</h4>
+        <h4>
+          {
+            ["Voting period", "Cancelled", "Settled", "Rejected"][
+              Math.floor(Math.random() * 3)
+            ]
+          }
+        </h4>
+        <h4>Votes: 0 / 7</h4>
       </div>
 
       <div className={styles.purposeContainer}>
-        <h2>Purpose</h2>
+        {/* <h2>Purpose</h2> */}
         <p>{proposalInfo[3]}</p>
         <div className={styles.approveButtonContainer}>
-          <button>Approve</button>
-          <button>Raject</button>
+          {!isOwner && (
+            <button
+              style={{ backgroundColor: "red" }}
+              onClick={rejectReq.write}
+            >
+              Raject
+            </button>
+          )}
+          {!isOwner && <button onClick={approveReq.write}>Approve</button>}
+
+          {isOwner && isOwner && (
+            <button
+              style={{ backgroundColor: "red" }}
+              onClick={cancelReq.write}
+            >
+              Cancel
+            </button>
+          )}
+          {isOwner && isOwner && (
+            <button onClick={claimReq.write}>Claim</button>
+          )}
         </div>
       </div>
     </div>
