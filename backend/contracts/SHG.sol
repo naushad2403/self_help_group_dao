@@ -76,6 +76,8 @@ contract SHG {
         proposal.loanDurationInMonth = _loanDurationInMonth;
         proposal.purpose = _purpose;
         proposal.proposalTime = block.timestamp + proposalVotingPeriod;
+        proposal.approvers = new address[](members.length);
+        proposal.rejecters = new address[](members.length);
         counter += 1;
         return counter - 1; 
     }
@@ -95,12 +97,13 @@ contract SHG {
     }
 
     function approveBorrowProposal(uint _proposalId) external returns (bool) {
-        borrowProposal[_proposalId].approvers[borrowProposal[_proposalId].approvers.length] = msg.sender;
+        // uint approvedL = borrowProposal[_proposalId].approvers.length;
+        borrowProposal[_proposalId].approvers.push(msg.sender);
         return true;
     }
 
      function rejectBorrowProposal(uint _proposalId) external returns (bool) {
-        borrowProposal[_proposalId].rejecters[borrowProposal[_proposalId].rejecters.length] = msg.sender;
+        borrowProposal[_proposalId].rejecters.push(msg.sender);
         return true;
     }
 
