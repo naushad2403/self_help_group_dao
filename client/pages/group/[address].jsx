@@ -11,8 +11,6 @@ import {
 } from "wagmi";
 import { shg_abi } from "../../util";
 import CreateProposal from '../../components/CreateProposal';
-import Proposals from '../../components/Proposals';
-
 
 export default function Group() {
   const router = useRouter();
@@ -238,10 +236,17 @@ export default function Group() {
             >
               {" "}
               Proposals
+              <button
+              style={{marginLeft: "20px", height: "40px"}}
+                onClick={() => {
+                  console.log(`/proposal/${router.query.address}`);
+                  router.push(`/proposal/${router.query.address}`);
+                }}
+              >
+                View Proposals
+              </button>
             </h2>
-            {/* <CreateProposal address={router.query.address}></CreateProposal>
-            Proposals */}
-            <Proposals address={router.query.address}></Proposals>
+            {<CreateProposal address={router.query.address}></CreateProposal>}
           </div>
         </div>
       </div>

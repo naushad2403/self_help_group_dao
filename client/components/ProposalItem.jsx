@@ -1,29 +1,56 @@
 import React, { useState } from "react";
 import styles from './../styles/ProposalItem.module.css'
+import { useContractRead } from "wagmi";
+import { Router, useRouter } from "next/router";
+import { shg_abi } from "../util";
 
-const ProposalItem = ({proposalId}) => {
+const ProposalItem = ({ address, proposalId }) => {
+console.log('proposal item', address, proposalId)
   const [proposalInfo, setProposalInfo] = useState("");
+  useContractRead({
+    address: address,
+    abi: shg_abi,
+    functionName: "borrowProposal",
+    args: [proposalId],
+    onSettled(data, error) {
+      console.log(" borrowProposal Settled", { data, error });
+      setProposalInfo(data);
+      // setGroups((prev) => [...prev, ...(data || [])]);
+    },
+  });
 
+  //   uint amount;
+  // address proposer;
+  // uint proposalId;
+  // string purpose;
+  // uint monthlyInterestRate;
+  // bool claimed;
+  // uint loanDurationInMonth;
+  // address[] approvers;
+  // address[] rejecters;
+  // uint proposalTime;
   return (
     <div className={styles.proposalItemContainer}>
-      <h2>Amount: 100</h2>
-      <h2>Interest rate/Month: 100</h2>
-      <h2>Duration: 100 Month</h2>
-      <h2>Purpose</h2>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-        pellentesque mauris sed felis tincidunt, non tincidunt lorem fringilla.
-        Donec ut tellus eu arcu posuere congue. Aenean convallis quam id nunc
-        aliquet, eu rutrum enim fermentum. Curabitur tincidunt felis ac diam
-        fringilla, nec scelerisque erat efficitur. Vestibulum ante ipsum primis
-        in faucibus orci luctus et ultrices posuere cubilia Curae; Sed et mauris
-        lacinia, posuere ex sed, malesuada justo. Mauris iaculis cursus
-        malesuada. Integer at ultrices risus, non efficitur nisl. Fusce cursus
-        purus non ipsum tincidunt, ac hendrerit mauris laoreet. Etiam et arcu ut
-        metus cursus scelerisque. Aenean hendrerit risus ac turpis cursus, a
-        posuere sapien tristique. Cras fringilla tincidunt turpis, vitae iaculis
-        neque fringilla vitae.
-      </p>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <h2>Amount(wei): {parseInt(proposalInfo[0])}</h2>
+        <h2>Interest rate/Month(wei): {parseInt(proposalInfo[4])}</h2>
+        <h2>Duration: ${parseInt(proposalInfo[6])} Month</h2>
+      </div>
+
+      <div className={styles.purposeContainer}>
+        <h2>Purpose</h2>
+        <p>{proposalInfo[3]}</p>
+        <div className={styles.approveButtonContainer}>
+          <button>Approve</button>
+          <button>Raject</button>
+        </div>
+      </div>
     </div>
   );
 };
