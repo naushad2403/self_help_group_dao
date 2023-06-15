@@ -184,6 +184,29 @@ export default function Group() {
                   "0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5)",
               }}
             >
+              {" "}
+              Proposals
+              <button
+                style={{ marginLeft: "20px", height: "40px" }}
+                onClick={() => {
+                  console.log(`/proposal/${router.query.address}`);
+                  router.push(`/proposal/${router.query.address}`);
+                }}
+              >
+                View Proposals
+              </button>
+            </h2>
+            {<CreateProposal address={router.query.address}></CreateProposal>}
+          </div>
+          <div style={{marginLeft: "50px"}}>
+            <h2
+              style={{
+                fontSize: "30px",
+                color: "black",
+                textShadow:
+                  "0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5)",
+              }}
+            >
               Members
             </h2>
             <div>
@@ -195,6 +218,7 @@ export default function Group() {
                       flexDirection: "row",
                       marginBottom: "30px",
                       justifyContent: "flex-start",
+                      marginLeft: "80px"
                     }}
                     key={x.address}
                   >
@@ -207,7 +231,7 @@ export default function Group() {
                     >
                       {x.address}:
                     </a>{" "}
-                    <span style={{ marginRight: "20px" }}>
+                    <span style={{ }}>
                       {x.balance} ETH{" "}
                     </span>
                   </div>
@@ -225,29 +249,6 @@ export default function Group() {
               margin: "0 0 10px",
             }}
           ></div> */}
-          <div>
-            <h2
-              style={{
-                fontSize: "30px",
-                color: "black",
-                textShadow:
-                  "0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5)",
-              }}
-            >
-              {" "}
-              Proposals
-              <button
-              style={{marginLeft: "20px", height: "40px"}}
-                onClick={() => {
-                  console.log(`/proposal/${router.query.address}`);
-                  router.push(`/proposal/${router.query.address}`);
-                }}
-              >
-                View Proposals
-              </button>
-            </h2>
-            {<CreateProposal address={router.query.address}></CreateProposal>}
-          </div>
         </div>
       </div>
     </>
