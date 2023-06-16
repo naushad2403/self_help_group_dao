@@ -46,6 +46,9 @@ const accountInfo = useAccount();
 
   const isOwner = proposalInfo[1] == accountInfo?.address;
   const remainingSecond =   parseInt(proposalInfo[7]) - Math.floor(Date.now()/1000);
+  const hasAlreadyVoter =
+    voterDetails[0][accountInfo.address] ||
+    voterDetails[1][accountInfo.address];
 
   console.log(
     "remainingSecond",
@@ -170,15 +173,16 @@ const accountInfo = useAccount();
         {/* <h2>Purpose</h2> */}
         <p>{proposalInfo[3]}</p>
         <div className={styles.approveButtonContainer}>
-          {!isOwner && (
-            <button
-              style={{ backgroundColor: "red" }}
-              onClick={rejectReq.write}
-            >
-              Raject
-            </button>
-          )}
-          {!isOwner && <button onClick={approveReq.write}>Approve</button>}
+          {!isOwner &&
+            !hasAlreadyVoter && (
+              <button
+                style={{ backgroundColor: "red" }}
+                onClick={rejectReq.write}
+              >
+                Raject
+              </button>
+            )}
+          {!isOwner && !hasAlreadyVoter  && <button onClick={approveReq.write}>Approve</button>}
 
           {isOwner && isOwner && (
             <button
