@@ -11,8 +11,8 @@ contract SHG {
     uint public proposalVotingPeriod = 259200;//72 hours in second;
     enum status{
         Voting,
-        Cancelled,
         Approved,
+        Cancelled,
         Rejected,
         Setteled
     }
