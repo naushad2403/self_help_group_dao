@@ -181,7 +181,7 @@ const accountInfo = useAccount();
           {/* <h2>Purpose</h2> */}
           <p>{proposalInfo[3]}</p>
           <div className={styles.approveButtonContainer}>
-            {!isOwner && !hasAlreadyVoter && (
+            {!isOwner && !hasAlreadyVoted && (
               <button
                 style={{ backgroundColor: "red" }}
                 onClick={rejectReq.write}
