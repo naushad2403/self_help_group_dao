@@ -46,9 +46,17 @@ const accountInfo = useAccount();
 
   const isOwner = proposalInfo[1] == accountInfo?.address;
   const remainingSecond =   parseInt(proposalInfo[7]) - Math.floor(Date.now()/1000);
-  const hasAlreadyVoter =
-    voterDetails[0][accountInfo.address] ||
-    voterDetails[1][accountInfo.address];
+  const hasAlreadyVoted = voterDetails?.length > 0 ? 
+    (voterDetails[0][accountInfo?.address] ||
+    voterDetails[1][accountInfo?.address]): false;
+    const isClaimedOrRejected = proposalInfo[5] > 1;
+    const isAvailableToClaim = proposalInfo[5] == 1;
+
+
+
+
+    // console.log('V, A',voterDetails, accountInfo);
+    // const isSettledOrRejected = 
 
   console.log(
     "remainingSecond",
@@ -168,13 +176,12 @@ const accountInfo = useAccount();
         </h4>
         <h4>Votes: 0 / {memberInfo?.data?.length - 1}</h4>
       </div>
-
-      <div className={styles.purposeContainer}>
-        {/* <h2>Purpose</h2> */}
-        <p>{proposalInfo[3]}</p>
-        <div className={styles.approveButtonContainer}>
-          {!isOwner &&
-            !hasAlreadyVoter && (
+      {!isClaimedOrRejected && (
+        <div className={styles.purposeContainer}>
+          {/* <h2>Purpose</h2> */}
+          <p>{proposalInfo[3]}</p>
+          <div className={styles.approveButtonContainer}>
+            {!isOwner && !hasAlreadyVoted && (
               <button
                 style={{ backgroundColor: "red" }}
                 onClick={rejectReq.write}
@@ -182,21 +189,24 @@ const accountInfo = useAccount();
                 Raject
               </button>
             )}
-          {!isOwner && !hasAlreadyVoter  && <button onClick={approveReq.write}>Approve</button>}
+            {!isOwner && !hasAlreadyVoted && (
+              <button onClick={approveReq.write}>Approve</button>
+            )}
 
-          {isOwner && isOwner && (
-            <button
-              style={{ backgroundColor: "red" }}
-              onClick={cancelReq.write}
-            >
-              Cancel
-            </button>
-          )}
-          {isOwner && isOwner && (
-            <button onClick={claimReq.write}>Claim</button>
-          )}
+            {isOwner && isOwner && (
+              <button
+                style={{ backgroundColor: "red" }}
+                onClick={cancelReq.write}
+              >
+                Cancel
+              </button>
+            )}
+            {isOwner && isAvailableToClaim && (
+              <button onClick={claimReq.write}>Claim</button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
