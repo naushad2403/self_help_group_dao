@@ -8,6 +8,9 @@ import Timer from "./Timer";
 const ProposalItem = ({ address, proposalId }) => {
   const [proposalInfo, setProposalInfo] = useState("");
   const [voterDetails, setVoter] = useState({});
+  const [message, setMessage] = useState("");
+  const [txHash, setTxHash] = useState("");
+
 const accountInfo = useAccount();  
 
 
@@ -90,7 +93,7 @@ const accountInfo = useAccount();
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMessage(
-        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
+        `Approve request sent, Tx Hash:`
       );
       setTxHash(data.hash);
     },
@@ -105,7 +108,7 @@ const accountInfo = useAccount();
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMessage(
-        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
+        `Reject request sent, Tx Hash:`
       );
       setTxHash(data.hash);
     },
@@ -120,7 +123,7 @@ const accountInfo = useAccount();
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMessage(
-        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
+        `Cancel request sent,  Tx Hash:`
       );
       setTxHash(data.hash);
     },
@@ -205,6 +208,14 @@ const accountInfo = useAccount();
               <button onClick={claimReq.write}>Claim</button>
             )}
           </div>
+          {message && (
+            <p>
+              {message}
+              <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
+                {txHash}
+              </a>
+            </p>
+          )}
         </div>
       )}
     </div>
