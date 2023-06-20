@@ -190,15 +190,17 @@ const accountInfo = useAccount();
           {/* <h2>Purpose</h2> */}
           <p>{proposalInfo[3]}</p>
           <div className={styles.approveButtonContainer}>
-            {!isOwner && !hasAlreadyVoted && (
-              <button
-                style={{ backgroundColor: "red" }}
-                onClick={rejectReq.write}
-              >
-                Raject
-              </button>
-            )}
-            {!isOwner && !hasAlreadyVoted && !isClaimedOrRejected &&  (
+            {!isOwner &&
+              !hasAlreadyVoted &&
+              !isClaimedOrRejected && e(
+                <button
+                  style={{ backgroundColor: "red" }}
+                  onClick={rejectReq.write}
+                >
+                  Raject
+                </button>
+              )}
+            {!isOwner && !hasAlreadyVoted && !isClaimedOrRejected && (
               <button onClick={approveReq.write}>Approve</button>
             )}
 
