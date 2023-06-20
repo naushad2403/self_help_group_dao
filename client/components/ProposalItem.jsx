@@ -54,6 +54,12 @@ const accountInfo = useAccount();
     voterDetails[1][accountInfo?.address]): false;
     const isClaimedOrRejected = proposalInfo[5] > 1;
     const isAvailableToClaim = proposalInfo[5] == 1;
+    console.log(
+      "proposalInfo",
+      proposalInfo,
+      proposalInfo[5],
+      isAvailableToClaim
+    );
 
 
 
@@ -156,7 +162,7 @@ const accountInfo = useAccount();
       >
         <h4>Amount(wei): {parseInt(proposalInfo[0])}</h4>
         <h4>Interest rate/Month(wei): {parseInt(proposalInfo[4])}</h4>
-        {remainingSecond > 0 && (
+        {remainingSecond > 0 && !isClaimedOrRejected && (
           <h4
             style={{
               // marginLeft: "40px",
@@ -172,31 +178,33 @@ const accountInfo = useAccount();
         <h4>Duration: ${parseInt(proposalInfo[6])} Month</h4>
         <h4>
           {
-            ["Voting period", "Cancelled", "Approved", "Rejected", "Settled"][
+            ["Voting period", "Approved", "Cancelled", "Rejected", "Settled"][
               proposalInfo[5]
             ]
           }
         </h4>
         <h4>Votes: 0 / {memberInfo?.data?.length - 1}</h4>
       </div>
-      {!isClaimedOrRejected && (
+      {
         <div className={styles.purposeContainer}>
           {/* <h2>Purpose</h2> */}
           <p>{proposalInfo[3]}</p>
           <div className={styles.approveButtonContainer}>
-            {!isOwner && !hasAlreadyVoted && (
-              <button
-                style={{ backgroundColor: "red" }}
-                onClick={rejectReq.write}
-              >
-                Raject
-              </button>
-            )}
-            {!isOwner && !hasAlreadyVoted && (
+            {!isOwner &&
+              !hasAlreadyVoted &&
+              !isClaimedOrRejected && e(
+                <button
+                  style={{ backgroundColor: "red" }}
+                  onClick={rejectReq.write}
+                >
+                  Raject
+                </button>
+              )}
+            {!isOwner && !hasAlreadyVoted && !isClaimedOrRejected && (
               <button onClick={approveReq.write}>Approve</button>
             )}
 
-            {isOwner && isOwner && (
+            {isOwner && !isClaimedOrRejected && (
               <button
                 style={{ backgroundColor: "red" }}
                 onClick={cancelReq.write}
@@ -217,7 +225,7 @@ const accountInfo = useAccount();
             </p>
           )}
         </div>
-      )}
+      }
     </div>
   );
 };
