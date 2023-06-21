@@ -31,7 +31,8 @@ const Proposals = () => {
       //    setCount((prev)=>prev+1)
     },
   });
-  console.log("count", count, new Array(count));
+  // console.log("count", count, new Array(count));
+  
   return (
     <div>
       <div>
