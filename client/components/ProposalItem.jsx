@@ -192,7 +192,7 @@ const accountInfo = useAccount();
           <div className={styles.approveButtonContainer}>
             {!isOwner &&
               !hasAlreadyVoted &&
-              !isClaimedOrRejected && e(
+              !isClaimedOrRejected && (
                 <button
                   style={{ backgroundColor: "red" }}
                   onClick={rejectReq.write}

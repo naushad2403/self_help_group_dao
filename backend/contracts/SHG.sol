@@ -88,12 +88,10 @@ contract SHG {
 
     function claimApprovedAmount (uint _proposalId) public returns(bool) {
       (address[] memory approvers, )  =  getApproversAndRejecters(_proposalId);
-      if(approvers.length > (members.length / 2)){
-          (bool success,)=  borrowProposal[_proposalId].proposer.call{value: borrowProposal[_proposalId].amount}("");
-          return success;
-      }
-      return false;
-       
+      require(approvers.length > (members.length / 2), "Unsufficient Vote");
+      require(address(this).balance > borrowProposal[_proposalId].amount, "Unsufficient amount in group");
+      (bool success,)=  borrowProposal[_proposalId].proposer.call{value: borrowProposal[_proposalId].amount}("");
+     return success;
     }
 
     function approveBorrowProposal(uint _proposalId) external returns (bool) {
