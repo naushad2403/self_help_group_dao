@@ -51,6 +51,7 @@ contract SHG {
 
     event Withdrawn(address _member, uint _amount);
     event Deposited(address _member, uint _amount);
+    event ProposalCancelled(uint _proposalId);
 
     function withdrawAmount(uint _amount) public {
         require(_amount <= balances[msg.sender], "Insufficient balance, please create a borrow proposal");
@@ -107,6 +108,7 @@ contract SHG {
 
     function cancelProposal(uint _proposalId) external returns (bool) {
         borrowProposal[_proposalId].currentStatus = status.Cancelled;
+        emit ProposalCancelled(_proposalId);
         return true;
     }
 
