@@ -52,6 +52,9 @@ contract SHG {
     event Withdrawn(address _member, uint _amount);
     event Deposited(address _member, uint _amount);
     event ProposalCancelled(uint _proposalId);
+    event ProposalApproved(uint _proposalId);
+    event ProposalRejected(uint _proposalId);
+
 
     function withdrawAmount(uint _amount) public {
         require(_amount <= balances[msg.sender], "Insufficient balance, please create a borrow proposal");
@@ -98,11 +101,13 @@ contract SHG {
     function approveBorrowProposal(uint _proposalId) external returns (bool) {
         // uint approvedL = borrowProposal[_proposalId].approvers.length;
         borrowProposal[_proposalId].approvers.push(msg.sender);
+        emit ProposalApproved(_proposalId);
         return true;
     }
 
      function rejectBorrowProposal(uint _proposalId) external returns (bool) {
         borrowProposal[_proposalId].rejecters.push(msg.sender);
+         emit ProposalRejected(_proposalId);
         return true;
     }
 
