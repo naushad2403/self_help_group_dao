@@ -54,6 +54,7 @@ contract SHG {
     event ProposalCancelled(uint _proposalId);
     event ProposalApproved(uint _proposalId);
     event ProposalRejected(uint _proposalId);
+    event ProposalClaimed(uint _proposalId);
 
 
     function withdrawAmount(uint _amount) public {
@@ -95,6 +96,7 @@ contract SHG {
       require(approvers.length > (members.length / 2), "Unsufficient Vote");
       require(address(this).balance > borrowProposal[_proposalId].amount, "Unsufficient amount in group");
       (bool success,)=  borrowProposal[_proposalId].proposer.call{value: borrowProposal[_proposalId].amount}("");
+      emit ProposalClaimed(_proposalId);
      return success;
     }
 
