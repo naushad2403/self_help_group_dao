@@ -55,6 +55,8 @@ contract SHG {
     event ProposalApproved(uint _proposalId);
     event ProposalRejected(uint _proposalId);
     event ProposalClaimed(uint _proposalId);
+    event MembersJoined(address _member);
+    event ProposalSubmitted(uint _proposalId);
 
 
     function withdrawAmount(uint _amount) public {
@@ -67,6 +69,7 @@ contract SHG {
 
     function join() external returns (bool) {
         members.push(msg.sender);
+        emit MembersJoined(msg.sender);
         return true;
     }
 
@@ -84,6 +87,7 @@ contract SHG {
         proposal.approvers = new address[](members.length);
         proposal.rejecters = new address[](members.length);
         counter += 1;
+       emit ProposalSubmitted(counter - 1);
         return counter - 1; 
     }
 
