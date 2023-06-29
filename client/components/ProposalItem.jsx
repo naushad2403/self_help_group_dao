@@ -40,6 +40,38 @@ const accountInfo = useAccount();
     },
   });
 
+    useContractEvent({
+      address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+      abi: group_abi,
+      eventName: "proposalCancelled",
+      listener(log) {
+        //  console.log("NewGroupCreated", log);
+        setGroups((prev) => [...prev, log[0].args[0]]);
+      },
+    });
+       useContractEvent({
+         address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+         abi: group_abi,
+         eventName: "proposalApproved",
+         listener(log) {
+           //  console.log("NewGroupCreated", log);
+           setGroups((prev) => [...prev, log[0].args[0]]);
+         },
+       });
+
+          useContractEvent({
+            address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+            abi: group_abi,
+            eventName: "proposalRejected",
+            listener(log) {
+              //  console.log("NewGroupCreated", log);
+              setGroups((prev) => [...prev, log[0].args[0]]);
+            },
+          });
+
+
+
+
     const memberInfo = useContractRead({
       address: address,
       abi: shg_abi,

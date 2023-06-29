@@ -27,6 +27,10 @@ export default function MyGroup() {
       setGroups((prev) => [...prev, log[0].args[0]]);
     },
   });
+
+
+
+
   const dispatch = useDispatch();
 
   // useEffect(() => {
