@@ -37,13 +37,11 @@ export default function MyGroupItem({ address }) {
   const joiningGroup = useContractWrite({
     address: address,
     abi: shg_abi,
-    functionName: "join",
+    functionName: "MembersJoined",
     onSuccess(data) {
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
-      setMessage(
-        `Joining Request sent, Tx Hash:`
-      );
+      setMessage(`Joining Request sent, Tx Hash:`);
       setTxHash(data.hash);
     },
   });
