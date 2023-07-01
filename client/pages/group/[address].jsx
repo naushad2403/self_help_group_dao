@@ -21,6 +21,19 @@ export default function Group() {
   const [withdrawVal, setWithdrawVal] = useState();
   const [message, setMessage] = useState("");
   const [txHash, setTxHash] = useState("");
+  const [proposalCounter, setProposalCounter] = useState();
+  
+  useContractRead({
+      address: router.query.address,
+      abi: shg_abi,
+      functionName: "counter",
+      onSettled(data, error) {
+        console.log("counter", data);
+        setProposalCounter(parseInt(data));
+        // console.log("Settled", { data, error });
+        // setCount(data);
+      },
+    }); 
 
   const depositObj = useContractWrite({
     address: router.query.address,
@@ -186,7 +199,10 @@ export default function Group() {
             >
               {" "}
               Proposals
-              <button
+
+              {
+                proposalCounter > 0 ?
+                <button
                 style={{ marginLeft: "20px", height: "40px" }}
                 onClick={() => {
                   console.log(`/proposal/${router.query.address}`);
@@ -194,7 +210,8 @@ export default function Group() {
                 }}
               >
                 View Proposals
-              </button>
+              </button> : <span> Available: 0</span>
+              }
             </h2>
             {<CreateProposal address={router.query.address}></CreateProposal>}
           </div>
