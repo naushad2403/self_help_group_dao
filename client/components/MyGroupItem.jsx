@@ -41,9 +41,7 @@ export default function MyGroupItem({ address }) {
     onSuccess(data) {
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
-      setMessage(
-        `Joining Request sent, Tx Hash:`
-      );
+      setMessage(`Joining Request sent, Tx Hash:`);
       setTxHash(data.hash);
     },
   });
@@ -92,7 +90,7 @@ export default function MyGroupItem({ address }) {
         }
       </div>
       {message && (
-        <p>
+        <p style={{border: "2px solid", borderRadius:"5px", padding:"5px", width: "60%",  marginLeft:"20%", color: "white", borderBlockColor:"white"}}>
           {message}
           <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
             {txHash}

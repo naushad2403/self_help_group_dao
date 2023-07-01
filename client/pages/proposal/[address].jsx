@@ -32,16 +32,21 @@ const Proposals = () => {
     },
   });
   // console.log("count", count, new Array(count));
-  
-  return (
-    <div>
+    return (
       <div>
-        {new Array(count).fill(0).map((proposal, index) => {
-          return <ProposalItem key={index} address = {router.query.address} proposalId={index}></ProposalItem>;
-        })}
+        <div>
+          {new Array(count).fill(0).map((proposal, index) => {
+            return (
+              <ProposalItem
+                key={index}
+                address={router.query.address}
+                proposalId={index}
+              ></ProposalItem>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default Proposals;

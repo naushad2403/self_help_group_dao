@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import styles from "./../styles/ProposalItem.module.css";
-import { useAccount, useContractRead, useContractWrite } from "wagmi";
+import {
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  useContractEvent,
+} from "wagmi";
 import { Router, useRouter } from "next/router";
 import { shg_abi } from "../util";
 import Timer from "./Timer";
@@ -42,7 +47,7 @@ const accountInfo = useAccount();
 
     useContractEvent({
       address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
-      abi: group_abi,
+      abi: shg_abi,
       eventName: "proposalCancelled",
       listener(log) {
         //  console.log("NewGroupCreated", log);
@@ -51,7 +56,7 @@ const accountInfo = useAccount();
     });
        useContractEvent({
          address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
-         abi: group_abi,
+         abi: shg_abi,
          eventName: "proposalApproved",
          listener(log) {
            //  console.log("NewGroupCreated", log);
@@ -61,7 +66,7 @@ const accountInfo = useAccount();
 
           useContractEvent({
             address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
-            abi: group_abi,
+            abi: shg_abi,
             eventName: "proposalRejected",
             listener(log) {
               //  console.log("NewGroupCreated", log);
