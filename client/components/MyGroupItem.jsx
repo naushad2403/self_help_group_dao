@@ -3,6 +3,7 @@ import {
   useBalance,
   useContractRead,
   useContractWrite,
+  useContractEvent,
   usePrepareContractWrite,
 } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
@@ -13,8 +14,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateGroup } from "../state_management/slices/group";
 
 export default function MyGroupItem({ address }) {
-    const [message, setMessage] = useState("");
-    const [txHash, setTxHash] = useState("");
+  const [message, setMessage] = useState("");
+  const [txHash, setTxHash] = useState("");
+  const [members, setMembers]= useState(0);
   const dispatch = useDispatch();
   const accountInfo = useAccount();
   const router = useRouter();
@@ -28,6 +30,10 @@ export default function MyGroupItem({ address }) {
     address: address,
     abi: shg_abi,
     functionName: "getAllMembers",
+    onSuccess(data){
+
+        setMemberCount(data.length);
+    }
   });
 
   const balanceInfo = useBalance({
@@ -39,12 +45,29 @@ export default function MyGroupItem({ address }) {
     abi: shg_abi,
     functionName: "join",
     onSuccess(data) {
-      // console.log("withdrawAmount Success", data);
-      //  setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMessage(`Joining Request sent, Tx Hash:`);
       setTxHash(data.hash);
     },
+
+    onError(error){
+      // console.log('error', error, );
+       setMessage(`Error: ${error?.details}`);
+    }
   });
+
+    useContractEvent({
+      address: address,
+      abi: shg_abi,
+      eventName: "MembersJoined",
+      listener(log) {
+        console.log(log)
+        setMembers.push(log.args[0]);
+      },
+    });
+
+
+
+
 
    
   // useEffect(() => {
@@ -75,7 +98,7 @@ export default function MyGroupItem({ address }) {
         <p>
           {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
         </p>
-        <p>{memberInfo?.data?.length}</p>
+        <p>{memberCount}</p>
         {!memberInfo?.data?.includes(accountInfo.address) ? (
           <button onClick={joiningGroup.write}>Join Group</button>
         ) : (
@@ -90,7 +113,17 @@ export default function MyGroupItem({ address }) {
         }
       </div>
       {message && (
-        <p style={{border: "2px solid", borderRadius:"5px", padding:"5px", width: "60%",  marginLeft:"20%", color: "white", borderBlockColor:"white"}}>
+        <p
+          style={{
+            border: "2px solid",
+            borderRadius: "5px",
+            padding: "5px",
+            width: "60%",
+            marginLeft: "20%",
+            color: "white",
+            borderBlockColor: "white",
+          }}
+        >
           {message}
           <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
             {txHash}

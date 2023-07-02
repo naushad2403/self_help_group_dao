@@ -52,7 +52,7 @@ export default function MyGroup() {
         <h4>Status</h4>
         <h3></h3>
       </div>
-      {groups?.map((x, index) => {
+      {[...(new Set(groups))]?.map((x, index) => {
         return (
           <MyGroupItem key={index} address={x}>
             {" "}
