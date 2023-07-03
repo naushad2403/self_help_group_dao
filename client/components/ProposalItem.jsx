@@ -50,8 +50,8 @@ const accountInfo = useAccount();
       abi: shg_abi,
       eventName: "proposalCancelled",
       listener(log) {
+        
         //  console.log("NewGroupCreated", log);
-        setGroups((prev) => [...prev, log[0].args[0]]);
       },
     });
        useContractEvent({
@@ -60,7 +60,6 @@ const accountInfo = useAccount();
          eventName: "proposalApproved",
          listener(log) {
            //  console.log("NewGroupCreated", log);
-           setGroups((prev) => [...prev, log[0].args[0]]);
          },
        });
 
@@ -70,7 +69,7 @@ const accountInfo = useAccount();
             eventName: "proposalRejected",
             listener(log) {
               //  console.log("NewGroupCreated", log);
-              setGroups((prev) => [...prev, log[0].args[0]]);
+
             },
           });
 
@@ -171,6 +170,9 @@ const accountInfo = useAccount();
       setTxHash(data.hash);
     },
   });
+
+
+
 
 
 
