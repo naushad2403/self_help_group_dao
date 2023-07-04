@@ -50,7 +50,8 @@ const accountInfo = useAccount();
       abi: shg_abi,
       eventName: "proposalCancelled",
       listener(log) {
-        
+        console.log(log.args._proposalId);
+
         //  console.log("NewGroupCreated", log);
       },
     });
@@ -72,6 +73,21 @@ const accountInfo = useAccount();
 
             },
           });
+
+                  useContractEvent({
+            address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+            abi: shg_abi,
+            eventName: "ProposalClaimed",
+            listener(log) {
+              //  console.log("NewGroupCreated", log);
+
+            },
+          });
+
+    //       //  event ProposalCancelled(uint _proposalId);
+    // event ProposalApproved(uint _proposalId, address approvar);
+    // event ProposalRejected(uint _proposalId, address approvar);
+    // event ProposalClaimed(uint _proposalId);
 
 
 
