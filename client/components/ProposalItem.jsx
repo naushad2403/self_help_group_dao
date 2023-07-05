@@ -16,9 +16,7 @@ const ProposalItem = ({ address, proposalId }) => {
   const [message, setMessage] = useState("");
   const [txHash, setTxHash] = useState("");
 
-const accountInfo = useAccount();  
-
-
+  const accountInfo = useAccount();
 
   useContractRead({
     address: address,
@@ -32,7 +30,6 @@ const accountInfo = useAccount();
     },
   });
 
-
   useContractRead({
     address: address,
     abi: shg_abi,
@@ -45,64 +42,73 @@ const accountInfo = useAccount();
     },
   });
 
-    useContractEvent({
-      address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
-      abi: shg_abi,
-      eventName: "proposalCancelled",
-      listener(log) {
-        //  console.log("NewGroupCreated", log);
-        setGroups((prev) => [...prev, log[0].args[0]]);
-      },
-    });
-       useContractEvent({
-         address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
-         abi: shg_abi,
-         eventName: "proposalApproved",
-         listener(log) {
-           //  console.log("NewGroupCreated", log);
-           setGroups((prev) => [...prev, log[0].args[0]]);
-         },
-       });
+  useContractEvent({
+    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+    abi: shg_abi,
+    eventName: "proposalCancelled",
+    listener(log) {
+      console.log(log.args._proposalId);
 
-          useContractEvent({
-            address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
-            abi: shg_abi,
-            eventName: "proposalRejected",
-            listener(log) {
-              //  console.log("NewGroupCreated", log);
-              setGroups((prev) => [...prev, log[0].args[0]]);
-            },
-          });
+      //  console.log("NewGroupCreated", log);
+    },
+  });
+  useContractEvent({
+    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+    abi: shg_abi,
+    eventName: "proposalApproved",
+    listener(log) {
+      //  console.log("NewGroupCreated", log);
+    },
+  });
 
+  useContractEvent({
+    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+    abi: shg_abi,
+    eventName: "proposalRejected",
+    listener(log) {
+      //  console.log("NewGroupCreated", log);
+    },
+  });
 
+  useContractEvent({
+    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+    abi: shg_abi,
+    eventName: "ProposalClaimed",
+    listener(log) {
+      //  console.log("NewGroupCreated", log);
+    },
+  });
 
+  //       //  event ProposalCancelled(uint _proposalId);
+  // event ProposalApproved(uint _proposalId, address approvar);
+  // event ProposalRejected(uint _proposalId, address approvar);
+  // event ProposalClaimed(uint _proposalId);
 
-    const memberInfo = useContractRead({
-      address: address,
-      abi: shg_abi,
-      functionName: "getAllMembers",
-    });
-
+  const memberInfo = useContractRead({
+    address: address,
+    abi: shg_abi,
+    functionName: "getAllMembers",
+  });
 
   const isOwner = proposalInfo[1] == accountInfo?.address;
-  const remainingSecond =   parseInt(proposalInfo[7]) - Math.floor(Date.now()/1000);
-  const hasAlreadyVoted = voterDetails?.length > 0 ? 
-    (voterDetails[0][accountInfo?.address] ||
-    voterDetails[1][accountInfo?.address]): false;
-    const isClaimedOrRejected = proposalInfo[5] > 1;
-    const isAvailableToClaim = proposalInfo[5] == 1;
-    console.log(
-      "proposalInfo",
-      proposalInfo,
-      proposalInfo[5],
-      isAvailableToClaim
-    );
+  const remainingSecond =
+    parseInt(proposalInfo[7]) - Math.floor(Date.now() / 1000);
+  const hasAlreadyVoted =
+    voterDetails?.length > 0
+      ? voterDetails[0][accountInfo?.address] ||
+        voterDetails[1][accountInfo?.address]
+      : false;
+  const isClaimedOrRejected = proposalInfo[5] > 1;
+  const isAvailableToClaim = proposalInfo[5] == 1;
+  console.log(
+    "proposalInfo",
+    proposalInfo,
+    proposalInfo[5],
+    isAvailableToClaim
+  );
 
-
-
-
-    // console.log('V, A',voterDetails, accountInfo);
-    // const isSettledOrRejected = 
+  // console.log('V, A',voterDetails, accountInfo);
+  // const isSettledOrRejected =
 
   console.log(
     "remainingSecond",
@@ -110,7 +116,6 @@ const accountInfo = useAccount();
     proposalInfo[7],
     Math.floor(Date.now() / 1000)
   );
-
 
   const claimReq = useContractWrite({
     address: address,
@@ -135,9 +140,7 @@ const accountInfo = useAccount();
     onSuccess(data) {
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
-      setMessage(
-        `Approve request sent, Tx Hash:`
-      );
+      setMessage(`Approve request sent, Tx Hash:`);
       setTxHash(data.hash);
     },
   });
@@ -150,9 +153,7 @@ const accountInfo = useAccount();
     onSuccess(data) {
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
-      setMessage(
-        `Reject request sent, Tx Hash:`
-      );
+      setMessage(`Reject request sent, Tx Hash:`);
       setTxHash(data.hash);
     },
   });
@@ -165,14 +166,10 @@ const accountInfo = useAccount();
     onSuccess(data) {
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
-      setMessage(
-        `Cancel request sent,  Tx Hash:`
-      );
+      setMessage(`Cancel request sent,  Tx Hash:`);
       setTxHash(data.hash);
     },
   });
-
-
 
   //   uint amount;
   // address proposer;
@@ -227,16 +224,14 @@ const accountInfo = useAccount();
           {/* <h2>Purpose</h2> */}
           <p>{proposalInfo[3]}</p>
           <div className={styles.approveButtonContainer}>
-            {!isOwner &&
-              !hasAlreadyVoted &&
-              !isClaimedOrRejected && (
-                <button
-                  style={{ backgroundColor: "red" }}
-                  onClick={rejectReq.write}
-                >
-                  Raject
-                </button>
-              )}
+            {!isOwner && !hasAlreadyVoted && !isClaimedOrRejected && (
+              <button
+                style={{ backgroundColor: "red" }}
+                onClick={rejectReq.write}
+              >
+                Raject
+              </button>
+            )}
             {!isOwner && !hasAlreadyVoted && !isClaimedOrRejected && (
               <button onClick={approveReq.write}>Approve</button>
             )}

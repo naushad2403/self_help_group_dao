@@ -26,9 +26,9 @@ const Proposals = () => {
   useContractEvent({
     address: router.query.address,
     abi: shg_abi,
-    eventName: "NewProposalSubmitted",
+    eventName: "ProposalSubmitted",
     listener(log) {
-      //    setCount((prev)=>prev+1)
+        setCount(prev=>prev+1);
     },
   });
   // console.log("count", count, new Array(count));
