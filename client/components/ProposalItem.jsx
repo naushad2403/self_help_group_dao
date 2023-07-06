@@ -140,7 +140,7 @@ const ProposalItem = ({ address, proposalId }) => {
     onSuccess(data) {
       // console.log("withdrawAmount Success", data);
       //  setBalance((prev) => prev - parseInt(log[0].args._amount));
-      setMessage(`Approve request sent, Tx Hash:`);
+      setMessage(`Approval sent, Tx Hash:`);
       setTxHash(data.hash);
     },
   });
