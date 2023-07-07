@@ -229,7 +229,7 @@ const ProposalItem = ({ address, proposalId }) => {
                 style={{ backgroundColor: "red" }}
                 onClick={rejectReq.write}
               >
-                Raject
+                Reject
               </button>
             )}
             {!isOwner && !hasAlreadyVoted && !isClaimedOrRejected && (
