@@ -222,13 +222,7 @@ const ProposalItem = ({ address, proposalId }) => {
           </h4>
         )}
         <h4>Duration: ${parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
-        <h4>
-          {
-            ["Voting period", "Approved", "Cancelled", "Rejected", "Settled"][
-              proposalInfo.currentStatus
-            ]
-          }
-        </h4>
+        <h4>{status[proposalInfo.currentStatus]}</h4>
         <h4>Votes: 0 / {memberInfo?.data?.length - 1}</h4>
       </div>
       {
