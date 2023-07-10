@@ -204,6 +204,7 @@ const ProposalItem = ({ address, proposalId }) => {
           marginTop: "0px",
         }}
       >
+        <h4>Proposal id: {parseInt(proposalInfo.proposalId)}</h4>
         <h4>Amount(wei): {parseInt(proposalInfo.amount)}</h4>
         <h4>
           Interest rate/Month(wei): {parseInt(proposalInfo.monthlyInterestRate)}
