@@ -5,6 +5,7 @@ const groupSlice = createSlice({
   reducers: {
     fetchGroup(state, action) {
       state?.list.push(action.payload);
+
       return state;
     },
     updateGroup(state, action) {
