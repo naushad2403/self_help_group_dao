@@ -48,8 +48,6 @@ const ProposalItem = ({ address, proposalId }) => {
     eventName: "proposalCancelled",
     listener(log) {
       console.log(log.args._proposalId);
-
-      //  console.log("NewGroupCreated", log);
     },
   });
   useContractEvent({
@@ -164,8 +162,6 @@ const ProposalItem = ({ address, proposalId }) => {
     functionName: "cancelProposal",
     args: [proposalId],
     onSuccess(data) {
-      // console.log("withdrawAmount Success", data);
-      //  setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMessage(`Cancel request sent,  Tx Hash:`);
       setTxHash(data.hash);
     },

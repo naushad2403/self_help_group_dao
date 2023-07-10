@@ -8,8 +8,8 @@ contract SHG {
     mapping(uint => BorrowProposal) public borrowProposal;
     uint public counter = 0;
     string public name;
-    uint public proposalVotingPeriod = 259200;//72 hours in second;
-    enum status{
+    uint public proposalVotingPeriod = 259200; //72 hours in second;
+    enum status {
         Voting,
         Approved,
         Cancelled,
@@ -28,7 +28,6 @@ contract SHG {
         address[] approvers;
         address[] rejecters;
         uint proposalTime;
-       
     }
 
     constructor(string memory _name) payable {
@@ -41,11 +40,15 @@ contract SHG {
         return members;
     }
 
-    function getMemberWithBalance () external view returns (address[] memory, uint[]  memory) {
-         uint[] memory  bal= new uint[](members.length);
-         for(uint i = 0; i < members.length; i++) {
+    function getMemberWithBalance()
+        external
+        view
+        returns (address[] memory, uint[] memory)
+    {
+        uint[] memory bal = new uint[](members.length);
+        for (uint i = 0; i < members.length; i++) {
             bal[i] = balances[members[i]];
-         }
+        }
         return (members, bal);
     }
 
@@ -58,9 +61,11 @@ contract SHG {
     event MembersJoined(address _member);
     event ProposalSubmitted(uint _proposalId);
 
-
     function withdrawAmount(uint _amount) public {
-        require(_amount <= balances[msg.sender], "Insufficient balance, please create a borrow proposal");
+        require(
+            _amount <= balances[msg.sender],
+            "Insufficient balance, please create a borrow proposal"
+        );
         balances[msg.sender] -= _amount;
         (bool success, ) = payable(msg.sender).call{value: _amount}("");
         require(success, "Payment failed");
@@ -73,47 +78,59 @@ contract SHG {
         return true;
     }
 
-
-    function submitLoanProposal(uint _amount, string memory _purpose, uint _interestRatePerMonth, 
-    uint _loanDurationInMonth) external returns (uint) {
+    function submitLoanProposal(
+        uint _amount,
+        string memory _purpose,
+        uint _interestRatePerMonth,
+        uint _loanDurationInMonth
+    ) external returns (uint) {
         BorrowProposal storage proposal = borrowProposal[counter];
         proposal.amount = _amount;
         proposal.proposer = msg.sender;
         proposal.proposalId = counter;
-        proposal.monthlyInterestRate= _interestRatePerMonth;
+        proposal.monthlyInterestRate = _interestRatePerMonth;
         proposal.loanDurationInMonth = _loanDurationInMonth;
         proposal.purpose = _purpose;
         proposal.proposalTime = block.timestamp + proposalVotingPeriod;
         proposal.approvers = new address[](members.length);
         proposal.rejecters = new address[](members.length);
         counter += 1;
-       emit ProposalSubmitted(counter - 1);
-        return counter - 1; 
+        emit ProposalSubmitted(counter - 1);
+        return counter - 1;
     }
 
-    function getApproversAndRejecters(uint _proposalId) public view returns(address[] memory, address[] memory) {
-        return (borrowProposal[_proposalId].approvers, borrowProposal[_proposalId].rejecters);
+    function getApproversAndRejecters(
+        uint _proposalId
+    ) public view returns (address[] memory, address[] memory) {
+        return (
+            borrowProposal[_proposalId].approvers,
+            borrowProposal[_proposalId].rejecters
+        );
     }
 
-    function claimApprovedAmount (uint _proposalId) public returns(bool) {
-      (address[] memory approvers, )  =  getApproversAndRejecters(_proposalId);
-      require(approvers.length > (members.length / 2), "Unsufficient Vote");
-      require(address(this).balance > borrowProposal[_proposalId].amount, "Unsufficient amount in group");
-      (bool success,)=  borrowProposal[_proposalId].proposer.call{value: borrowProposal[_proposalId].amount}("");
-      emit ProposalClaimed(_proposalId);
-     return success;
+    function claimApprovedAmount(uint _proposalId) public returns (bool) {
+        (address[] memory approvers, ) = getApproversAndRejecters(_proposalId);
+        require(approvers.length > (members.length / 2), "Unsufficient Vote");
+        require(
+            address(this).balance > borrowProposal[_proposalId].amount,
+            "Unsufficient amount in group"
+        );
+        (bool success, ) = borrowProposal[_proposalId].proposer.call{
+            value: borrowProposal[_proposalId].amount
+        }("");
+        emit ProposalClaimed(_proposalId);
+        return success;
     }
 
     function approveBorrowProposal(uint _proposalId) external returns (bool) {
-        // uint approvedL = borrowProposal[_proposalId].approvers.length;
         borrowProposal[_proposalId].approvers.push(msg.sender);
         emit ProposalApproved(_proposalId, msg.sender);
         return true;
     }
 
-     function rejectBorrowProposal(uint _proposalId) external returns (bool) {
+    function rejectBorrowProposal(uint _proposalId) external returns (bool) {
         borrowProposal[_proposalId].rejecters.push(msg.sender);
-         emit ProposalRejected(_proposalId, msg.sender);
+        emit ProposalRejected(_proposalId, msg.sender);
         return true;
     }
 
@@ -125,17 +142,16 @@ contract SHG {
 
     receive() external payable {
         balances[msg.sender] += msg.value;
-         emit Deposited(msg.sender, msg.value);
+        emit Deposited(msg.sender, msg.value);
     }
 
     fallback() external payable {
         balances[msg.sender] += msg.value;
-         emit Deposited(msg.sender, msg.value);
+        emit Deposited(msg.sender, msg.value);
     }
 
     function deposit() external payable {
-     balances[msg.sender] += msg.value;
-     emit Deposited(msg.sender, msg.value);
-
+        balances[msg.sender] += msg.value;
+        emit Deposited(msg.sender, msg.value);
     }
 }
