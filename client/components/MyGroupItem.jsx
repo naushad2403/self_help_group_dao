@@ -32,7 +32,7 @@ export default function MyGroupItem({ address }) {
     functionName: "getAllMembers",
     onSuccess(data){
 
-        setMemberCount(data.length);
+        setMembers(data);
     }
   });
 
@@ -98,7 +98,7 @@ export default function MyGroupItem({ address }) {
         <p>
           {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
         </p>
-        <p>{memberCount}</p>
+        <p>{members.length}</p>
         {!memberInfo?.data?.includes(accountInfo.address) ? (
           <button onClick={joiningGroup.write}>Join Group</button>
         ) : (
