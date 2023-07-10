@@ -4,8 +4,20 @@ This is a [RainbowKit](https://rainbowkit.com) + [wagmi](https://wagmi.sh) + [Ne
 
 First, run the development server:
 
-```bash
-npm run dev
+```
+Steps to run Backend, Run following commands step by step
+1. npm i
+2. npx hardhat node
+3. npx hardhat run scripts/deploy.js --network localhost
+
+Copy produced contract address and paste into client/env.local NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS=address  
+```
+
+
+```
+Steps to run Client, Run following commands step by step
+1. npm i
+2. npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
