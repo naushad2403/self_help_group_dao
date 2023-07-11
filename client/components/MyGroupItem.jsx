@@ -16,7 +16,7 @@ import { updateGroup } from "../state_management/slices/group";
 export default function MyGroupItem({ address }) {
   const [message, setMessage] = useState("");
   const [txHash, setTxHash] = useState("");
-  const [members, setMembers]= useState(0);
+  const [members, setMembers] = useState([]);
   const dispatch = useDispatch();
   const accountInfo = useAccount();
   const router = useRouter();
@@ -26,14 +26,14 @@ export default function MyGroupItem({ address }) {
     functionName: "name",
   });
 
-  const memberInfo = useContractRead({
+  useContractRead({
     address: address,
     abi: shg_abi,
     functionName: "getAllMembers",
-    onSuccess(data){
 
-        setMembers(data);
-    }
+    onSuccess(data) {
+      setMembers(data);
+    },
   });
 
   const balanceInfo = useBalance({
@@ -49,27 +49,22 @@ export default function MyGroupItem({ address }) {
       setTxHash(data.hash);
     },
 
-    onError(error){
-      // console.log('error', error, );
-       setMessage(`Error: ${error?.details}`);
-    }
+    onError(error) {
+      setMessage(`Error: ${error?.details}`);
+    },
   });
 
-    useContractEvent({
-      address: address,
-      abi: shg_abi,
-      eventName: "MembersJoined",
-      listener(log) {
-        console.log(log)
-        setMembers.push(log.args[0]);
-      },
-    });
+  useContractEvent({
+    address: address,
+    abi: shg_abi,
+    eventName: "MembersJoined",
+    listener(log) {
+      if (log.length > 0) {
+        setMembers((prev) => [...prev, log[0].args._member]);
+      }
+    },
+  });
 
-
-
-
-
-   
   // useEffect(() => {
   //   nameInfo &&
   //     dispatch(
@@ -99,7 +94,7 @@ export default function MyGroupItem({ address }) {
           {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
         </p>
         <p>{members.length}</p>
-        {!memberInfo?.data?.includes(accountInfo.address) ? (
+        {!members?.includes(accountInfo.address) ? (
           <button onClick={joiningGroup.write}>Join Group</button>
         ) : (
           <p>You are member</p>
