@@ -32,13 +32,21 @@ const ProposalItem = ({ address, proposalId }) => {
   const [message, setMessage] = useState("");
   const [remainingSecond, setRemainingSecond]  = useState();
   const [txHash, setTxHash] = useState("");
-  const status = [
-    "Voting period",
-    "Approved",
+  const statusVal = [
+    "Open",
+    "Claimed",
     "Cancelled",
-    "Rejected",
-    "Settled",
-  ];
+    "Expired"
+  ]
+
+  const statusIdx =  {
+    Open: 0,
+    Claimed: 1,
+    Cancelled: 2,
+    Expired: 3
+  }
+
+
 
   const accountInfo = useAccount();
 
@@ -126,11 +134,12 @@ const ProposalItem = ({ address, proposalId }) => {
   });
 
   useContractEvent({
-    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+    address: address,
     abi: shg_abi,
     eventName: "ProposalClaimed",
     listener(log) {
       //  console.log("NewGroupCreated", log);
+      setProposalInfo((prev) => ({ ...prev, currentStatus: 1 }));
     },
   });
 
@@ -145,18 +154,9 @@ const ProposalItem = ({ address, proposalId }) => {
     functionName: "getAllMembers",
   });
 
-  const isOwner = proposalInfo.proposer == accountInfo?.address;
-    
-  const hasAlreadyVoted =
-    voterDetails.support.includes(accountInfo?.address) ||
-    voterDetails.against.includes(accountInfo?.address);
-     const sufficientVoteCount =
-       (voterDetails.support.length / memberInfo?.data.length) > 0.5;
-  const isClaimedOrRejected =
-    proposalInfo.currentStatus > 1 ||
-    (remainingSecond < 0 && !sufficientVoteCount);
-  const isAvailableToClaim =
-    ((proposalInfo.currentStatus == 1) || sufficientVoteCount );
+  
+
+
  
   const claimReq = useContractWrite({
     address: address,
@@ -164,8 +164,6 @@ const ProposalItem = ({ address, proposalId }) => {
     functionName: "claimApprovedAmount",
     args: [proposalId],
     onSuccess(data) {
-      // console.log("withdrawAmount Success", data);
-      //  setBalance((prev) => prev - parseInt(log[0].args._amount=);
       setMessage(
         `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
       );
@@ -179,8 +177,6 @@ const ProposalItem = ({ address, proposalId }) => {
     functionName: "approveBorrowProposal",
     args: [proposalId],
     onSuccess(data) {
-      // console.log("withdrawAmount Success", data);
-      //  setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMessage(`Approval sent, Tx Hash:`);
       setTxHash(data.hash);
     },
@@ -192,8 +188,6 @@ const ProposalItem = ({ address, proposalId }) => {
     functionName: "rejectBorrowProposal",
     args: [proposalId],
     onSuccess(data) {
-      // console.log("withdrawAmount Success", data);
-      //  setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMessage(`Reject request sent, Tx Hash:`);
       setTxHash(data.hash);
     },
@@ -210,16 +204,40 @@ const ProposalItem = ({ address, proposalId }) => {
     },
   });
 
-  //   uint amount;
-  // address proposer;
-  // uint proposalId;
-  // string purpose;
-  // uint monthlyInterestRate;
-  // bool claimed;
-  // uint loanDurationInMonth;
-  // address[] approvers;
-  // address[] rejecters;
-  // uint proposalTime;
+
+  const isOwner = proposalInfo.proposer == accountInfo?.address;
+
+  const notVotedYet = () => {
+      return (
+        !isOwner &&
+        proposalInfo.currentStatus == statusIdx.Open &&
+        !(voterDetails.support.includes(accountInfo?.address) ||
+        voterDetails.against.includes(accountInfo?.address))
+      );
+  }
+
+  const canOwnerClaim = () => {
+    return (
+      voterDetails.support.length / memberInfo?.data.length > 0.5 &&
+      isOwner &&
+      proposalInfo.currentStatus == statusIdx.Open
+    );
+  }
+
+  const canOwnerCancel = () => {
+      return isOwner && proposalInfo.currentStatus == statusIdx.Open;
+  }   
+  
+  const getStatusText = () => {
+    if(proposalInfo.currentStatus == 0 && remainingSecond < 0){
+      return statusVal[statusIdx.Expired];
+    }else return statusVal[proposalInfo.currentStatus];
+  }
+
+  const showTimer = () => {
+    return (proposalInfo.currentStatus == statusIdx.Open) && (remainingSecond > 0);
+  }
+
   return (
     <div className={styles.proposalItemContainer}>
       <div
@@ -228,8 +246,6 @@ const ProposalItem = ({ address, proposalId }) => {
           flexDirection: "row",
           justifyContent: "space-evenly",
           alignContent: "center",
-          // alignItems:"baseline",
-          // backgroundColor:"gray",
           marginTop: "0px",
         }}
       >
@@ -238,7 +254,7 @@ const ProposalItem = ({ address, proposalId }) => {
         <h4>
           Interest rate/Month(wei): {parseInt(proposalInfo.monthlyInterestRate)}
         </h4>
-        {remainingSecond > 0 && !isClaimedOrRejected && (
+        {showTimer() && (
           <h4
             style={{
               // marginLeft: "40px",
@@ -249,11 +265,14 @@ const ProposalItem = ({ address, proposalId }) => {
             }}
           >
             Voting closes in:{" "}
-            <Timer seconds={remainingSecond} timesUpCb={setRemainingSecond}></Timer>
+            <Timer
+              seconds={remainingSecond}
+              timesUpCb={setRemainingSecond}
+            ></Timer>
           </h4>
         )}
         <h4>Duration: {parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
-        <h4>{status[isClaimedOrRejected ? 2 : proposalInfo.currentStatus]}</h4>
+        <h4>{getStatusText()}</h4>
         <h4>
           Voter(Support/Against):{" "}
           <span style={{ color: "green" }}>{voterDetails.support.length} </span>
@@ -265,7 +284,7 @@ const ProposalItem = ({ address, proposalId }) => {
           {/* <h2>Purpose</h2> */}
           <p>{proposalInfo.purpose}</p>
           <div className={styles.approveButtonContainer}>
-            {!isOwner && !hasAlreadyVoted && !isClaimedOrRejected && (
+            {notVotedYet() && (
               <button
                 style={{ backgroundColor: "red" }}
                 onClick={rejectReq.write}
@@ -273,11 +292,11 @@ const ProposalItem = ({ address, proposalId }) => {
                 Reject
               </button>
             )}
-            {!isOwner && !hasAlreadyVoted && !isClaimedOrRejected && (
+            {notVotedYet() && (
               <button onClick={approveReq.write}>Approve</button>
             )}
 
-            {isOwner && !isClaimedOrRejected && (
+            {canOwnerCancel() && (
               <button
                 style={{ backgroundColor: "red" }}
                 onClick={cancelReq.write}
@@ -285,9 +304,7 @@ const ProposalItem = ({ address, proposalId }) => {
                 Cancel
               </button>
             )}
-            {isOwner && isAvailableToClaim && (
-              <button onClick={claimReq.write}>Claim</button>
-            )}
+            {canOwnerClaim() && <button onClick={claimReq.write}>Claim</button>}
           </div>
           {message && (
             <p>

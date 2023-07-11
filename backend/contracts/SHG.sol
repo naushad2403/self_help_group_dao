@@ -8,13 +8,11 @@ contract SHG {
     mapping(uint => BorrowProposal) public borrowProposal;
     uint public counter = 0;
     string public name;
-    uint public proposalVotingPeriod = 259200; //72 hours in second;
+    uint public proposalVotingPeriod = 300;//259200; //72 hours in second;
     enum status {
-        Voting,
-        Approved,
-        Cancelled,
-        Rejected,
-        Setteled
+        Open,
+        Claimed,
+        Cancelled
     }
 
     struct BorrowProposal {
@@ -94,6 +92,7 @@ contract SHG {
         proposal.proposalTime = block.timestamp + proposalVotingPeriod;
         proposal.approvers = new address[](0);
         proposal.rejecters = new address[](0);
+        proposal.currentStatus = status.Open;
         counter += 1;
         emit ProposalSubmitted(counter - 1);
         return counter - 1;
@@ -115,11 +114,17 @@ contract SHG {
             address(this).balance > borrowProposal[_proposalId].amount,
             "Unsufficient amount in group"
         );
+        borrowProposal[_proposalId].currentStatus = status.Claimed;
         (bool success, ) = borrowProposal[_proposalId].proposer.call{
             value: borrowProposal[_proposalId].amount
         }("");
-        emit ProposalClaimed(_proposalId);
+        if(success){
+            emit ProposalClaimed(_proposalId);
+        }else{
+            borrowProposal[_proposalId].currentStatus = status.Open;
+        }
         return success;
+      
     }
 
     function approveBorrowProposal(uint _proposalId) external returns (bool) {
