@@ -10,6 +10,7 @@ contract SHG {
     string public name;
     uint public proposalVotingPeriod = 300; // 72 hours in seconds
     mapping(address => Loan) public loanDetails;
+    DistributionProposal public distributionProposal;
 
     enum Status {
         Open,
@@ -41,29 +42,12 @@ contract SHG {
         uint256 percentage;
     }
 
-    constructor(string memory _name) payable {
-        members.push(tx.origin);
-        balances[tx.origin] = msg.value;
-        name = _name;
+    struct DistributionProposal {
+        uint expiryTime;
+        bool isRunning;
     }
 
-    function getAllMembers() external view returns (address[] memory) {
-        return members;
-    }
-
-    function getMemberWithBalance()
-        external
-        view
-        returns (address[] memory, uint[] memory)
-    {
-        uint[] memory bal = new uint[](members.length);
-        for (uint i = 0; i < members.length; i++) {
-            bal[i] = balances[members[i]];
-        }
-        return (members, bal);
-    }
-
-    event Withdrawn(address _member, uint _amount);
+      event Withdrawn(address _member, uint _amount);
     event Deposited(address _member, uint _amount);
     event ProposalCancelled(uint _proposalId);
     event ProposalApproved(uint proposalId, address approver, uint percentage);
@@ -82,6 +66,73 @@ contract SHG {
         uint proposalId,
         uint amount
     );
+
+    event MoneyDistributed(address distributor);
+    event MoneyDistributionShareSent(address member, uint amount);
+
+    constructor(string memory _name) payable {
+        members.push(tx.origin);
+        balances[tx.origin] = msg.value;
+        name = _name;
+    }
+
+    function createDistributionProposal() external {
+        require(
+            !distributionProposal.isRunning,
+            "Already  a proposal is running"
+        );
+        distributionProposal.isRunning = true;
+        distributionProposal.expiryTime = block.timestamp + 84400;
+    }
+
+    function rejectDistributionProposal() external {
+        require(
+            distributionProposal.isRunning &&
+                block.timestamp < distributionProposal.expiryTime,
+            "No proposal Running"
+        );
+        distributionProposal.isRunning = false;
+    }
+
+    function distributeMoney() external {
+
+        require(
+            distributionProposal.isRunning &&
+                block.timestamp > distributionProposal.expiryTime,
+            "Rejection period is still Open, Pelase wait for it to end"
+        );
+
+        for (uint i = 0; i < members.length; i++) {
+            uint bal = balances[members[i]];
+            balances[members[i]] = 0;
+            (bool success, ) = members[i].call{value:bal}("");
+            require(success, "Money Couldn't send");
+            emit MoneyDistributionShareSent(members[i], bal);
+        }
+        
+        emit MoneyDistributed(msg.sender);
+        distributionProposal.isRunning  = false;
+    }
+
+
+
+    function getAllMembers() external view returns (address[] memory) {
+        return members;
+    }
+
+
+    function getMemberWithBalance()
+        external
+        view
+        returns (address[] memory, uint[] memory)
+    {
+        uint[] memory bal = new uint[](members.length);
+        for (uint i = 0; i < members.length; i++) {
+            bal[i] = balances[members[i]];
+        }
+        return (members, bal);
+    }
+
     event LoanUpdated(address member, uint amount);
 
     function withdrawAmount(uint _amount) public {
@@ -168,7 +219,6 @@ contract SHG {
         require(success, "Amount Transferred");
         emit ProposalClaimed(_proposalId);
         return success;
-      
     }
 
     function approveBorrowProposal(
