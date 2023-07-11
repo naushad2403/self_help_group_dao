@@ -23,8 +23,8 @@ let initialState = {
 
 let initialVoterState = {
   support: [],
-  against: []
-}
+  against: [],
+};
 
 const ProposalItem = ({ address, proposalId }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
@@ -66,7 +66,7 @@ const ProposalItem = ({ address, proposalId }) => {
     functionName: "getApproversAndRejecters",
     args: [proposalId],
     onSettled(data, error) {
-      setVoter({support: data[0], against: data[1]});
+      setVoter({ support: data[0], against: data[1] });
     },
   });
 
@@ -93,12 +93,11 @@ const ProposalItem = ({ address, proposalId }) => {
         const pid = parseInt(log[0].args.proposalId);
         if (pid == proposalId) {
           setVoter((prev) => {
-            let newState = {support: [], against: []};
+            let newState = { support: [], against: [] };
             prev.support.push(log[0].args.approvar);
-            newState.support = [...(new Set(prev.support))];
+            newState.support = [...new Set(prev.support)];
             newState.against = prev.against;
             return newState;
-            
           });
         }
       }
@@ -148,8 +147,9 @@ const ProposalItem = ({ address, proposalId }) => {
   const isOwner = proposalInfo.proposer == accountInfo?.address;
   const remainingSecond =
     parseInt(proposalInfo.proposalTime) - Math.floor(Date.now() / 1000);
-  const hasAlreadyVoted = voterDetails.support.includes(accountInfo?.address) ||
-       voterDetails.against.includes(accountInfo?.address);
+  const hasAlreadyVoted =
+    voterDetails.support.includes(accountInfo?.address) ||
+    voterDetails.against.includes(accountInfo?.address);
   const isClaimedOrRejected = proposalInfo.currentStatus > 1;
   const isAvailableToClaim = proposalInfo.currentStatus == 1;
 
@@ -246,13 +246,12 @@ const ProposalItem = ({ address, proposalId }) => {
             Voting closes in: <Timer seconds={remainingSecond}></Timer>
           </h4>
         )}
-        <h4>Duration: ${parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
+        <h4>Duration: {parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
         <h4>{status[proposalInfo.currentStatus]}</h4>
         <h4>
           Voter(Support/Against):{" "}
           <span style={{ color: "green" }}>{voterDetails.support.length} </span>
-          /{" "}
-          <span style={{ color: "red" }}>{voterDetails.against.length}</span>
+          / <span style={{ color: "red" }}>{voterDetails.against.length}</span>
         </h4>
       </div>
       {
