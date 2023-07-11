@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from './../styles/Timer.module.css'
 
-const Timer = ({ seconds }) => {
+const Timer = ({ seconds, timesUpCb}) => {
   const [countdown, setCountdown] = useState(seconds);
 
   useEffect(() => {
@@ -13,8 +13,10 @@ const Timer = ({ seconds }) => {
       return () => {
         clearInterval(timer);
       };
+    }else{
+      timesUpCb(countdown);
     }
-  }, [countdown]);
+  }, [countdown, timesUpCb]);
 
 
   const formatTime = (time) => {
