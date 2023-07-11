@@ -30,6 +30,7 @@ const ProposalItem = ({ address, proposalId }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
   const [voterDetails, setVoter] = useState(initialVoterState);
   const [message, setMessage] = useState("");
+  const [remainingSecond, setRemainingSecond]  = useState();
   const [txHash, setTxHash] = useState("");
   const status = [
     "Voting period",
@@ -54,8 +55,8 @@ const ProposalItem = ({ address, proposalId }) => {
           temp[key] = data[index];
           index++;
         }
-        console.log("inisde this temp we have", temp, data);
         setProposalInfo(temp);
+        setRemainingSecond(parseInt(data[7]) - Math.floor(Date.now() / 1000));
       }
     },
   });
@@ -145,14 +146,18 @@ const ProposalItem = ({ address, proposalId }) => {
   });
 
   const isOwner = proposalInfo.proposer == accountInfo?.address;
-  const remainingSecond =
-    parseInt(proposalInfo.proposalTime) - Math.floor(Date.now() / 1000);
+    
   const hasAlreadyVoted =
     voterDetails.support.includes(accountInfo?.address) ||
     voterDetails.against.includes(accountInfo?.address);
-  const isClaimedOrRejected = proposalInfo.currentStatus > 1;
-  const isAvailableToClaim = proposalInfo.currentStatus == 1;
-
+     const sufficientVoteCount =
+       (voterDetails.support.length / memberInfo?.data.length) > 0.5;
+  const isClaimedOrRejected =
+    proposalInfo.currentStatus > 1 ||
+    (remainingSecond < 0 && !sufficientVoteCount);
+  const isAvailableToClaim =
+    ((proposalInfo.currentStatus == 1) || sufficientVoteCount );
+ 
   const claimReq = useContractWrite({
     address: address,
     abi: shg_abi,
@@ -243,11 +248,12 @@ const ProposalItem = ({ address, proposalId }) => {
               verticalAlign: "top",
             }}
           >
-            Voting closes in: <Timer seconds={remainingSecond}></Timer>
+            Voting closes in:{" "}
+            <Timer seconds={remainingSecond} timesUpCb={setRemainingSecond}></Timer>
           </h4>
         )}
         <h4>Duration: {parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
-        <h4>{status[proposalInfo.currentStatus]}</h4>
+        <h4>{status[isClaimedOrRejected ? 2 : proposalInfo.currentStatus]}</h4>
         <h4>
           Voter(Support/Against):{" "}
           <span style={{ color: "green" }}>{voterDetails.support.length} </span>
