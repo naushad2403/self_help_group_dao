@@ -196,7 +196,7 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "_proposalId",
+        name: "proposalId",
         type: "uint256",
       },
       {
@@ -241,13 +241,13 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "_proposalId",
+        name: "proposalId",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "address",
-        name: "approvar",
+        name: "rejector",
         type: "address",
       },
     ],
