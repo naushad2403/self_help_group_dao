@@ -54,6 +54,8 @@ export default function MyGroupItem({ address }) {
     },
   });
 
+  console.log("inside this joinGroup", joiningGroup);
+
   useContractEvent({
     address: address,
     abi: shg_abi,
@@ -95,14 +97,21 @@ export default function MyGroupItem({ address }) {
         </p>
         <p>{members.length}</p>
         {!members?.includes(accountInfo.address) ? (
-          <button onClick={joiningGroup.write}>Join Group</button>
+          <button
+            onClick={joiningGroup.write}
+            disabled={joiningGroup.isLoading}
+          >
+            Join Group
+          </button>
         ) : (
           <p>You are member</p>
         )}
 
         {
-          <button onClick={() => router.push(`/group/${address}`)}>
-            {" "}
+          <button
+            onClick={() => router.push(`/group/${address}`)}
+            disabled={!members?.includes(accountInfo.address)}
+          >
             View Group
           </button>
         }

@@ -4,12 +4,11 @@ import { useContractRead, useContractEvent } from "wagmi";
 import { shg_abi } from "../../util";
 import ProposalItem from "../../components/ProposalItem";
 import { useRouter } from "next/router";
+import { GroupDetails } from "../../components/GroupDetails";
 
 const Proposals = () => {
   const [count, setCount] = useState(0);
   const router = useRouter();
-
-  console.log("inside this we have onCointer", count);
 
   useContractRead({
     address: router.query.address,
@@ -25,13 +24,14 @@ const Proposals = () => {
     abi: shg_abi,
     eventName: "ProposalSubmitted",
     listener(log) {
-        setCount(parseInt(log.args._proposalId));
+      setCount(parseInt(log.args._proposalId));
     },
   });
-  // console.log("count", count, new Array(count));
+
   return (
     <div>
       <div>
+        <GroupDetails address={router.query.address} />
         {new Array(count).fill(0).map((proposal, index) => {
           return (
             <ProposalItem

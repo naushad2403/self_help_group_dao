@@ -31,3 +31,6 @@ button {
     font-size: small;
     font-weight: bold;
 }
+button:disabled{
+  opacity: 0.5;;
+}

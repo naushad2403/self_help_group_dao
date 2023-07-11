@@ -64,17 +64,21 @@ const CreateProposal = ({ address }) => {
   };
 
   const isSubmitDisabled =
-    !( amount > 0) ||
+    !(amount > 0) ||
     !(duration > 0) ||
-    !( interestRate > 0) ||
-    !(purpose.length > 0) 
+    !(interestRate > 0) ||
+    !(purpose.length > 0);
 
-
-    console.log("isSubmitDisabled", isSubmitDisabled);
-    console.log("isValidInput(amount)", isValidInput(amount), "-", amount);
-    console.log("isValidInput(duration)", isValidInput(duration),"-", duration);
-      console.log("isValidInput(interestRate)", isValidInput(interestRate),"-", interestRate);
-      console.log("isValidInput(purpose)", isValidInput(purpose), "-",purpose);
+  console.log("isSubmitDisabled", isSubmitDisabled);
+  console.log("isValidInput(amount)", isValidInput(amount), "-", amount);
+  console.log("isValidInput(duration)", isValidInput(duration), "-", duration);
+  console.log(
+    "isValidInput(interestRate)",
+    isValidInput(interestRate),
+    "-",
+    interestRate
+  );
+  console.log("isValidInput(purpose)", isValidInput(purpose), "-", purpose);
 
   const buttonStyle = isSubmitDisabled ? { opacity: 0.5 } : {};
 
@@ -136,7 +140,7 @@ const CreateProposal = ({ address }) => {
           ...buttonStyle, // Apply the buttonStyle dynamically
         }}
         onClick={handleSubmit}
-        disabled={isSubmitDisabled}
+        disabled={isSubmitDisabled || proposalMethod.isLoading}
       >
         SEND PROPOSAL
       </button>

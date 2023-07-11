@@ -30,23 +30,16 @@ const ProposalItem = ({ address, proposalId }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
   const [voterDetails, setVoter] = useState(initialVoterState);
   const [message, setMessage] = useState("");
-  const [remainingSecond, setRemainingSecond]  = useState();
+  const [remainingSecond, setRemainingSecond] = useState();
   const [txHash, setTxHash] = useState("");
-  const statusVal = [
-    "Open",
-    "Claimed",
-    "Cancelled",
-    "Expired"
-  ]
+  const statusVal = ["Open", "Claimed", "Cancelled", "Expired"];
 
-  const statusIdx =  {
+  const statusIdx = {
     Open: 0,
     Claimed: 1,
     Cancelled: 2,
-    Expired: 3
-  }
-
-
+    Expired: 3,
+  };
 
   const accountInfo = useAccount();
 
@@ -154,10 +147,6 @@ const ProposalItem = ({ address, proposalId }) => {
     functionName: "getAllMembers",
   });
 
-  
-
-
- 
   const claimReq = useContractWrite({
     address: address,
     abi: shg_abi,
@@ -204,17 +193,18 @@ const ProposalItem = ({ address, proposalId }) => {
     },
   });
 
-
   const isOwner = proposalInfo.proposer == accountInfo?.address;
 
   const notVotedYet = () => {
-      return (
-        !isOwner &&
-        proposalInfo.currentStatus == statusIdx.Open &&
-        !(voterDetails.support.includes(accountInfo?.address) ||
-        voterDetails.against.includes(accountInfo?.address))
-      );
-  }
+    return (
+      !isOwner &&
+      proposalInfo.currentStatus == statusIdx.Open &&
+      !(
+        voterDetails.support.includes(accountInfo?.address) ||
+        voterDetails.against.includes(accountInfo?.address)
+      )
+    );
+  };
 
   const canOwnerClaim = () => {
     return (
@@ -222,21 +212,21 @@ const ProposalItem = ({ address, proposalId }) => {
       isOwner &&
       proposalInfo.currentStatus == statusIdx.Open
     );
-  }
+  };
 
   const canOwnerCancel = () => {
-      return isOwner && proposalInfo.currentStatus == statusIdx.Open;
-  }   
-  
+    return isOwner && proposalInfo.currentStatus == statusIdx.Open;
+  };
+
   const getStatusText = () => {
-    if(proposalInfo.currentStatus == 0 && remainingSecond < 0){
+    if (proposalInfo.currentStatus == 0 && remainingSecond < 0) {
       return statusVal[statusIdx.Expired];
-    }else return statusVal[proposalInfo.currentStatus];
-  }
+    } else return statusVal[proposalInfo.currentStatus];
+  };
 
   const showTimer = () => {
-    return (proposalInfo.currentStatus == statusIdx.Open) && (remainingSecond > 0);
-  }
+    return proposalInfo.currentStatus == statusIdx.Open && remainingSecond > 0;
+  };
 
   return (
     <div className={styles.proposalItemContainer}>
@@ -288,23 +278,34 @@ const ProposalItem = ({ address, proposalId }) => {
               <button
                 style={{ backgroundColor: "red" }}
                 onClick={rejectReq.write}
+                disabled={rejectReq.isLoading || approveReq.isLoading}
               >
                 Reject
               </button>
             )}
             {notVotedYet() && (
-              <button onClick={approveReq.write}>Approve</button>
+              <button
+                onClick={approveReq.write}
+                disabled={rejectReq.isLoading || approveReq.isLoading}
+              >
+                Approve
+              </button>
             )}
 
             {canOwnerCancel() && (
               <button
                 style={{ backgroundColor: "red" }}
                 onClick={cancelReq.write}
+                disabled={cancelReq.isLoading}
               >
                 Cancel
               </button>
             )}
-            {canOwnerClaim() && <button onClick={claimReq.write}>Claim</button>}
+            {canOwnerClaim() && (
+              <button onClick={claimReq.write} disabled={cancelReq.isLoading}>
+                Claim
+              </button>
+            )}
           </div>
           {message && (
             <p>
