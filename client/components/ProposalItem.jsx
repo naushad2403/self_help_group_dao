@@ -21,9 +21,14 @@ let initialState = {
   proposalTime: 0,
 };
 
+let initialVoterState = {
+  support: [],
+  against: []
+}
+
 const ProposalItem = ({ address, proposalId }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
-  const [voterDetails, setVoter] = useState({});
+  const [voterDetails, setVoter] = useState(initialVoterState);
   const [message, setMessage] = useState("");
   const [txHash, setTxHash] = useState("");
   const status = [
@@ -61,8 +66,7 @@ const ProposalItem = ({ address, proposalId }) => {
     functionName: "getApproversAndRejecters",
     args: [proposalId],
     onSettled(data, error) {
-      console.log(" setVoter Settled", { data, error });
-      setVoter(data);
+      setVoter({support: data[0], against: data[1]});
     },
   });
 
@@ -74,27 +78,50 @@ const ProposalItem = ({ address, proposalId }) => {
       if (log.length > 0) {
         const pid = parseInt(log[0].data);
         if (pid === proposalId) {
-          console.log("inside here we are", pid);
           setProposalInfo((prev) => ({ ...prev, currentStatus: 2 }));
         }
       }
     },
   });
+
   useContractEvent({
-    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+    address: address,
     abi: shg_abi,
-    eventName: "proposalApproved",
+    eventName: "ProposalApproved",
     listener(log) {
-      //  console.log("NewGroupCreated", log);
+      if (log.length > 0) {
+        const pid = parseInt(log[0].args.proposalId);
+        if (pid == proposalId) {
+          setVoter((prev) => {
+            let newState = {support: [], against: []};
+            prev.support.push(log[0].args.approvar);
+            newState.support = [...(new Set(prev.support))];
+            newState.against = prev.against;
+            return newState;
+            
+          });
+        }
+      }
     },
   });
 
   useContractEvent({
-    address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
+    address: address,
     abi: shg_abi,
-    eventName: "proposalRejected",
+    eventName: "ProposalRejected",
     listener(log) {
-      //  console.log("NewGroupCreated", log);
+      if (log.length > 0) {
+        const pid = parseInt(log[0].args.proposalId);
+        if (pid == proposalId) {
+          setVoter((prev) => {
+            let newState = { support: [], against: [] };
+            prev.against.push(log[0].args.rejector);
+            newState.against = [...new Set(prev.against)];
+            newState.support = prev.support;
+            return newState;
+          });
+        }
+      }
     },
   });
 
@@ -121,11 +148,8 @@ const ProposalItem = ({ address, proposalId }) => {
   const isOwner = proposalInfo.proposer == accountInfo?.address;
   const remainingSecond =
     parseInt(proposalInfo.proposalTime) - Math.floor(Date.now() / 1000);
-  const hasAlreadyVoted =
-    voterDetails?.length > 0
-      ? voterDetails[0][accountInfo?.address] ||
-        voterDetails[1][accountInfo?.address]
-      : false;
+  const hasAlreadyVoted = voterDetails.support.includes(accountInfo?.address) ||
+       voterDetails.against.includes(accountInfo?.address);
   const isClaimedOrRejected = proposalInfo.currentStatus > 1;
   const isAvailableToClaim = proposalInfo.currentStatus == 1;
 
@@ -224,7 +248,12 @@ const ProposalItem = ({ address, proposalId }) => {
         )}
         <h4>Duration: ${parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
         <h4>{status[proposalInfo.currentStatus]}</h4>
-        <h4>Votes: 0 / {memberInfo?.data?.length - 1}</h4>
+        <h4>
+          Voter(Support/Against):{" "}
+          <span style={{ color: "green" }}>{voterDetails.support.length} </span>
+          /{" "}
+          <span style={{ color: "red" }}>{voterDetails.against.length}</span>
+        </h4>
       </div>
       {
         <div className={styles.purposeContainer}>

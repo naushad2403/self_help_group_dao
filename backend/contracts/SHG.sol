@@ -55,8 +55,8 @@ contract SHG {
     event Withdrawn(address _member, uint _amount);
     event Deposited(address _member, uint _amount);
     event ProposalCancelled(uint _proposalId);
-    event ProposalApproved(uint _proposalId, address approvar);
-    event ProposalRejected(uint _proposalId, address approvar);
+    event ProposalApproved(uint proposalId, address approvar);
+    event ProposalRejected(uint proposalId, address rejector);
     event ProposalClaimed(uint _proposalId);
     event MembersJoined(address _member);
     event ProposalSubmitted(uint _proposalId);
@@ -92,8 +92,8 @@ contract SHG {
         proposal.loanDurationInMonth = _loanDurationInMonth;
         proposal.purpose = _purpose;
         proposal.proposalTime = block.timestamp + proposalVotingPeriod;
-        proposal.approvers = new address[](members.length);
-        proposal.rejecters = new address[](members.length);
+        proposal.approvers = new address[](0);
+        proposal.rejecters = new address[](0);
         counter += 1;
         emit ProposalSubmitted(counter - 1);
         return counter - 1;
