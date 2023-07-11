@@ -25,7 +25,7 @@ const Proposals = () => {
     abi: shg_abi,
     eventName: "ProposalSubmitted",
     listener(log) {
-      setCount((prev) => prev + 1);
+        setCount(parseInt(log.args._proposalId));
     },
   });
   // console.log("count", count, new Array(count));

@@ -97,6 +97,15 @@ export default function Group() {
     },
   });
 
+    useContractEvent({
+      address: router.query.address,
+      abi: shg_abi,
+      eventName: "ProposalSubmitted",
+      listener(log) {
+        setProposalCounter((prev) => prev + 1);
+      },
+    });
+
   const memberBalance = useContractRead({
     address: router.query.address,
     abi: shg_abi,
@@ -121,6 +130,8 @@ export default function Group() {
       setBalance(parseInt(data?.value));
     },
   });
+
+
 
   console.log("memberBal", memberBal);
 
