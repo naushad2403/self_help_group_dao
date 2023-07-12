@@ -164,6 +164,56 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "address",
+        name: "member",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "proposalId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "AmountRecievedFromLoanPayment",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "proposalId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "member",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "ApprovalUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
         name: "_member",
         type: "address",
       },
@@ -175,6 +225,25 @@ const shg_abi = [
       },
     ],
     name: "Deposited",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "member",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "LoanUpdated",
     type: "event",
   },
   {
@@ -195,18 +264,31 @@ const shg_abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "uint256",
-        name: "proposalId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
         internalType: "address",
-        name: "approvar",
+        name: "distributor",
         type: "address",
       },
     ],
-    name: "ProposalApproved",
+    name: "MoneyDistributed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "member",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "MoneyDistributionShareSent",
     type: "event",
   },
   {
@@ -233,25 +315,6 @@ const shg_abi = [
       },
     ],
     name: "ProposalClaimed",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "proposalId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "rejector",
-        type: "address",
-      },
-    ],
-    name: "ProposalRejected",
     type: "event",
   },
   {
@@ -297,8 +360,13 @@ const shg_abi = [
         name: "_proposalId",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
     ],
-    name: "approveBorrowProposal",
+    name: "approveLimit",
     outputs: [
       {
         internalType: "bool",
@@ -364,7 +432,7 @@ const shg_abi = [
         type: "uint256",
       },
       {
-        internalType: "enum SHG.status",
+        internalType: "enum SHG.Status",
         name: "currentStatus",
         type: "uint8",
       },
@@ -435,9 +503,41 @@ const shg_abi = [
   },
   {
     inputs: [],
+    name: "createDistributionProposal",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "deposit",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "distributeMoney",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "distributionProposal",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "expiryTime",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "isRunning",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -461,17 +561,24 @@ const shg_abi = [
         type: "uint256",
       },
     ],
-    name: "getApproversAndRejecters",
+    name: "getApprovers",
     outputs: [
       {
-        internalType: "address[]",
+        components: [
+          {
+            internalType: "address",
+            name: "member",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct SHG.MemberApproval[]",
         name: "",
-        type: "address[]",
-      },
-      {
-        internalType: "address[]",
-        name: "",
-        type: "address[]",
+        type: "tuple[]",
       },
     ],
     stateMutability: "view",
@@ -509,6 +616,40 @@ const shg_abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "loanDetails",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "proposalId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "interestRate",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "date",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "name",
     outputs: [
@@ -535,21 +676,9 @@ const shg_abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_proposalId",
-        type: "uint256",
-      },
-    ],
-    name: "rejectBorrowProposal",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
+    inputs: [],
+    name: "rejectDistributionProposal",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
