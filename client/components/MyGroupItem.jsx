@@ -10,13 +10,12 @@ import Styles from "./../styles/MyGroup.module.css";
 import { shg_abi } from "../util";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
 
 export default function MyGroupItem({ address, forJoined }) {
   const [message, setMessage] = useState("");
   const [txHash, setTxHash] = useState("");
   const [members, setMembers] = useState([]);
-  const dispatch = useDispatch();
+
   const accountInfo = useAccount();
   const router = useRouter();
   const nameInfo = useContractRead({
@@ -65,20 +64,6 @@ export default function MyGroupItem({ address, forJoined }) {
       }
     },
   });
-
-  // useEffect(() => {
-  //   nameInfo &&
-  //     dispatch(
-  //       updateGroup({
-  //         address,
-  //         info: {
-  //           name: nameInfo?.data,
-  //           members: memberInfo?.data,
-  //           balance: balanceInfo?.data,
-  //         },
-  //       })
-  //     );
-  // }, [nameInfo, memberInfo, balanceInfo]);
 
   const isMember = () => {
     return members?.includes(accountInfo.address);
