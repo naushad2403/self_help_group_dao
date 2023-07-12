@@ -35,7 +35,6 @@ export default function Group() {
     abi: shg_abi,
     eventName: "Withdrawn",
     listener(log) {
-      //  console.log("NewGroupCreated", log);
       setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMemberBal((prev) => {
         return prev.map((member) => {

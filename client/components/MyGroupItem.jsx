@@ -8,12 +8,11 @@ import {
 } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
 import { shg_abi } from "../util";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-import { updateGroup } from "../state_management/slices/group";
+import { useDispatch } from "react-redux";
 
-export default function MyGroupItem({ address }) {
+export default function MyGroupItem({ address, forJoined }) {
   const [message, setMessage] = useState("");
   const [txHash, setTxHash] = useState("");
   const [members, setMembers] = useState([]);
@@ -81,6 +80,14 @@ export default function MyGroupItem({ address }) {
   //     );
   // }, [nameInfo, memberInfo, balanceInfo]);
 
+  const isMember = () => {
+    return members?.includes(accountInfo.address);
+  };
+
+  if (forJoined && !isMember()) {
+    return null;
+  }
+
   return (
     <>
       <div className={Styles.MyGroupItem}>
@@ -96,7 +103,7 @@ export default function MyGroupItem({ address }) {
           {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
         </p>
         <p>{members.length}</p>
-        {!members?.includes(accountInfo.address) ? (
+        {!isMember() ? (
           <button
             onClick={joiningGroup.write}
             disabled={joiningGroup.isLoading}
@@ -110,7 +117,7 @@ export default function MyGroupItem({ address }) {
         {
           <button
             onClick={() => router.push(`/group/${address}`)}
-            disabled={!members?.includes(accountInfo.address)}
+            disabled={!isMember()}
           >
             View Group
           </button>
