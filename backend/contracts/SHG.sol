@@ -33,13 +33,12 @@ contract SHG {
         Status currentStatus;
         uint loanDurationInMonth;
         MemberApproval[] approvers;
-        address[] rejecters;
         uint proposalTime;
     }
 
     struct MemberApproval {
         address member;
-        uint256 percentage;
+        uint256 amount;
     }
 
     struct DistributionProposal {
@@ -50,15 +49,13 @@ contract SHG {
       event Withdrawn(address _member, uint _amount);
     event Deposited(address _member, uint _amount);
     event ProposalCancelled(uint _proposalId);
-    event ProposalApproved(uint proposalId, address approver, uint percentage);
-    event ProposalRejected(uint proposalId, address rejector);
     event ProposalClaimed(uint _proposalId);
     event MembersJoined(address _member);
     event ProposalSubmitted(uint _proposalId);
     event ApprovalUpdated(
         uint proposalId,
         address member,
-        uint256 newPercentage
+        uint256 amount
     );
 
     event AmountRecievedFromLoanPayment(
@@ -172,17 +169,16 @@ contract SHG {
         return counter - 1;
     }
 
-    function getApproversAndRejecters(
+    function getApprovers(
         uint _proposalId
-    ) public view returns (MemberApproval[] memory, address[] memory) {
+    ) public view returns (MemberApproval[] memory) {
         return (
-            borrowProposal[_proposalId].approvers,
-            borrowProposal[_proposalId].rejecters
+            borrowProposal[_proposalId].approvers
         );
     }
 
     function claimApprovedAmount(uint _proposalId) public returns (bool) {
-        (MemberApproval[] memory approvers, ) = getApproversAndRejecters(
+        (MemberApproval[] memory approvers) = getApprovers(
             _proposalId
         );
         require(approvers.length > (members.length / 2), "Insufficient votes");
@@ -191,19 +187,16 @@ contract SHG {
             "Insufficient amount in group"
         );
 
-        uint256 totalPercentage = 0;
+        uint256 totalAmount = 0;
         for (uint256 i = 0; i < approvers.length; i++) {
-            totalPercentage += approvers[i].percentage;
-            uint256 approvedAmount = (borrowProposal[_proposalId].amount *
-                approvers[i].percentage) / 100;
             require(
-                balances[approvers[i].member] >= approvedAmount,
+                balances[approvers[i].member] >= approvers[i].amount,
                 "Insufficient balance for the approved percentage"
             );
-            balances[approvers[i].member] -= approvedAmount;
+            balances[approvers[i].member] -= approvers[i].amount;
         }
 
-        require(totalPercentage == 100, "Total percentage does not equal 100%");
+        require(totalAmount == 100, "Total percentage does not equal 100%");
 
         borrowProposal[_proposalId].currentStatus = Status.Claimed;
         loanDetails[msg.sender] = Loan(
@@ -220,39 +213,26 @@ contract SHG {
         emit ProposalClaimed(_proposalId);
         return success;
     }
-
-    function approveBorrowProposal(
+    function approveLimit (
         uint _proposalId,
-        uint256 _percentage
-    ) external returns (bool) {
-        MemberApproval memory approval = MemberApproval({
-            member: msg.sender,
-            percentage: _percentage
-        });
-        borrowProposal[_proposalId].approvers.push(approval);
-        emit ProposalApproved(_proposalId, msg.sender, _percentage);
-        return true;
-    }
-
-    function updateApproveBorrowProposal(
-        uint _proposalId,
-        uint256 _newPercentage
+        uint256 _amount
     ) external returns (bool) {
         MemberApproval[] storage approvers = borrowProposal[_proposalId]
             .approvers;
+        
+        emit ApprovalUpdated(_proposalId, msg.sender, _amount);
         for (uint i = 0; i < approvers.length; i++) {
             if (approvers[i].member == msg.sender) {
-                approvers[i].percentage = _newPercentage;
-                emit ApprovalUpdated(_proposalId, msg.sender, _newPercentage);
+                approvers[i].amount = _amount;
+               
                 return true;
             }
         }
-        return false;
-    }
-
-    function rejectBorrowProposal(uint _proposalId) external returns (bool) {
-        borrowProposal[_proposalId].rejecters.push(msg.sender);
-        emit ProposalRejected(_proposalId, msg.sender);
+         MemberApproval memory approval = MemberApproval({
+            member: msg.sender,
+            amount: _amount
+        });
+        borrowProposal[_proposalId].approvers.push(approval);
         return true;
     }
 
@@ -275,11 +255,11 @@ contract SHG {
             timeDiff
         );
 
-        (MemberApproval[] memory approvers, ) = getApproversAndRejecters(
+        (MemberApproval[] memory approvers) = getApprovers(
             loan.proposalId
         );
         for (uint256 i = 0; i < approvers.length; i++) {
-            uint256 memberShare = (msg.value * approvers[i].percentage) / 100;
+            uint256 memberShare = (msg.value * (approvers[i].amount/loan.amount));
             balances[approvers[i].member] += memberShare;
             emit AmountRecievedFromLoanPayment(
                 approvers[i].member,

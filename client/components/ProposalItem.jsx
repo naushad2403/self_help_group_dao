@@ -21,18 +21,14 @@ let initialState = {
   proposalTime: 0,
 };
 
-let initialVoterState = {
-  support: [],
-  against: [],
-};
-
 const ProposalItem = ({ address, proposalId, onlyUser }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
-  const [voterDetails, setVoter] = useState(initialVoterState);
+  const [voterDetails, setVoter] = useState([]);
   const [message, setMessage] = useState("");
   const [remainingSecond, setRemainingSecond] = useState();
   const [txHash, setTxHash] = useState("");
   const statusVal = ["Open", "Claimed", "Cancelled", "Expired"];
+  const [approvalAmount, setApprovalAmount] = useState(0);
 
   const statusIdx = {
     Open: 0,
@@ -65,10 +61,11 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   useContractRead({
     address: address,
     abi: shg_abi,
-    functionName: "getApproversAndRejecters",
+    functionName: "getApprovers",
     args: [proposalId],
     onSettled(data, error) {
-      setVoter({ support: data[0], against: data[1] });
+      console.log("getApprovers", data);
+      setVoter(data);
     },
   });
 
@@ -89,36 +86,23 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   useContractEvent({
     address: address,
     abi: shg_abi,
-    eventName: "ProposalApproved",
+    eventName: "ApprovalUpdated",
     listener(log) {
       if (log.length > 0) {
         const pid = parseInt(log[0].args.proposalId);
         if (pid == proposalId) {
           setVoter((prev) => {
-            let newState = { support: [], against: [] };
-            prev.support.push(log[0].args.approvar);
-            newState.support = [...new Set(prev.support)];
-            newState.against = prev.against;
-            return newState;
-          });
-        }
-      }
-    },
-  });
-
-  useContractEvent({
-    address: address,
-    abi: shg_abi,
-    eventName: "ProposalRejected",
-    listener(log) {
-      if (log.length > 0) {
-        const pid = parseInt(log[0].args.proposalId);
-        if (pid == proposalId) {
-          setVoter((prev) => {
-            let newState = { support: [], against: [] };
-            prev.against.push(log[0].args.rejector);
-            newState.against = [...new Set(prev.against)];
-            newState.support = prev.support;
+            let newState = [...prev];
+            for (let i = 0; i < prev.length; i++) {
+              if (newState[i].member == log[0].args.member) {
+                newState[i].amount = parseInt(log[0].args.amount);
+                return newState;
+              }
+            }
+            newState.push({
+              member: log[0].args.member,
+              amount: parseInt(log[0].args.amount),
+            });
             return newState;
           });
         }
@@ -131,15 +115,9 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     abi: shg_abi,
     eventName: "ProposalClaimed",
     listener(log) {
-      //  console.log("NewGroupCreated", log);
       setProposalInfo((prev) => ({ ...prev, currentStatus: 1 }));
     },
   });
-
-  //       //  event ProposalCancelled(uint _proposalId);
-  // event ProposalApproved(uint _proposalId, address approvar);
-  // event ProposalRejected(uint _proposalId, address approvar);
-  // event ProposalClaimed(uint _proposalId);
 
   const memberInfo = useContractRead({
     address: address,
@@ -163,21 +141,10 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   const approveReq = useContractWrite({
     address: address,
     abi: shg_abi,
-    functionName: "approveBorrowProposal",
-    args: [proposalId],
+    functionName: "approveLimit",
+    args: [proposalId, approvalAmount],
     onSuccess(data) {
       setMessage(`Approval sent, Tx Hash:`);
-      setTxHash(data.hash);
-    },
-  });
-
-  const rejectReq = useContractWrite({
-    address: address,
-    abi: shg_abi,
-    functionName: "rejectBorrowProposal",
-    args: [proposalId],
-    onSuccess(data) {
-      setMessage(`Reject request sent, Tx Hash:`);
       setTxHash(data.hash);
     },
   });
@@ -208,7 +175,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
 
   const canOwnerClaim = () => {
     return (
-      voterDetails.support.length / memberInfo?.data.length > 0.5 &&
+      getTotalApprovedLimit() == parseInt(proposalInfo.amount) &&
       isOwner &&
       proposalInfo.currentStatus == statusIdx.Open
     );
@@ -231,6 +198,39 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   if (onlyUser && !isOwner) {
     return null;
   }
+  const handleSliderChange = (event) => {
+    setApprovalAmount(parseInt(event.target.value));
+  };
+
+  const handleApproveClick = () => {
+    // Write your logic here to handle the approval request
+    // For example, you can make an API call to update the approval percentage
+    console.log("Approval percentage:", approvalAmount);
+  };
+
+  const getTotalApprovedLimit = () => {
+    let amount = 0;
+    for (let i = 0; i < voterDetails.length; i++) {
+      amount += parseInt(voterDetails[i].amount);
+    }
+    return amount;
+  };
+
+  const approvedAmountByUser = () => {
+    for (let i = 0; i < voterDetails.length; i++) {
+      if (voterDetails[i].member == accountInfo.address)
+        return voterDetails[i].amount;
+    }
+    return 0;
+  };
+
+  const getApprovalLimit = () => {
+    // TODO check if user have that much amount to approved
+    let max = parseInt(proposalInfo.amount) - getTotalApprovedLimit();
+    let min = Math.min(5, max);
+    return { min, max };
+  };
+
   return (
     <div className={styles.proposalItemContainer}>
       <div
@@ -245,7 +245,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
         <h4>Proposal id: {parseInt(proposalInfo.proposalId)}</h4>
         <h4>Amount(wei): {parseInt(proposalInfo.amount)}</h4>
         <h4>
-          Interest rate/Month(wei): {parseInt(proposalInfo.monthlyInterestRate)}
+          Interest rate/Year(wei): {parseInt(proposalInfo.monthlyInterestRate)}
         </h4>
         {showTimer() && (
           <h4
@@ -266,35 +266,38 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
         )}
         <h4>Duration: {parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
         <h4>{getStatusText()}</h4>
-        <h4>
-          Voter(Support/Against):{" "}
-          <span style={{ color: "green" }}>{voterDetails.support.length} </span>
-          / <span style={{ color: "red" }}>{voterDetails.against.length}</span>
-        </h4>
+        <h4>Approved Limit: {getTotalApprovedLimit()} Wei</h4>
       </div>
       {
         <div className={styles.purposeContainer}>
           {/* <h2>Purpose</h2> */}
           <p>{proposalInfo.purpose}</p>
           <div className={styles.approveButtonContainer}>
-            {notVotedYet() && (
-              <button
-                style={{ backgroundColor: "red" }}
-                onClick={rejectReq.write}
-                disabled={rejectReq.isLoading || approveReq.isLoading}
-              >
-                Reject
-              </button>
-            )}
-            {notVotedYet() && (
-              <button
-                onClick={approveReq.write}
-                disabled={rejectReq.isLoading || approveReq.isLoading}
-              >
-                Approve
-              </button>
-            )}
+            {!isOwner && (
+              <div className={styles.sliderContainer}>
+                <input
+                  type="range"
+                  id="approvalSlider"
+                  min={getApprovalLimit().min}
+                  max={getApprovalLimit().max}
+                  value={approvalAmount}
+                  onChange={handleSliderChange}
+                  style={{ marginRight: "10px", width: "20%", height: "20px" }}
+                />
 
+                <button
+                  onClick={approveReq.write}
+                  disabled={approvalAmount === 0}
+                >
+                  Approve ({approvalAmount} Wei)
+                </button>
+                <label>
+                  {`You are approving  (${approvalAmount} Wei) with interest rate of  ${parseInt(
+                    proposalInfo.monthlyInterestRate
+                  )}%/Year`}
+                </label>
+              </div>
+            )}
             {canOwnerCancel() && (
               <button
                 style={{ backgroundColor: "red" }}
@@ -308,6 +311,11 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
               <button onClick={claimReq.write} disabled={cancelReq.isLoading}>
                 Claim
               </button>
+            )}
+            {!isOwner && approvedAmountByUser() > 0 && (
+              <h3 style={{ color: "white" }}>
+                You've approved ({approvedAmountByUser()} Wei)
+              </h3>
             )}
           </div>
           {message && (
