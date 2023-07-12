@@ -202,12 +202,6 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     setApprovalAmount(parseInt(event.target.value));
   };
 
-  const handleApproveClick = () => {
-    // Write your logic here to handle the approval request
-    // For example, you can make an API call to update the approval percentage
-    console.log("Approval percentage:", approvalAmount);
-  };
-
   const getTotalApprovedLimit = () => {
     let amount = 0;
     for (let i = 0; i < voterDetails.length; i++) {
