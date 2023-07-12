@@ -52,8 +52,6 @@ export default function MyGroupItem({ address, forJoined }) {
     },
   });
 
-  console.log("inside this joinGroup", joiningGroup);
-
   useContractEvent({
     address: address,
     abi: shg_abi,
