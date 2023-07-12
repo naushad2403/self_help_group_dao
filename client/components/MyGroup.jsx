@@ -1,19 +1,16 @@
 import { useContractEvent, useContractRead, useContractWrite } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
 import { group_abi } from "../util";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import MyGroupItem from "./MyGroupItem";
-import { useDispatch } from "react-redux";
-import { updateGroup } from "../state_management/slices/group";
 
 export default function MyGroup() {
   const [groups, setGroups] = useState([]);
-  const { isLoading, isSuccess } = useContractRead({
+  const { isFetching, error } = useContractRead({
     address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
     abi: group_abi,
     functionName: "getAllGroup",
     onSettled(data, error) {
-      // console.log("Settled", { data, error });
       setGroups((prev) => [...prev, ...(data || [])]);
     },
   });
@@ -23,24 +20,21 @@ export default function MyGroup() {
     abi: group_abi,
     eventName: "NewGroupCreated",
     listener(log) {
-      //  console.log("NewGroupCreated", log);
       setGroups((prev) => [...prev, log[0].args[0]]);
     },
   });
 
+  if (isFetching) {
+    return <p className={Styles.textColor}> ...Loading</p>;
+  }
 
-
-
-  const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   if (data) {
-  //     dispatch(updateGroup(data));
-  //   }
-  // }, [data, dispatch]);
-
-  // console.log(data, isLoading, isSuccess);
-  console.log(groups);
+  if (groups.length == 0) {
+    return (
+      <p className={Styles.textColor}>
+        No group present. Please create one to get started
+      </p>
+    );
+  }
 
   return (
     <div className={Styles.myGroup}>
@@ -52,22 +46,13 @@ export default function MyGroup() {
         <h4>Status</h4>
         <h3></h3>
       </div>
-      {[...(new Set(groups))]?.map((x, index) => {
+      {[...new Set(groups)]?.map((x, index) => {
         return (
           <MyGroupItem key={index} address={x}>
             {" "}
           </MyGroupItem>
         );
       })}
-      {/* <input
-        type="text"
-        class={Styles.nameInput}
-        id="name-input"
-        placeholder="Enter group name"
-      />
-      <button className={Styles.createButton} onClick={createGroup}>
-        Create
-      </button> */}
     </div>
   );
 }
