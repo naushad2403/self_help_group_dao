@@ -8,16 +8,14 @@ import {
 } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
 import { shg_abi } from "../util";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-import { updateGroup } from "../state_management/slices/group";
 
-export default function MyGroupItem({ address }) {
+export default function MyGroupItem({ address, forJoined }) {
   const [message, setMessage] = useState("");
   const [txHash, setTxHash] = useState("");
   const [members, setMembers] = useState([]);
-  const dispatch = useDispatch();
+
   const accountInfo = useAccount();
   const router = useRouter();
   const nameInfo = useContractRead({
@@ -54,8 +52,6 @@ export default function MyGroupItem({ address }) {
     },
   });
 
-  console.log("inside this joinGroup", joiningGroup);
-
   useContractEvent({
     address: address,
     abi: shg_abi,
@@ -67,19 +63,13 @@ export default function MyGroupItem({ address }) {
     },
   });
 
-  // useEffect(() => {
-  //   nameInfo &&
-  //     dispatch(
-  //       updateGroup({
-  //         address,
-  //         info: {
-  //           name: nameInfo?.data,
-  //           members: memberInfo?.data,
-  //           balance: balanceInfo?.data,
-  //         },
-  //       })
-  //     );
-  // }, [nameInfo, memberInfo, balanceInfo]);
+  const isMember = () => {
+    return members?.includes(accountInfo.address);
+  };
+
+  if (forJoined && !isMember()) {
+    return null;
+  }
 
   return (
     <>
@@ -96,7 +86,7 @@ export default function MyGroupItem({ address }) {
           {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
         </p>
         <p>{members.length}</p>
-        {!members?.includes(accountInfo.address) ? (
+        {!isMember() ? (
           <button
             onClick={joiningGroup.write}
             disabled={joiningGroup.isLoading}
@@ -110,7 +100,7 @@ export default function MyGroupItem({ address }) {
         {
           <button
             onClick={() => router.push(`/group/${address}`)}
-            disabled={!members?.includes(accountInfo.address)}
+            disabled={!isMember()}
           >
             View Group
           </button>

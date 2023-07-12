@@ -3,9 +3,11 @@ import Styles from "./../styles/MyGroup.module.css";
 import { group_abi } from "../util";
 import { useState } from "react";
 import MyGroupItem from "./MyGroupItem";
+import { Switch } from "./Switch";
 
 export default function MyGroup() {
   const [groups, setGroups] = useState([]);
+  const [onlyJoined, setOnlyJoined] = useState(false);
   const { isFetching, error } = useContractRead({
     address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
     abi: group_abi,
@@ -23,6 +25,10 @@ export default function MyGroup() {
       setGroups((prev) => [...prev, log[0].args[0]]);
     },
   });
+
+  const onChange = (e) => {
+    setOnlyJoined(e.target.checked);
+  };
 
   if (isFetching) {
     return <p className={Styles.textColor}> ...Loading</p>;
@@ -44,11 +50,12 @@ export default function MyGroup() {
         <h4>Balance</h4>
         <h4>Person</h4>
         <h4>Status</h4>
+        <Switch value={onlyJoined} onChange={onChange} label={"Only Joined"} />
         <h3></h3>
       </div>
       {[...new Set(groups)]?.map((x, index) => {
         return (
-          <MyGroupItem key={index} address={x}>
+          <MyGroupItem key={index} address={x} forJoined={onlyJoined}>
             {" "}
           </MyGroupItem>
         );
