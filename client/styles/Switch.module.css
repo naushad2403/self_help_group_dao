@@ -1,3 +1,11 @@
+
+.filterWrapper{
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+
 .switchWrapper{
     display: flex;
     align-items: center;
@@ -50,4 +58,7 @@
 
 .switch input:checked+label:before {
     transform: translateX(40px);
+}
+.labelText{
+     color: white;
 }

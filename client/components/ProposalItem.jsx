@@ -26,7 +26,7 @@ let initialVoterState = {
   against: [],
 };
 
-const ProposalItem = ({ address, proposalId }) => {
+const ProposalItem = ({ address, proposalId, onlyUser }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
   const [voterDetails, setVoter] = useState(initialVoterState);
   const [message, setMessage] = useState("");
@@ -228,6 +228,9 @@ const ProposalItem = ({ address, proposalId }) => {
     return proposalInfo.currentStatus == statusIdx.Open && remainingSecond > 0;
   };
 
+  if (onlyUser && !isOwner) {
+    return null;
+  }
   return (
     <div className={styles.proposalItemContainer}>
       <div

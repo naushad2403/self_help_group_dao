@@ -8,7 +8,7 @@ export const Switch = ({ value, onChange, label }) => {
         <input type="checkbox" id="toggle" value={value} onChange={onChange} />
         <label for="toggle"></label>
       </div>
-      <span className="label-text">{label}</span>
+      <span className={styles.labelText}>{label}</span>
     </div>
   );
 };
