@@ -3,8 +3,8 @@ import styles from "./../styles/Toast.module.css";
 
 function Toast({ title, onClose, duration = 3000, body, id }) {
   useEffect(() => {
-    // const timer = setTimeout(() => onClose({ id }), duration);
-    // return () => clearTimeout(timer);
+    const timer = setTimeout(() => onClose({ id }), duration);
+    return () => clearTimeout(timer);
   }, [duration, onClose]);
 
   return (
