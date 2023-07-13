@@ -25,21 +25,21 @@ export default function CreateGroup() {
   return (
     <div className={Styles.root}>
       <div className={Styles.componentContainer}>
-        <h4>Create a new group by entering a name</h4>
+        <h4>Create a new group by entering a 1 to 20 character long name</h4>
       </div>
       <div className={Styles.componentContainer}>
         <input
           type="text"
           className={Styles.nameInput}
           id="name-input"
-          placeholder="Enter group name"
+          placeholder="Enter group name:"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <button
-          disabled={name.length == 0}
           className={Styles.createButton}
           onClick={createGroup}
+          disabled={name.length < 1 || name.length > 30}
         >
           Create
         </button>
