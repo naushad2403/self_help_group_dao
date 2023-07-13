@@ -1,9 +1,19 @@
 import { useRouter } from "next/router";
 import styles from "./../styles/Home.module.css";
+import { ToastGroup } from "../components/ToastGroup";
+import { useSelector, useDispatch } from "react-redux";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { removeToast } from "../state_management/slices/toast";
 export default function MainLayout({ children }) {
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const toasts = useSelector((state) => state.toast.toasts);
+  const onClose = (toast) => {
+    dispatch(removeToast(toast.id));
+  };
+
   return (
     <>
       {/* <head>
@@ -14,6 +24,7 @@ export default function MainLayout({ children }) {
         />
         <link href="/favicon.ico" rel="icon" />
       </head> */}
+
       <div className={styles.container}>
         <main className={styles.main}>
           <div className={styles.navigation}>
@@ -59,6 +70,7 @@ export default function MainLayout({ children }) {
           Made with ❤️ by your frens at 🌈
         </a>
       </footer> */}
+        <ToastGroup toasts={toasts} onClose={onClose} />
       </div>
     </>
   );
