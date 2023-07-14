@@ -244,9 +244,13 @@ contract SHG {
 
     function handleDeposit() internal {
         Loan storage loan = loanDetails[msg.sender];
-        require(loan.amount > 0, "No active loan for the sender");
         require(msg.value > 0, "Deposit amount should be greater than 0");
 
+        if( loan.amount == 0) {
+             balances[msg.sender] += msg.value;
+             emit Deposited(msg.sender, msg.value);
+             return;
+        }
         uint256 currentTime = block.timestamp;
         uint256 timeDiff = currentTime - loan.date;
         uint256 totalBalance = calculateLoanWithInterest(

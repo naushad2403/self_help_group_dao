@@ -32,7 +32,7 @@ export default function CreateGroup() {
           type="text"
           className={Styles.nameInput}
           id="name-input"
-          placeholder="Enter group name:"
+          placeholder="Enter group name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
