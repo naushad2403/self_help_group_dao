@@ -4,17 +4,18 @@ import {
   useContractRead,
   useContractWrite,
   useContractEvent,
-  usePrepareContractWrite,
 } from "wagmi";
 import Styles from "./../styles/MyGroup.module.css";
 import { shg_abi } from "../util";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { addToast } from "../state_management/slices/toast";
 
 export default function MyGroupItem({ address, forJoined }) {
-  const [message, setMessage] = useState("");
-  const [txHash, setTxHash] = useState("");
   const [members, setMembers] = useState([]);
+
+  const dispatch = useDispatch();
 
   const accountInfo = useAccount();
   const router = useRouter();
@@ -43,12 +44,13 @@ export default function MyGroupItem({ address, forJoined }) {
     abi: shg_abi,
     functionName: "join",
     onSuccess(data) {
-      setMessage(`Joining Request sent, Tx Hash:`);
-      setTxHash(data.hash);
+      dispatch(
+        addToast({ title: "Joining Request sent, Tx Hash:", body: data.hash })
+      );
     },
 
     onError(error) {
-      setMessage(`Error: ${error?.details}`);
+      addToast({ title: "Error", body: error?.details });
     },
   });
 
@@ -96,7 +98,6 @@ export default function MyGroupItem({ address, forJoined }) {
         ) : (
           <p>You are member</p>
         )}
-
         {
           <button
             onClick={() => router.push(`/group/${address}`)}
@@ -106,24 +107,6 @@ export default function MyGroupItem({ address, forJoined }) {
           </button>
         }
       </div>
-      {message && (
-        <p
-          style={{
-            border: "2px solid",
-            borderRadius: "5px",
-            padding: "5px",
-            width: "60%",
-            marginLeft: "20%",
-            color: "white",
-            borderBlockColor: "white",
-          }}
-        >
-          {message}
-          <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
-            {txHash}
-          </a>
-        </p>
-      )}
     </>
   );
 }

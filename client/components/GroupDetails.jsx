@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import styles from "../styles/GroupView.module.css";
 import { shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
-import  {ethers} from "ethers";
+import { ethers } from "ethers";
 
-console.log("Ethers ", ethers)
+console.log("Ethers ", ethers);
+import { useDispatch } from "react-redux";
+import { addToast } from "../state_management/slices/toast";
 
 export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);
   const [depositVal, setDepositVal] = useState(0);
   const [balance, setBalance] = useState(0);
-  const [message, setMessage] = useState("");
-  const [txHash, setTxHash] = useState("");
+
+  const dispatch = useDispatch();
 
   useBalance({
     address: address,
@@ -26,10 +28,12 @@ export const GroupDetails = ({ address }) => {
     functionName: "withdrawAmount",
     args: [withdrawVal],
     onSuccess(data) {
-      setMessage(
-        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
+      dispatch(
+        addToast({ title: `Withdraw Transaction sent`, body: data.hash })
       );
-      setTxHash(data.hash);
+    },
+    onError(error) {
+      dispatch(addToast({ title: "Error", body: error?.details }));
     },
   });
 
@@ -38,11 +42,14 @@ export const GroupDetails = ({ address }) => {
     abi: shg_abi,
     functionName: "deposit",
     value: depositVal,
+
     onSuccess(data) {
-      setMessage(
-        `Deposit Transaction sent, Amount will be update sooner Tx Hash:`
+      dispatch(
+        addToast({ title: `Deposit Transaction sent`, body: data.hash })
       );
-      setTxHash(data.hash);
+    },
+    onError(error) {
+      dispatch(addToast({ title: "Error", body: error?.details }));
     },
   });
 
@@ -78,7 +85,7 @@ export const GroupDetails = ({ address }) => {
           </a>
         </h3>
         <h3>Name: G1</h3>
-        <h3>Balance: {(balance)} Wei</h3>
+        <h3>Balance: {balance} Wei</h3>
         <div className={styles.balanceDetail}>
           <input
             type="text"
@@ -129,16 +136,7 @@ export const GroupDetails = ({ address }) => {
 
           // border: "1px solid",
         }}
-      >
-        {message && (
-          <p>
-            {message}
-            <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
-              {txHash}
-            </a>
-          </p>
-        )}
-      </div>
+      ></div>
     </>
   );
 };

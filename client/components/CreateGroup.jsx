@@ -1,13 +1,22 @@
-import { useContractRead, useContractWrite } from "wagmi";
+import { useContractRead, useContractWrite, useDisconnect } from "wagmi";
 import Styles from "./../styles/CreateGroup.module.css";
 import { group_abi } from "../util";
 import { useCallback, useState } from "react";
+import { addToast } from "../state_management/slices/toast";
+import { useDispatch } from "react-redux";
 
 export default function CreateGroup() {
+  const dispatch = useDispatch();
   const { data, isLoading, isSuccess, write } = useContractWrite({
     address: process.env.NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS,
     abi: group_abi,
     functionName: "createNewGroup",
+    onSettled: (data) => {
+      dispatch(addToast({ title: "Group Created", body: data.hash }));
+    },
+    onError: (error) => {
+      dispatch(addToast({ title: "Error ", body: JSON.stringify(error) }));
+    },
   });
 
   const [name, setName] = useState("");
@@ -47,22 +56,6 @@ export default function CreateGroup() {
       <div className={Styles.componentContainer}>
         {isLoading && (
           <h5>Please check wallet and sign the pending transaction </h5>
-        )}
-
-        {isSuccess && (
-          <h5 className={Styles.SuccessfulMessage}>
-            Transaction Completed Please check the transaction hash:
-            <a
-              target="_blank"
-              className={Styles.HashStyle}
-              href={`https://etherscan.io/tx/${data.hash}`}
-              rel="noreferrer"
-            >
-              {" "}
-              {data.hash}
-            </a>
-            or Refresh the Groups to see newly created group
-          </h5>
         )}
       </div>
     </div>

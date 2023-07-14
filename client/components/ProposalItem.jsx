@@ -6,9 +6,10 @@ import {
   useContractWrite,
   useContractEvent,
 } from "wagmi";
-import { Router, useRouter } from "next/router";
 import { shg_abi } from "../util";
 import Timer from "./Timer";
+import { addToast } from "../state_management/slices/toast";
+import { useDispatch } from "react-redux";
 
 let initialState = {
   amount: 0,
@@ -24,11 +25,10 @@ let initialState = {
 const ProposalItem = ({ address, proposalId, onlyUser }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
   const [voterDetails, setVoter] = useState([]);
-  const [message, setMessage] = useState("");
   const [remainingSecond, setRemainingSecond] = useState();
-  const [txHash, setTxHash] = useState("");
   const statusVal = ["Open", "Claimed", "Cancelled", "Expired"];
   const [approvalAmount, setApprovalAmount] = useState(0);
+  const dispatch = useDispatch();
 
   const statusIdx = {
     Open: 0,
@@ -131,10 +131,10 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     functionName: "claimApprovedAmount",
     args: [proposalId],
     onSuccess(data) {
-      setMessage(
-        `Withdraw Transaction sent, Amount will be credit sooner Tx Hash:`
-      );
-      setTxHash(data.hash);
+      dispatch(addToast({ title: "Withdraw Request", body: data.hash }));
+    },
+    onError(error) {
+      dispatch(addToast({ title: "Error in Withdraw", body: error?.details }));
     },
   });
 
@@ -144,8 +144,10 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     functionName: "approveLimit",
     args: [proposalId, approvalAmount],
     onSuccess(data) {
-      setMessage(`Approval sent, Tx Hash:`);
-      setTxHash(data.hash);
+      dispatch(addToast({ title: "Approval equest", body: data.hash }));
+    },
+    onError(error) {
+      dispatch(addToast({ title: "Error in Withdraw", body: error?.details }));
     },
   });
 
@@ -155,8 +157,10 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     functionName: "cancelProposal",
     args: [proposalId],
     onSuccess(data) {
-      setMessage(`Cancel request sent,  Tx Hash:`);
-      setTxHash(data.hash);
+      dispatch(addToast({ title: "Cancel Request", body: data.hash }));
+    },
+    onError(error) {
+      dispatch(addToast({ title: "Error in Withdraw", body: error?.details }));
     },
   });
 
@@ -264,7 +268,6 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
       </div>
       {
         <div className={styles.purposeContainer}>
-          {/* <h2>Purpose</h2> */}
           <p>{proposalInfo.purpose}</p>
           <div className={styles.approveButtonContainer}>
             {!isOwner && (
@@ -312,14 +315,6 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
               </h3>
             )}
           </div>
-          {message && (
-            <p>
-              {message}
-              <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
-                {txHash}
-              </a>
-            </p>
-          )}
         </div>
       }
     </div>
