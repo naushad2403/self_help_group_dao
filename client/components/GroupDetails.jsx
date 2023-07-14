@@ -11,8 +11,6 @@ export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);
   const [depositVal, setDepositVal] = useState(0);
   const [balance, setBalance] = useState(0);
-  const [message, setMessage] = useState("");
-  const [txHash, setTxHash] = useState("");
 
   const dispatch = useDispatch();
 
@@ -137,16 +135,7 @@ export const GroupDetails = ({ address }) => {
 
           // border: "1px solid",
         }}
-      >
-        {message && (
-          <p>
-            {message}
-            <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
-              {txHash}
-            </a>
-          </p>
-        )}
-      </div>
+      ></div>
     </>
   );
 };
