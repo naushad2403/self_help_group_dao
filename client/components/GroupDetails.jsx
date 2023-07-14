@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 
 console.log("Ethers ", ethers);
 import { useDispatch } from "react-redux";
+import { addToast } from "../state_management/slices/toast";
 
 export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);
