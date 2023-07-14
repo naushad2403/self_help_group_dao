@@ -44,3 +44,7 @@
   font-weight: 700;
   font-size: 20px;
 }
+.toastAnchor {
+  white-space: wrap;
+  word-wrap: break-word;
+}

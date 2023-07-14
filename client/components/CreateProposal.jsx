@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import styles from "../styles/CreateProposal.module.css";
 import { shg_abi } from "../util";
 import { useContractWrite } from "wagmi";
+import { useDispatch } from "react-redux";
+import { addToast } from "../state_management/slices/toast";
 
 const CreateProposal = ({ address }) => {
   const [amount, setAmount] = useState("");
   const [duration, setDuration] = useState("");
   const [interestRate, setInterestRate] = useState("");
   const [purpose, setPurpose] = useState("");
-  const [txHash, setTxHash] = useState("");
-  const [message, setMessage] = useState("");
+
+  const dispatch = useDispatch();
 
   const proposalMethod = useContractWrite({
     address: address,
@@ -17,11 +19,13 @@ const CreateProposal = ({ address }) => {
     functionName: "submitLoanProposal",
     args: [amount, purpose, interestRate, duration],
     onSuccess(data) {
-      console.log("Success", data);
-      setMessage(
-        `Proposal Transaction sent, Proposal will reflect in the list sooner, Tx Hash:`
+      dispatch(
+        addToast({ title: "Proposal Transaction sent", body: data.hash })
       );
-      setTxHash(data.hash);
+    },
+
+    onError(error) {
+      dispatch(addToast({ title: "Error!!!", body: error?.details }));
     },
   });
 
@@ -144,14 +148,6 @@ const CreateProposal = ({ address }) => {
       >
         SEND PROPOSAL
       </button>
-      {message && (
-        <p>
-          {message}
-          <a href={`${process.env.NEXT_PUBLIC_BLOXPLORER}tx/${txHash}`}>
-            {txHash}
-          </a>
-        </p>
-      )}
     </div>
   );
 };
