@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import styles from "../styles/GroupView.module.css";
 import { shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
+import  {ethers} from "ethers";
+
+console.log("Ethers ", ethers)
 
 export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);
@@ -75,7 +78,7 @@ export const GroupDetails = ({ address }) => {
           </a>
         </h3>
         <h3>Name: G1</h3>
-        <h3>Balance: {balance}</h3>
+        <h3>Balance: {(balance)} Wei</h3>
         <div className={styles.balanceDetail}>
           <input
             type="text"
