@@ -26,7 +26,7 @@ export const GroupDetails = ({ address }) => {
     address: address,
     abi: shg_abi,
     functionName: "withdrawAmount",
-    args: [withdrawVal],
+    args: [withdrawVal ?  ethers.parseEther(withdrawVal.toString()): "0"],
     onSuccess(data) {
       dispatch(
         addToast({ title: `Withdraw Transaction sent`, body: data.hash })
@@ -41,7 +41,7 @@ export const GroupDetails = ({ address }) => {
     address: address,
     abi: shg_abi,
     functionName: "deposit",
-    value: depositVal,
+    value: depositVal ?  ethers.parseEther(depositVal.toString()): "0",
 
     onSuccess(data) {
       dispatch(
@@ -91,7 +91,7 @@ export const GroupDetails = ({ address }) => {
             type="text"
             className={styles.amountInput}
             id="name-input"
-            placeholder="Enter amount in wei"
+            placeholder="Enter amount in ether"
             value={depositVal}
             onChange={(e) => setDepositVal(e.target.value)}
           />
@@ -103,13 +103,13 @@ export const GroupDetails = ({ address }) => {
             }}
             disabled={depositObj.isLoading || withdrawVal.isLoading}
           >
-            Deposit
+            Deposit {depositVal} ETH
           </button>
           <input
             type="text"
             className={styles.amountInput}
             id="name-input"
-            placeholder="Enter amount in wei"
+            placeholder="Enter amount in ether"
             value={withdrawVal}
             onChange={(e) => setWithdrawVal(e.target.value)}
           />
@@ -121,7 +121,7 @@ export const GroupDetails = ({ address }) => {
             }}
             disabled={withdrawObj.isLoading || depositObj.isLoading}
           >
-            Withdraw
+            Withdraw {withdrawVal} ETH
           </button>
         </div>
       </div>
