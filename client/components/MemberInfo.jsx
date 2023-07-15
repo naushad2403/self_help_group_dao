@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../styles/MemberInfo.module.css";
+import { formateEther } from "../util";
 
 const MemberInfo = ({ membersInfo }) => {
   return (
@@ -23,7 +24,7 @@ const MemberInfo = ({ membersInfo }) => {
               >
                 {x.address}:
               </a>{" "}
-              <span style={{}}>{x.balance} ETH </span>
+              <span style={{}}>{formateEther(x.balance)} ETH </span>
             </div>
           );
         })}
