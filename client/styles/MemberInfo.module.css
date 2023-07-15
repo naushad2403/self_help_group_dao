@@ -1,0 +1,22 @@
+.memberInfoWrapper {
+  margin-left: 20;
+}
+
+.memberHeading {
+  font-size: 30px;
+  color: black;
+  text-shadow: 0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5);
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 30px;
+  justify-content: space-between;
+  margin-left: 10px;
+}
+
+.memberInfoAnchor {
+  width: 60%;
+  text-align: left;
+}
