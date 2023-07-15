@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import styles from "../styles/GroupView.module.css";
 import { shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
-import { ethers } from "ethers";
-
-console.log("Ethers ", ethers);
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
 
@@ -58,7 +55,12 @@ export const GroupDetails = ({ address }) => {
     abi: shg_abi,
     eventName: "Withdrawn",
     listener(log) {
-      setBalance((prev) => prev - parseInt(log[0].args._amount));
+      dispatch(
+        addToast({
+          title: `Transaction successful`,
+          body: ` amount ${log[0].args._amount} withdrawn from your account`,
+        })
+      );
     },
   });
 
@@ -67,7 +69,12 @@ export const GroupDetails = ({ address }) => {
     abi: shg_abi,
     eventName: "Deposited",
     listener(log) {
-      setBalance((prev) => prev + parseInt(log[0].args._amount));
+      dispatch(
+        addToast({
+          title: `Transaction successful`,
+          body: ` amount ${log[0].args._amount} deposited from your account`,
+        })
+      );
     },
   });
 
