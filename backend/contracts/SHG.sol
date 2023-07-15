@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity >=0.7.0 <0.9.0;
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract SHG {
+    using SafeMath for uint256;
+
     address[] members;
-    mapping(address => uint) public balances;
-    mapping(uint => BorrowProposal) public borrowProposal;
-    uint public counter = 0;
+    mapping(address => uint256) public balances;
+    mapping(uint256 => BorrowProposal) public borrowProposal;
+    uint256 public counter = 0;
     string public name;
-    uint public proposalVotingPeriod = 300; // 72 hours in seconds
+    uint256 public proposalVotingPeriod = 300; // 72 hours in seconds
     mapping(address => Loan) public loanDetails;
     DistributionProposal public distributionProposal;
 
@@ -17,23 +20,24 @@ contract SHG {
         Claimed,
         Cancelled
     }
+
     struct Loan {
-        uint proposalId;
-        uint amount;
-        uint interestRate;
-        uint date;
+        uint256 proposalId;
+        uint256 amount;
+        uint256 interestRate;
+        uint256 date;
     }
 
     struct BorrowProposal {
-        uint amount;
+        uint256 amount;
         address proposer;
-        uint proposalId;
+        uint256 proposalId;
         string purpose;
-        uint monthlyInterestRate;
+        uint256 monthlyInterestRate;
         Status currentStatus;
-        uint loanDurationInMonth;
+        uint256 loanDurationInMonth;
         MemberApproval[] approvers;
-        uint proposalTime;
+        uint256 proposalTime;
     }
 
     struct MemberApproval {
@@ -42,30 +46,30 @@ contract SHG {
     }
 
     struct DistributionProposal {
-        uint expiryTime;
+        uint256 expiryTime;
         bool isRunning;
     }
 
-      event Withdrawn(address _member, uint _amount);
-    event Deposited(address _member, uint _amount);
-    event ProposalCancelled(uint _proposalId);
-    event ProposalClaimed(uint _proposalId);
+    event Withdrawn(address _member, uint256 _amount);
+    event Deposited(address _member, uint256 _amount);
+    event ProposalCancelled(uint256 _proposalId);
+    event ProposalClaimed(uint256 _proposalId);
     event MembersJoined(address _member);
-    event ProposalSubmitted(uint _proposalId);
+    event ProposalSubmitted(uint256 _proposalId);
     event ApprovalUpdated(
-        uint proposalId,
+        uint256 proposalId,
         address member,
         uint256 amount
     );
 
     event AmountRecievedFromLoanPayment(
         address member,
-        uint proposalId,
-        uint amount
+        uint256 proposalId,
+        uint256 amount
     );
 
     event MoneyDistributed(address distributor);
-    event MoneyDistributionShareSent(address member, uint amount);
+    event MoneyDistributionShareSent(address member, uint256 amount);
 
     constructor(string memory _name) payable {
         members.push(tx.origin);
@@ -76,7 +80,7 @@ contract SHG {
     function createDistributionProposal() external {
         require(
             !distributionProposal.isRunning,
-            "Already  a proposal is running"
+            "Already a proposal is running"
         );
         distributionProposal.isRunning = true;
         distributionProposal.expiryTime = block.timestamp + 84400;
@@ -86,58 +90,54 @@ contract SHG {
         require(
             distributionProposal.isRunning &&
                 block.timestamp < distributionProposal.expiryTime,
-            "No proposal Running"
+            "No proposal running"
         );
         distributionProposal.isRunning = false;
     }
 
     function distributeMoney() external {
-
         require(
             distributionProposal.isRunning &&
                 block.timestamp > distributionProposal.expiryTime,
-            "Rejection period is still Open, Pelase wait for it to end"
+            "Rejection period is still open. Please wait for it to end"
         );
 
-        for (uint i = 0; i < members.length; i++) {
-            uint bal = balances[members[i]];
+        for (uint256 i = 0; i < members.length; i++) {
+            uint256 bal = balances[members[i]];
             balances[members[i]] = 0;
-            (bool success, ) = members[i].call{value:bal}("");
-            require(success, "Money Couldn't send");
+            (bool success, ) = members[i].call{value: bal}("");
+            require(success, "Money couldn't be sent");
             emit MoneyDistributionShareSent(members[i], bal);
         }
-        
+
         emit MoneyDistributed(msg.sender);
-        distributionProposal.isRunning  = false;
+        distributionProposal.isRunning = false;
     }
-
-
 
     function getAllMembers() external view returns (address[] memory) {
         return members;
     }
 
-
     function getMemberWithBalance()
         external
         view
-        returns (address[] memory, uint[] memory)
+        returns (address[] memory, uint256[] memory)
     {
-        uint[] memory bal = new uint[](members.length);
-        for (uint i = 0; i < members.length; i++) {
+        uint256[] memory bal = new uint256[](members.length);
+        for (uint256 i = 0; i < members.length; i++) {
             bal[i] = balances[members[i]];
         }
         return (members, bal);
     }
 
-    event LoanUpdated(address member, uint amount);
+    event LoanUpdated(address member, uint256 amount);
 
-    function withdrawAmount(uint _amount) public {
+    function withdrawAmount(uint256 _amount) public {
         require(
             _amount <= balances[msg.sender],
             "Insufficient balance, please create a borrow proposal"
         );
-        balances[msg.sender] -= _amount;
+        balances[msg.sender] = balances[msg.sender].sub(_amount);
         (bool success, ) = payable(msg.sender).call{value: _amount}("");
         require(success, "Payment failed");
         emit Withdrawn(msg.sender, _amount);
@@ -150,11 +150,11 @@ contract SHG {
     }
 
     function submitLoanProposal(
-        uint _amount,
+        uint256 _amount,
         string memory _purpose,
-        uint _interestRatePerMonth,
-        uint _loanDurationInMonth
-    ) external returns (uint) {
+        uint256 _interestRatePerMonth,
+        uint256 _loanDurationInMonth
+    ) external returns (uint256) {
         BorrowProposal storage proposal = borrowProposal[counter];
         proposal.amount = _amount;
         proposal.proposer = msg.sender;
@@ -164,39 +164,37 @@ contract SHG {
         proposal.purpose = _purpose;
         proposal.proposalTime = block.timestamp + proposalVotingPeriod;
         proposal.currentStatus = Status.Open;
-        counter += 1;
-        emit ProposalSubmitted(counter - 1);
-        return counter - 1;
+        counter = counter.add(1);
+        emit ProposalSubmitted(counter.sub(1));
+        return counter.sub(1);
     }
 
-    function getApprovers(
-        uint _proposalId
-    ) public view returns (MemberApproval[] memory) {
-        return (
-            borrowProposal[_proposalId].approvers
-        );
+    function getApprovers(uint256 _proposalId)
+        public
+        view
+        returns (MemberApproval[] memory)
+    {
+        return (borrowProposal[_proposalId].approvers);
     }
 
-    function claimApprovedAmount(uint _proposalId) public returns (bool) {
-        (MemberApproval[] memory approvers) = getApprovers(
-            _proposalId
-        );
-        require(approvers.length > (members.length / 2), "Insufficient votes");
-        require(
-            address(this).balance > borrowProposal[_proposalId].amount,
-            "Insufficient amount in group"
-        );
-
+    function claimApprovedAmount(uint256 _proposalId) public returns (bool) {
+        (MemberApproval[] memory approvers) = getApprovers(_proposalId);
         uint256 totalAmount = 0;
         for (uint256 i = 0; i < approvers.length; i++) {
             require(
                 balances[approvers[i].member] >= approvers[i].amount,
                 "Insufficient balance for the approved percentage"
             );
-            balances[approvers[i].member] -= approvers[i].amount;
+            balances[approvers[i].member] = balances[approvers[i].member].sub(
+                approvers[i].amount
+            );
+            totalAmount = totalAmount.add(approvers[i].amount);
         }
 
-        require(totalAmount == 100, "Total percentage does not equal 100%");
+        require(
+            totalAmount == borrowProposal[_proposalId].amount,
+            "Total approved amount is not equal to required amount"
+        );
 
         borrowProposal[_proposalId].currentStatus = Status.Claimed;
         loanDetails[msg.sender] = Loan(
@@ -209,26 +207,26 @@ contract SHG {
         (bool success, ) = borrowProposal[_proposalId].proposer.call{
             value: borrowProposal[_proposalId].amount
         }("");
-        require(success, "Amount Transferred");
+        require(success, "Amount transferred");
         emit ProposalClaimed(_proposalId);
         return success;
     }
-    function approveLimit (
-        uint _proposalId,
-        uint256 _amount
-    ) external returns (bool) {
+
+    function approveLimit(uint256 _proposalId, uint256 _amount)
+        external
+        returns (bool)
+    {
         MemberApproval[] storage approvers = borrowProposal[_proposalId]
             .approvers;
-        
+
         emit ApprovalUpdated(_proposalId, msg.sender, _amount);
-        for (uint i = 0; i < approvers.length; i++) {
+        for (uint256 i = 0; i < approvers.length; i++) {
             if (approvers[i].member == msg.sender) {
                 approvers[i].amount = _amount;
-               
                 return true;
             }
         }
-         MemberApproval memory approval = MemberApproval({
+        MemberApproval memory approval = MemberApproval({
             member: msg.sender,
             amount: _amount
         });
@@ -236,7 +234,7 @@ contract SHG {
         return true;
     }
 
-    function cancelProposal(uint _proposalId) external returns (bool) {
+    function cancelProposal(uint256 _proposalId) external returns (bool) {
         borrowProposal[_proposalId].currentStatus = Status.Cancelled;
         emit ProposalCancelled(_proposalId);
         return true;
@@ -244,12 +242,15 @@ contract SHG {
 
     function handleDeposit() internal {
         Loan storage loan = loanDetails[msg.sender];
-        require(msg.value > 0, "Deposit amount should be greater than 0");
+        require(
+            msg.value > 0,
+            "Deposit amount should be greater than 0"
+        );
 
-        if( loan.amount == 0) {
-             balances[msg.sender] += msg.value;
-             emit Deposited(msg.sender, msg.value);
-             return;
+        if (loan.amount == 0) {
+            balances[msg.sender] = balances[msg.sender].add(msg.value);
+            emit Deposited(msg.sender, msg.value);
+            return;
         }
         uint256 currentTime = block.timestamp;
         uint256 timeDiff = currentTime - loan.date;
@@ -259,12 +260,14 @@ contract SHG {
             timeDiff
         );
 
-        (MemberApproval[] memory approvers) = getApprovers(
-            loan.proposalId
-        );
+        (MemberApproval[] memory approvers) = getApprovers(loan.proposalId);
         for (uint256 i = 0; i < approvers.length; i++) {
-            uint256 memberShare = (msg.value * (approvers[i].amount/loan.amount));
-            balances[approvers[i].member] += memberShare;
+            uint256 memberShare = (msg.value.mul(approvers[i].amount)).div(
+                loan.amount
+            );
+            balances[approvers[i].member] = balances[approvers[i].member].add(
+                memberShare
+            );
             emit AmountRecievedFromLoanPayment(
                 approvers[i].member,
                 loan.proposalId,
@@ -272,12 +275,12 @@ contract SHG {
             );
         }
 
-        balances[msg.sender] += msg.value;
+        balances[msg.sender] = balances[msg.sender].add(msg.value);
         if (loan.amount <= msg.value) {
             loan.amount = 0;
             loan.date = 0;
         } else {
-            loan.amount -= totalBalance;
+            loan.amount = loan.amount.sub(totalBalance);
             loan.date = currentTime;
         }
 
@@ -289,23 +292,24 @@ contract SHG {
         uint256 interestRate,
         uint256 time
     ) internal pure returns (uint256) {
-        return (principal * (interestRate ** time)) / 100 + principal;
+        return
+            (principal.mul(interestRate ** time)).div(100).add(principal);
     }
 
     receive() external payable {
-        balances[msg.sender] += msg.value;
+        balances[msg.sender] = balances[msg.sender].add(msg.value);
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
 
     fallback() external payable {
-        balances[msg.sender] += msg.value;
+        balances[msg.sender] = balances[msg.sender].add(msg.value);
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
 
     function deposit() external payable {
-        balances[msg.sender] += msg.value;
+        balances[msg.sender] = balances[msg.sender].add(msg.value);
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
