@@ -65,6 +65,17 @@ export default function MyGroupItem({ address, forJoined }) {
     },
   });
 
+  useContractEvent({
+    address: address,
+    abi: shg_abi,
+    eventName: "GroupBalanceUpdated",
+    listener(log) {
+      if (log.length > 0) {
+        log[0].args.balance;
+      }
+    },
+  });
+
   const isMember = () => {
     return members?.includes(accountInfo.address);
   };

@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 const group_abi = [
   {
     inputs: [],
@@ -760,4 +762,9 @@ const shg_abi = [
     type: "receive",
   },
 ];
-export { group_abi, shg_abi };
+
+export const formateEither = (amount) => {
+  return ethers.formateEither(amount).toFixed(4);
+};
+
+export { group_abi, shg_abi, formateEither };
