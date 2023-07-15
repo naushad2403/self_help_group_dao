@@ -12,6 +12,7 @@ import {
 } from "wagmi";
 import { shg_abi } from "../../util";
 import CreateProposal from "../../components/CreateProposal";
+import MemberInfo from "../../components/MemberInfo";
 
 export default function Group() {
   const router = useRouter();
@@ -160,55 +161,7 @@ export default function Group() {
                   ></CreateProposal>
                 }
               </div>
-              <div style={{ marginLeft: "50px" }}>
-                <h2
-                  style={{
-                    fontSize: "30px",
-                    color: "black",
-                    textShadow:
-                      "0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5)",
-                  }}
-                >
-                  Members
-                </h2>
-                <div>
-                  {(memberBal || []).map((x) => {
-                    return (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          marginBottom: "30px",
-                          justifyContent: "flex-start",
-                          marginLeft: "80px",
-                        }}
-                        key={x.address}
-                      >
-                        {" "}
-                        <a
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{ width: "60%", textAlign: "left" }}
-                          href={`${process.env.NEXT_PUBLIC_BLOXPLORER}address/${x.address}`}
-                        >
-                          {x.address}:
-                        </a>{" "}
-                        <span style={{}}>{x.balance} ETH </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              {/* <div
-            style={{
-              width: "5px",
-              height: "500px",
-              boxShadow:
-                "0 4px 8px #ffffff, 0 6px 20px rgba(255, 255, 255, 0.5)",
-              backgroundColor: "black",
-              margin: "0 0 10px",
-            }}
-          ></div> */}
+              <MemberInfo membersInfo={memberBal} />
             </div>
           </>
         )}
