@@ -91,6 +91,17 @@ export const GroupDetails = ({ address }) => {
     },
   });
 
+  useContractEvent({
+    address: address,
+    abi: shg_abi,
+    eventName: "GroupBalanceUpdated",
+    listener(log) {
+      if (log.length > 0) {
+        setBalance(log[0].args.balance);
+      }
+    },
+  });
+
   return (
     <>
       <div className={styles.basicDetail}>
