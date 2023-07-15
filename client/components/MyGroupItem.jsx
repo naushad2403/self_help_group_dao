@@ -15,6 +15,8 @@ import { addToast } from "../state_management/slices/toast";
 export default function MyGroupItem({ address, forJoined }) {
   const [members, setMembers] = useState([]);
 
+  const [balance, setBalance] = useState(0);
+
   const dispatch = useDispatch();
 
   const accountInfo = useAccount();
@@ -35,8 +37,11 @@ export default function MyGroupItem({ address, forJoined }) {
     },
   });
 
-  const balanceInfo = useBalance({
+  useBalance({
     address: address,
+    onSuccess: (data) => {
+      setBalance(data.formatted);
+    },
   });
 
   const joiningGroup = useContractWrite({
@@ -95,9 +100,7 @@ export default function MyGroupItem({ address, forJoined }) {
           {"..." + address.substr(-5)}
         </a>
         <p>{nameInfo?.data}</p>
-        <p>
-          {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
-        </p>
+        <p>{balance} ETH</p>
         <p>{members.length}</p>
         {!isMember() ? (
           <button

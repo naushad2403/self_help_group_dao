@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "../styles/GroupView.module.css";
-import { shg_abi } from "../util";
+import { formateEither, formateEther, shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
@@ -15,7 +15,7 @@ export const GroupDetails = ({ address }) => {
   useBalance({
     address: address,
     onSuccess(data) {
-      setBalance(parseInt(data?.value));
+      setBalance(formateEther(data?.value));
     },
   });
 
@@ -78,6 +78,17 @@ export const GroupDetails = ({ address }) => {
     },
   });
 
+  useContractEvent({
+    address: address,
+    abi: shg_abi,
+    eventName: "GroupBalanceUpdated",
+    listener(log) {
+      if (log.length > 0) {
+        setBalance(log[0].args.balance);
+      }
+    },
+  });
+
   return (
     <>
       <div className={styles.basicDetail}>
@@ -92,7 +103,7 @@ export const GroupDetails = ({ address }) => {
           </a>
         </h3>
         <h3>Name: G1</h3>
-        <h3>Balance: {balance} Wei</h3>
+        <h3>Balance: {formateEther(balance)} Ether</h3>
         <div className={styles.balanceDetail}>
           <input
             type="text"
