@@ -52,6 +52,8 @@ contract SHG {
 
     event Withdrawn(address _member, uint256 _amount);
     event Deposited(address _member, uint256 _amount);
+    event GroupBalanceUpdated(uint256 balance);
+    event UserBalanceUpdated(uint256 balance);
     event ProposalCancelled(uint256 _proposalId);
     event ProposalClaimed(uint256 _proposalId);
     event MembersJoined(address _member);
@@ -141,6 +143,8 @@ contract SHG {
         (bool success, ) = payable(msg.sender).call{value: _amount}("");
         require(success, "Payment failed");
         emit Withdrawn(msg.sender, _amount);
+        emit UserBalanceUpdated(balances[msg.sender]);
+        emit GroupBalanceUpdated(address(this).balance);
     }
 
     function join() external returns (bool) {
@@ -209,6 +213,8 @@ contract SHG {
         }("");
         require(success, "Amount transferred");
         emit ProposalClaimed(_proposalId);
+        emit UserBalanceUpdated(balances[msg.sender]);
+        emit GroupBalanceUpdated(address(this).balance);
         return success;
     }
 
@@ -250,6 +256,8 @@ contract SHG {
         if (loan.amount == 0) {
             balances[msg.sender] = balances[msg.sender].add(msg.value);
             emit Deposited(msg.sender, msg.value);
+            emit UserBalanceUpdated(balances[msg.sender]);
+            emit GroupBalanceUpdated(address(this).balance);
             return;
         }
         uint256 currentTime = block.timestamp;
@@ -285,6 +293,8 @@ contract SHG {
         }
 
         emit LoanUpdated(msg.sender, loan.amount);
+        emit UserBalanceUpdated(balances[msg.sender]);
+        emit GroupBalanceUpdated(address(this).balance);
     }
 
     function calculateLoanWithInterest(

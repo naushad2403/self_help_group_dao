@@ -232,6 +232,19 @@ const shg_abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "uint256",
+        name: "balance",
+        type: "uint256",
+      },
+    ],
+    name: "GroupBalanceUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "address",
         name: "member",
         type: "address",
@@ -328,6 +341,19 @@ const shg_abi = [
       },
     ],
     name: "ProposalSubmitted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "balance",
+        type: "uint256",
+      },
+    ],
+    name: "UserBalanceUpdated",
     type: "event",
   },
   {
