@@ -23,7 +23,7 @@ export const GroupDetails = ({ address }) => {
     address: address,
     abi: shg_abi,
     functionName: "withdrawAmount",
-    args: [withdrawVal ?  ethers.parseEther(withdrawVal.toString()): "0"],
+    args: [withdrawVal ? ethers.parseEther(withdrawVal.toString()) : "0"],
     onSuccess(data) {
       dispatch(
         addToast({ title: `Withdraw Transaction sent`, body: data.hash })
@@ -38,7 +38,7 @@ export const GroupDetails = ({ address }) => {
     address: address,
     abi: shg_abi,
     functionName: "deposit",
-    value: depositVal ?  ethers.parseEther(depositVal.toString()): "0",
+    value: depositVal ? ethers.parseEther(depositVal.toString()) : "0",
 
     onSuccess(data) {
       dispatch(
