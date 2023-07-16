@@ -763,8 +763,8 @@ const shg_abi = [
   },
 ];
 
-export const formateEther = (amount) => {
-  return ethers.formateEther(amount).toFixed(4);
+export const parseToEther = (amount) => {
+  return ethers.formatEther(ethers.toBigInt(amount));
 };
 
-export { group_abi, shg_abi, formateEther };
+export { group_abi, shg_abi };
