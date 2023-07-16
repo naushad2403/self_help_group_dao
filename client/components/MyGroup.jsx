@@ -51,7 +51,6 @@ export default function MyGroup() {
         <h4>Person</h4>
         <h4>Status</h4>
         <Switch value={onlyJoined} onChange={onChange} label={"Only Joined"} />
-        <h3></h3>
       </div>
       {[...new Set(groups)]?.map((x, index) => {
         return (

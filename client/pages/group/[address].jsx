@@ -33,28 +33,8 @@ export default function Group() {
           return {
             ...member,
             balance:
-              log[0].args._member == member.address
-                ? log[0].args._amount
-                : member.balance,
-          };
-        });
-      });
-    },
-  });
-
-  useContractEvent({
-    address: router.query.address,
-    abi: shg_abi,
-    eventName: "UserBalanceUpdated",
-    listener(log) {
-      setBalance((prev) => prev + parseInt(log[0].args._amount));
-      setMemberBal((prev) => {
-        return prev.map((member) => {
-          return {
-            ...member,
-            balance:
-              log[0].args._member == member.address
-                ? parseInt(log[0].args._amount)
+              log[0].args.member == member.address
+                ? log[0].args.balance
                 : member.balance,
           };
         });

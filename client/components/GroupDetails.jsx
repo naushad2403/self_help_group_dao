@@ -4,6 +4,7 @@ import { parseToEther, shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
+import { ethers } from "ethers";
 
 export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);
@@ -50,33 +51,33 @@ export const GroupDetails = ({ address }) => {
     },
   });
 
-  useContractEvent({
-    address: address,
-    abi: shg_abi,
-    eventName: "Withdrawn",
-    listener(log) {
-      dispatch(
-        addToast({
-          title: `Transaction successful`,
-          body: ` amount ${log[0].args._amount} withdrawn from your account`,
-        })
-      );
-    },
-  });
+  // useContractEvent({
+  //   address: address,
+  //   abi: shg_abi,
+  //   eventName: "Withdrawn",
+  //   listener(log) {
+  //     dispatch(
+  //       addToast({
+  //         title: `Transaction successful`,
+  //         body: ` amount ${log[0].args._amount} withdrawn from your account`,
+  //       })
+  //     );
+  //   },
+  // });
 
-  useContractEvent({
-    address: address,
-    abi: shg_abi,
-    eventName: "Deposited",
-    listener(log) {
-      dispatch(
-        addToast({
-          title: `Transaction successful`,
-          body: ` amount ${log[0].args._amount} deposited from your account`,
-        })
-      );
-    },
-  });
+  // useContractEvent({
+  //   address: address,
+  //   abi: shg_abi,
+  //   eventName: "Deposited",
+  //   listener(log) {
+  //     dispatch(
+  //       addToast({
+  //         title: `Transaction successful`,
+  //         body: ` amount ${log[0].args._amount} deposited from your account`,
+  //       })
+  //     );
+  //   },
+  // });
 
   useContractEvent({
     address: address,
@@ -84,6 +85,7 @@ export const GroupDetails = ({ address }) => {
     eventName: "GroupBalanceUpdated",
     listener(log) {
       if (log.length > 0) {
+        console.log("inside this balance group", log[0].args.balance);
         setBalance(log[0].args.balance);
       }
     },
