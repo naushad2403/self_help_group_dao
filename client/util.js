@@ -350,6 +350,12 @@ const shg_abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "address",
+        name: "member",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "uint256",
         name: "balance",
         type: "uint256",
@@ -764,7 +770,8 @@ const shg_abi = [
 ];
 
 export const parseToEther = (amount) => {
-  return ethers.formatEther(ethers.toBigInt(amount));
+  const value = ethers.formatEther(BigInt(amount));
+  return parseFloat(value).toFixed(3);
 };
 
 export { group_abi, shg_abi };

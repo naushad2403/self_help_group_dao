@@ -13,6 +13,7 @@ const MemberInfo = ({ membersInfo }) => {
 
       <div>
         {(membersInfo || []).map((x) => {
+          console.log("x", x);
           return (
             <div className={styles.memberInfo} key={x.address}>
               {" "}

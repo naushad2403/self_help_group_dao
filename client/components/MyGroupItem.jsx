@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
+import { parseToEther } from "../util";
 
 export default function MyGroupItem({ address, forJoined }) {
   const [members, setMembers] = useState([]);
@@ -40,7 +41,8 @@ export default function MyGroupItem({ address, forJoined }) {
   useBalance({
     address: address,
     onSuccess: (data) => {
-      setBalance(data.formatted);
+      console.log("inisde this data", data);
+      setBalance(data.value);
     },
   });
 
@@ -100,7 +102,7 @@ export default function MyGroupItem({ address, forJoined }) {
           {"..." + address.substr(-5)}
         </a>
         <p>{nameInfo?.data}</p>
-        <p>{balance} ETH</p>
+        <p>{parseToEther(balance)} ETH</p>
         <p>{members.length}</p>
         {!isMember() ? (
           <button
