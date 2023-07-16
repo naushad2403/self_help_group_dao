@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 const group_abi = [
   {
     inputs: [],
@@ -232,6 +234,19 @@ const shg_abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "uint256",
+        name: "balance",
+        type: "uint256",
+      },
+    ],
+    name: "GroupBalanceUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "address",
         name: "member",
         type: "address",
@@ -328,6 +343,25 @@ const shg_abi = [
       },
     ],
     name: "ProposalSubmitted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "member",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "balance",
+        type: "uint256",
+      },
+    ],
+    name: "UserBalanceUpdated",
     type: "event",
   },
   {
@@ -734,4 +768,9 @@ const shg_abi = [
     type: "receive",
   },
 ];
-export { group_abi, shg_abi };
+
+export const parseToEther = (amount) => {
+  const value = ethers.formatEther(BigInt(amount || 0));
+  return parseFloat(value).toFixed(3);
+};
+export { group_abi, shg_abi};

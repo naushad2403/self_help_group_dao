@@ -52,7 +52,6 @@ const CreateProposal = ({ address }) => {
       isValidInput(interestRate) &&
       isValidInput(purpose)
     ) {
-      console.log(amount, duration, purpose, interestRate);
       proposalMethod.write();
       setAmount("");
       setDuration("");
@@ -72,17 +71,6 @@ const CreateProposal = ({ address }) => {
     !(duration > 0) ||
     !(interestRate > 0) ||
     !(purpose.length > 0);
-
-  console.log("isSubmitDisabled", isSubmitDisabled);
-  console.log("isValidInput(amount)", isValidInput(amount), "-", amount);
-  console.log("isValidInput(duration)", isValidInput(duration), "-", duration);
-  console.log(
-    "isValidInput(interestRate)",
-    isValidInput(interestRate),
-    "-",
-    interestRate
-  );
-  console.log("isValidInput(purpose)", isValidInput(purpose), "-", purpose);
 
   const buttonStyle = isSubmitDisabled ? { opacity: 0.5 } : {};
 
