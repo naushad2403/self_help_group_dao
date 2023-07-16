@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 const group_abi = [
   {
     inputs: [],
@@ -346,6 +348,12 @@ const shg_abi = [
   {
     anonymous: false,
     inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "member",
+        type: "address",
+      },
       {
         indexed: false,
         internalType: "uint256",
@@ -760,4 +768,10 @@ const shg_abi = [
     type: "receive",
   },
 ];
+
+export const parseToEther = (amount) => {
+  const value = ethers.formatEther(BigInt(amount));
+  return parseFloat(value).toFixed(3);
+};
+
 export { group_abi, shg_abi };

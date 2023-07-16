@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import styles from "../styles/GroupView.module.css";
-import { shg_abi } from "../util";
+import { parseToEther, shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
-import { ethers } from "ethers";
-
-console.log("Ethers ", ethers);
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
+import { ethers } from "ethers";
 
 export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);
@@ -18,7 +16,7 @@ export const GroupDetails = ({ address }) => {
   useBalance({
     address: address,
     onSuccess(data) {
-      setBalance(parseInt(data?.value));
+      setBalance(data?.value);
     },
   });
 
@@ -26,7 +24,7 @@ export const GroupDetails = ({ address }) => {
     address: address,
     abi: shg_abi,
     functionName: "withdrawAmount",
-    args: [withdrawVal ?  ethers.parseEther(withdrawVal.toString()): "0"],
+    args: [withdrawVal ? ethers.parseEther(withdrawVal.toString()) : "0"],
     onSuccess(data) {
       dispatch(
         addToast({ title: `Withdraw Transaction sent`, body: data.hash })
@@ -41,7 +39,7 @@ export const GroupDetails = ({ address }) => {
     address: address,
     abi: shg_abi,
     functionName: "deposit",
-    value: depositVal ?  ethers.parseEther(depositVal.toString()): "0",
+    value: depositVal ? ethers.parseEther(depositVal.toString()) : "0",
 
     onSuccess(data) {
       dispatch(
@@ -53,21 +51,43 @@ export const GroupDetails = ({ address }) => {
     },
   });
 
-  useContractEvent({
-    address: address,
-    abi: shg_abi,
-    eventName: "Withdrawn",
-    listener(log) {
-      setBalance((prev) => prev - parseInt(log[0].args._amount));
-    },
-  });
+  // useContractEvent({
+  //   address: address,
+  //   abi: shg_abi,
+  //   eventName: "Withdrawn",
+  //   listener(log) {
+  //     dispatch(
+  //       addToast({
+  //         title: `Transaction successful`,
+  //         body: ` amount ${log[0].args._amount} withdrawn from your account`,
+  //       })
+  //     );
+  //   },
+  // });
+
+  // useContractEvent({
+  //   address: address,
+  //   abi: shg_abi,
+  //   eventName: "Deposited",
+  //   listener(log) {
+  //     dispatch(
+  //       addToast({
+  //         title: `Transaction successful`,
+  //         body: ` amount ${log[0].args._amount} deposited from your account`,
+  //       })
+  //     );
+  //   },
+  // });
 
   useContractEvent({
     address: address,
     abi: shg_abi,
-    eventName: "Deposited",
+    eventName: "GroupBalanceUpdated",
     listener(log) {
-      setBalance((prev) => prev + parseInt(log[0].args._amount));
+      if (log.length > 0) {
+        console.log("inside this balance group", log[0].args.balance);
+        setBalance(log[0].args.balance);
+      }
     },
   });
 
@@ -85,7 +105,7 @@ export const GroupDetails = ({ address }) => {
           </a>
         </h3>
         <h3>Name: G1</h3>
-        <h3>Balance: {balance} Wei</h3>
+        <h3>Balance: {parseToEther(balance)} Ether</h3>
         <div className={styles.balanceDetail}>
           <input
             type="text"

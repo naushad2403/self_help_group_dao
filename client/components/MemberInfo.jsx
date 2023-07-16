@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../styles/MemberInfo.module.css";
+import { parseToEther } from "../util";
 
 const MemberInfo = ({ membersInfo }) => {
   return (
@@ -12,6 +13,7 @@ const MemberInfo = ({ membersInfo }) => {
 
       <div>
         {(membersInfo || []).map((x) => {
+          console.log("x", x);
           return (
             <div className={styles.memberInfo} key={x.address}>
               {" "}
@@ -23,7 +25,7 @@ const MemberInfo = ({ membersInfo }) => {
               >
                 {x.address}:
               </a>{" "}
-              <span style={{}}>{x.balance} ETH </span>
+              <span style={{}}>{parseToEther(x.balance)} ETH </span>
             </div>
           );
         })}

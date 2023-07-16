@@ -11,9 +11,12 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
+import { parseToEther } from "../util";
 
 export default function MyGroupItem({ address, forJoined }) {
   const [members, setMembers] = useState([]);
+
+  const [balance, setBalance] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -35,8 +38,12 @@ export default function MyGroupItem({ address, forJoined }) {
     },
   });
 
-  const balanceInfo = useBalance({
+  useBalance({
     address: address,
+    onSuccess: (data) => {
+      console.log("inisde this data", data);
+      setBalance(data.value);
+    },
   });
 
   const joiningGroup = useContractWrite({
@@ -65,6 +72,17 @@ export default function MyGroupItem({ address, forJoined }) {
     },
   });
 
+  useContractEvent({
+    address: address,
+    abi: shg_abi,
+    eventName: "GroupBalanceUpdated",
+    listener(log) {
+      if (log.length > 0) {
+        log[0].args.balance;
+      }
+    },
+  });
+
   const isMember = () => {
     return members?.includes(accountInfo.address);
   };
@@ -84,9 +102,7 @@ export default function MyGroupItem({ address, forJoined }) {
           {"..." + address.substr(-5)}
         </a>
         <p>{nameInfo?.data}</p>
-        <p>
-          {balanceInfo?.data?.formatted} {balanceInfo?.data?.symbol}
-        </p>
+        <p>{parseToEther(balance)} ETH</p>
         <p>{members.length}</p>
         {!isMember() ? (
           <button

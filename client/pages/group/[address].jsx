@@ -3,21 +3,13 @@ import styles from "./../../styles/GroupView.module.css";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { GroupDetails } from "../../components/GroupDetails";
-
-import {
-  useBalance,
-  useContractEvent,
-  useContractRead,
-  useAccount,
-} from "wagmi";
+import { useContractEvent, useContractRead, useAccount } from "wagmi";
 import { shg_abi } from "../../util";
 import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
 
 export default function Group() {
   const router = useRouter();
-  const info = useSelector((state) => state.info);
-  const [balance, setBalance] = useState();
   const [memberBal, setMemberBal] = useState();
   const [proposalCounter, setProposalCounter] = useState();
 
@@ -34,36 +26,15 @@ export default function Group() {
   useContractEvent({
     address: router.query.address,
     abi: shg_abi,
-    eventName: "Withdrawn",
+    eventName: "UserBalanceUpdated",
     listener(log) {
-      setBalance((prev) => prev - parseInt(log[0].args._amount));
       setMemberBal((prev) => {
         return prev.map((member) => {
           return {
             ...member,
             balance:
-              log[0].args._member == member.address
-                ? member.balance - parseInt(log[0].args._amount)
-                : member.balance,
-          };
-        });
-      });
-    },
-  });
-
-  useContractEvent({
-    address: router.query.address,
-    abi: shg_abi,
-    eventName: "Deposited",
-    listener(log) {
-      setBalance((prev) => prev + parseInt(log[0].args._amount));
-      setMemberBal((prev) => {
-        return prev.map((member) => {
-          return {
-            ...member,
-            balance:
-              log[0].args._member == member.address
-                ? member.balance + parseInt(log[0].args._amount)
+              log[0].args.member == member.address
+                ? log[0].args.balance
                 : member.balance,
           };
         });
@@ -91,14 +62,6 @@ export default function Group() {
           return { address: addr, balance: parseInt(data[1][balIdx]) };
         })
       );
-    },
-  });
-
-  useBalance({
-    address: router.query.address,
-    onSuccess(data) {
-      // console.log("balance Success", data);
-      setBalance(parseInt(data?.value));
     },
   });
 
