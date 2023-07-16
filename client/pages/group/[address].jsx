@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { GroupDetails } from "../../components/GroupDetails";
 import { useContractEvent, useContractRead, useAccount } from "wagmi";
-import { shg_abi } from "../../util";
+import { parseToEther, shg_abi } from "../../util";
 import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
 
@@ -28,6 +28,7 @@ export default function Group() {
     abi: shg_abi,
     eventName: "UserBalanceUpdated",
     listener(log) {
+      console.log("UserBalanceUpdated", log);
       setMemberBal((prev) => {
         return prev.map((member) => {
           return {
@@ -85,6 +86,7 @@ export default function Group() {
   ) {
     return null;
   }
+   console.log(memberBal);
   return (
     <>
       <div className={styles.container}>

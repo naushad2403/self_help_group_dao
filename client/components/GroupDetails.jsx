@@ -4,7 +4,7 @@ import { parseToEther, shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
-import { ethers } from "ethers";
+import {ethers} from "ethers";
 
 export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);
@@ -86,6 +86,17 @@ export const GroupDetails = ({ address }) => {
     listener(log) {
       if (log.length > 0) {
         console.log("inside this balance group", log[0].args.balance);
+        setBalance(log[0].args.balance);
+      }
+    },
+  });
+
+  useContractEvent({
+    address: address,
+    abi: shg_abi,
+    eventName: "GroupBalanceUpdated",
+    listener(log) {
+      if (log.length > 0) {
         setBalance(log[0].args.balance);
       }
     },
