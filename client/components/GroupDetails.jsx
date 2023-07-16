@@ -4,7 +4,7 @@ import { parseToEther, shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
-import { ethers } from "ethers";
+import {ethers} from "ethers";
 
 export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);

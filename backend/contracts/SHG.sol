@@ -248,11 +248,6 @@ contract SHG {
 
     function handleDeposit() internal {
         Loan storage loan = loanDetails[msg.sender];
-        require(
-            msg.value > 0,
-            "Deposit amount should be greater than 0"
-        );
-
         if (loan.amount == 0) {
             balances[msg.sender] = balances[msg.sender].add(msg.value);
             emit Deposited(msg.sender, msg.value);
@@ -307,19 +302,16 @@ contract SHG {
     }
 
     receive() external payable {
-        balances[msg.sender] = balances[msg.sender].add(msg.value);
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
 
     fallback() external payable {
-        balances[msg.sender] = balances[msg.sender].add(msg.value);
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
 
     function deposit() external payable {
-        balances[msg.sender] = balances[msg.sender].add(msg.value);
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
