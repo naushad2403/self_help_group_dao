@@ -10,6 +10,7 @@ import { shg_abi } from "../util";
 import Timer from "./Timer";
 import { addToast } from "../state_management/slices/toast";
 import { useDispatch } from "react-redux";
+import DepositerInfo from "./DepositorInfo";
 
 let initialState = {
   amount: 0,
@@ -225,17 +226,16 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   const getApprovalLimit = () => {
     // TODO check if user have that much amount to approved
     let max = parseInt(proposalInfo.amount) - getTotalApprovedLimit();
-    if(max == 0) {
-        return {min: 0, max: 0}
+    if (max == 0) {
+      return { min: 0, max: 0 };
     }
-    return { min : 0, max: max };
+    return { min: 0, max: max };
   };
 
   const disabledApproveButton = () => {
-    if(approvedAmountByUser() > 0) return false;
-    if(approvalAmount === 0) return true;
-  }
-
+    if (approvedAmountByUser() > 0) return false;
+    if (approvalAmount === 0) return true;
+  };
 
   return (
     <div className={styles.proposalItemContainer}>
@@ -320,12 +320,11 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
                 Claim
               </button>
             )}
-            {!isOwner && approvedAmountByUser() > 0 && (
-              <h3 style={{ color: "white" }}>
-                You've approved ({approvedAmountByUser()} ETH)
-              </h3>
-            )}
           </div>
+
+          {!isOwner && approvedAmountByUser() > 0 && (
+            <DepositerInfo memberInfo={voterDetails} />
+          )}
         </div>
       }
     </div>

@@ -2,17 +2,18 @@ import React from "react";
 import styles from "../styles/MemberInfo.module.css";
 import { parseToEther } from "../util";
 
-const MemberInfo = ({ membersInfo }) => {
+const DepositerInfo = ({ memberInfo }) => {
+  console.log("inside this memeberInfo", memberInfo);
   return (
     <div className={styles.memberInfoWrapper}>
-      <h2 className={styles.memberHeading}>Members</h2>
+      <h2 className={styles.memberHeading}>Depositors</h2>
       <div className={styles.memberInfo}>
         <span>Accounts</span>
-        <span> Balance</span>
+        <span> Amount</span>
       </div>
 
       <div>
-        {(membersInfo || []).map((x) => {
+        {(memberInfo || []).map((x) => {
           return (
             <div className={styles.memberInfo} key={x.address}>
               {" "}
@@ -20,11 +21,11 @@ const MemberInfo = ({ membersInfo }) => {
                 target="_blank"
                 rel="noreferrer"
                 className={styles.memberInfoAnchor}
-                href={`${process.env.NEXT_PUBLIC_BLOXPLORER}address/${x.address}`}
+                href={`${process.env.NEXT_PUBLIC_BLOXPLORER}address/${x.member}`}
               >
-                {x.address}:
+                {x.member}
               </a>{" "}
-              <span style={{}}>{parseToEther(x.balance)} ETH </span>
+              <span style={{}}>{x.amount.toFixed(3)} ETH </span>
             </div>
           );
         })}
@@ -33,4 +34,4 @@ const MemberInfo = ({ membersInfo }) => {
   );
 };
 
-export default MemberInfo;
+export default DepositerInfo;
