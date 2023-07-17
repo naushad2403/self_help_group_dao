@@ -225,9 +225,17 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   const getApprovalLimit = () => {
     // TODO check if user have that much amount to approved
     let max = parseInt(proposalInfo.amount) - getTotalApprovedLimit();
-    let min = Math.min(5, max);
-    return { min, max };
+    if(max == 0) {
+        return {min: 0, max: 0}
+    }
+    return { min : 0, max: max };
   };
+
+  const disabledApproveButton = () => {
+    if(approvedAmountByUser() > 0) return false;
+    if(approvalAmount === 0) return true;
+  }
+
 
   return (
     <div className={styles.proposalItemContainer}>
@@ -270,7 +278,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
         <div className={styles.purposeContainer}>
           <p>{proposalInfo.purpose}</p>
           <div className={styles.approveButtonContainer}>
-            {!isOwner && (
+            {!isOwner && getApprovalLimit().min != getApprovalLimit().max && (
               <div className={styles.sliderContainer}>
                 <input
                   type="range"
@@ -283,10 +291,13 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
                 />
 
                 <button
-                  onClick={approveReq.write}
-                  disabled={approvalAmount === 0}
+                  onClick={() => {
+                    setApprovalAmount(0);
+                    approveReq.write();
+                  }}
+                  disabled={disabledApproveButton()}
                 >
-                  Approve ({approvalAmount} Wei)
+                  Approve ({approvalAmount} ETH)
                 </button>
                 <label>
                   {`You are approving  (${approvalAmount} Wei) with interest rate of  ${parseInt(
@@ -311,7 +322,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
             )}
             {!isOwner && approvedAmountByUser() > 0 && (
               <h3 style={{ color: "white" }}>
-                You've approved ({approvedAmountByUser()} Wei)
+                You've approved ({approvedAmountByUser()} ETH)
               </h3>
             )}
           </div>
