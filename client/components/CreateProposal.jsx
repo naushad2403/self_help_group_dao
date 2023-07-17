@@ -80,6 +80,7 @@ const CreateProposal = ({ address }) => {
       <div className={styles.inputContainer}>
         <h5>Enter amount:</h5>
         <input
+          type="number"
           placeholder="Enter amount"
           value={amount}
           onChange={handleAmountChange}
@@ -89,6 +90,7 @@ const CreateProposal = ({ address }) => {
       <div className={styles.inputContainer}>
         <h5>Enter duration on loan:</h5>
         <input
+          type="number"
           placeholder="Enter duration in month"
           value={duration}
           onChange={handleDurationChange}
@@ -98,6 +100,7 @@ const CreateProposal = ({ address }) => {
       <div className={styles.inputContainer}>
         <h5>Enter interest rate percentage per month:</h5>
         <input
+          type="number"
           placeholder="Enter interest rate percentage"
           value={interestRate}
           onChange={handleInterestRateChange}
