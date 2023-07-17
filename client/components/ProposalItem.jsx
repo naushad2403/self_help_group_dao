@@ -10,6 +10,7 @@ import { shg_abi } from "../util";
 import Timer from "./Timer";
 import { addToast } from "../state_management/slices/toast";
 import { useDispatch } from "react-redux";
+import DepositerInfo from "./DepositorInfo";
 
 let initialState = {
   amount: 0,
@@ -309,12 +310,11 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
                 Claim
               </button>
             )}
-            {!isOwner && approvedAmountByUser() > 0 && (
-              <h3 style={{ color: "white" }}>
-                You've approved ({approvedAmountByUser()} Wei)
-              </h3>
-            )}
           </div>
+
+          {!isOwner && approvedAmountByUser() > 0 && (
+            <DepositerInfo memberInfo={voterDetails} />
+          )}
         </div>
       }
     </div>
