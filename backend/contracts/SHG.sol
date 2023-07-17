@@ -79,7 +79,7 @@ contract SHG {
         name = _name;
     }
 
-    function createDistributionProposal() external {
+    function createDistributionProposal() onlyMember external {
         require(
             !distributionProposal.isRunning,
             "Already a proposal is running"
@@ -88,7 +88,7 @@ contract SHG {
         distributionProposal.expiryTime = block.timestamp + 84400;
     }
 
-    function rejectDistributionProposal() external {
+    function rejectDistributionProposal() onlyMember external {
         require(
             distributionProposal.isRunning &&
                 block.timestamp < distributionProposal.expiryTime,
@@ -97,7 +97,7 @@ contract SHG {
         distributionProposal.isRunning = false;
     }
 
-    function distributeMoney() external {
+    function distributeMoney() onlyMember external {
         require(
             distributionProposal.isRunning &&
                 block.timestamp > distributionProposal.expiryTime,
@@ -134,7 +134,7 @@ contract SHG {
 
     event LoanUpdated(address member, uint256 amount);
 
-    function withdrawAmount(uint256 _amount) public {
+    function withdrawAmount(uint256 _amount) onlyMember public {
         require(
             _amount <= balances[msg.sender],
             "Insufficient balance, please create a borrow proposal"
@@ -153,12 +153,13 @@ contract SHG {
         return true;
     }
 
+//TODO Only if not any loan is running
     function submitLoanProposal(
         uint256 _amount,
         string memory _purpose,
         uint256 _interestRatePerMonth,
         uint256 _loanDurationInMonth
-    ) external returns (uint256) {
+    ) onlyMember noLoanRunning external returns (uint256) {
         BorrowProposal storage proposal = borrowProposal[counter];
         proposal.amount = _amount;
         proposal.proposer = msg.sender;
@@ -181,7 +182,7 @@ contract SHG {
         return (borrowProposal[_proposalId].approvers);
     }
 
-    function claimApprovedAmount(uint256 _proposalId) public returns (bool) {
+    function claimApprovedAmount(uint256 _proposalId) onlyMember onlyOpenProposal(_proposalId) public returns (bool) {
         (MemberApproval[] memory approvers) = getApprovers(_proposalId);
         uint256 totalAmount = 0;
         for (uint256 i = 0; i < approvers.length; i++) {
@@ -218,7 +219,7 @@ contract SHG {
         return success;
     }
 
-    function approveLimit(uint256 _proposalId, uint256 _amount)
+    function approveLimit(uint256 _proposalId, uint256 _amount) onlyMember onlyOpenProposal(_proposalId) onlyWithInProposalTime(_proposalId)
         external
         returns (bool)
     {
@@ -240,7 +241,7 @@ contract SHG {
         return true;
     }
 
-    function cancelProposal(uint256 _proposalId) external returns (bool) {
+    function cancelProposal(uint256 _proposalId) onlyMember onlyOpenProposal(_proposalId) external returns (bool) {
         borrowProposal[_proposalId].currentStatus = Status.Cancelled;
         emit ProposalCancelled(_proposalId);
         return true;
@@ -301,18 +302,50 @@ contract SHG {
             (principal.mul(interestRate ** time)).div(100).add(principal);
     }
 
-    receive() external payable {
+    receive() onlyMember external payable {
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
 
-    fallback() external payable {
+    fallback() onlyMember external payable {
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
 
-    function deposit() external payable {
+    function deposit() onlyMember external payable {
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
+
+    function isMember ()  view internal returns(bool) {
+        for(uint i = 0; i < members.length; i++) {
+            if(members[i] == msg.sender){
+               return true;
+            }
+        }
+        return false;
+    }
+
+
+    modifier onlyMember () {
+        require(isMember(), "You're not member of the group, Please join");
+        _;
+    }
+
+    modifier onlyOpenProposal (uint256 _proposalId) {
+        require(borrowProposal[_proposalId].currentStatus == Status.Open, "Application is close/expired");
+        _;
+    }
+
+    modifier onlyWithInProposalTime (uint256 _proposalId){
+        require(borrowProposal[_proposalId].proposalTime >= block.timestamp, "Approving time has been expired");
+        _;
+    }
+
+    modifier noLoanRunning () {
+        Loan storage loan = loanDetails[msg.sender];
+        require(loan.amount == 0, "Already a loan in running");
+        _;
+    }
+
 }
