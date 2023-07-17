@@ -4,7 +4,7 @@ import { parseToEther, shg_abi } from "../util";
 import { useBalance, useContractWrite, useContractEvent } from "wagmi";
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
-import {ethers} from "ethers";
+import { ethers } from "ethers";
 
 export const GroupDetails = ({ address }) => {
   const [withdrawVal, setWithdrawVal] = useState(0);
@@ -119,7 +119,7 @@ export const GroupDetails = ({ address }) => {
         <h3>Balance: {parseToEther(balance)} Ether</h3>
         <div className={styles.balanceDetail}>
           <input
-            type="text"
+            type="number"
             className={styles.amountInput}
             id="name-input"
             placeholder="Enter amount in ether"
@@ -137,7 +137,7 @@ export const GroupDetails = ({ address }) => {
             Deposit {depositVal} ETH
           </button>
           <input
-            type="text"
+            type="number"
             className={styles.amountInput}
             id="name-input"
             placeholder="Enter amount in ether"
