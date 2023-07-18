@@ -9,6 +9,7 @@ contract SHG {
     address[] members;
     mapping(address => uint256) public balances;
     mapping(uint256 => BorrowProposal) public borrowProposal;
+    mapping(address => uint256[]) public proposalId;
     uint256 public counter = 0;
     string public name;
     uint256 public proposalVotingPeriod = 300; // 72 hours in seconds
@@ -169,8 +170,9 @@ contract SHG {
         proposal.purpose = _purpose;
         proposal.proposalTime = block.timestamp + proposalVotingPeriod;
         proposal.currentStatus = Status.Open;
+        proposalId[msg.sender].push(counter);
+        emit ProposalSubmitted(counter);
         counter = counter.add(1);
-        emit ProposalSubmitted(counter.sub(1));
         return counter.sub(1);
     }
 
