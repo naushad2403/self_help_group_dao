@@ -1,25 +1,48 @@
 import { useRouter } from "next/router";
 import styles from "./../../styles/GroupView.module.css";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { GroupDetails } from "../../components/GroupDetails";
 import { useContractEvent, useContractRead, useAccount } from "wagmi";
-import { parseToEther, shg_abi } from "../../util";
+import { shg_abi } from "../../util";
 import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
+import LoanDetails from "../../components/LoanDetails";
 
 export default function Group() {
   const router = useRouter();
   const [memberBal, setMemberBal] = useState();
   const [proposalCounter, setProposalCounter] = useState();
+  const [loanDetails, setDetails] = useState({
+    proposalId: 0,
+    amount: 0,
+    interestRate: 0,
+    date: 0,
+  });
+  const accountInfo = useAccount();
 
   useContractRead({
     address: router.query.address,
     abi: shg_abi,
     functionName: "counter",
     onSettled(data, error) {
-      console.log("counter", data);
       setProposalCounter(parseInt(data));
+    },
+  });
+
+  useContractRead({
+    address: router.query.address,
+    abi: shg_abi,
+    functionName: "loanDetails",
+    args: [accountInfo.address],
+    onSettled(data, error) {
+      if (data) {
+        let ans = {};
+        let index = 0;
+        for (let key in loanDetails) {
+          ans[key] = parseInt(data[index++]);
+        }
+        setDetails(ans);
+      }
     },
   });
 
@@ -66,8 +89,6 @@ export default function Group() {
     },
   });
 
-  const accountInfo = useAccount();
-
   useEffect(() => {
     if (memberBal?.length > 0) {
       const isPresent = memberBal?.find(
@@ -86,7 +107,11 @@ export default function Group() {
   ) {
     return null;
   }
-   console.log(memberBal);
+
+  console.log("loanDetails", loanDetails);
+
+  const hasLoan = loanDetails.date === 0;
+
   return (
     <>
       <div className={styles.container}>
@@ -120,11 +145,13 @@ export default function Group() {
                     <span> Available: 0</span>
                   )}
                 </h2>
-                {
+                {hasLoan ? (
+                  <LoanDetails info={loanDetails} />
+                ) : (
                   <CreateProposal
                     address={router.query.address}
                   ></CreateProposal>
-                }
+                )}
               </div>
               <MemberInfo membersInfo={memberBal} />
             </div>
