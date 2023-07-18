@@ -25,7 +25,7 @@ const DepositerInfo = ({ memberInfo }) => {
               >
                 {x.member}
               </a>{" "}
-              <span style={{}}>{parseInt(x.amount).toFixed(3)} ETH </span>
+              <span style={{}}>{parseToEther(x.amount)} ETH </span>
             </div>
           );
         })}
