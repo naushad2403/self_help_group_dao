@@ -11,6 +11,7 @@ import Timer from "./Timer";
 import { addToast } from "../state_management/slices/toast";
 import { useDispatch } from "react-redux";
 import DepositerInfo from "./DepositorInfo";
+import { ethers } from "ethers";
 
 let initialState = {
   amount: 0,
@@ -143,7 +144,10 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     address: address,
     abi: shg_abi,
     functionName: "approveLimit",
-    args: [proposalId, approvalAmount],
+    args: [
+      proposalId,
+      approvalAmount ? ethers.parseEther(approvalAmount.toString()) : "0",
+    ],
     onSuccess(data) {
       dispatch(addToast({ title: "Approval equest", body: data.hash }));
     },
@@ -204,7 +208,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     return null;
   }
   const handleSliderChange = (event) => {
-    setApprovalAmount(parseInt(event.target.value));
+    setApprovalAmount((event.target.value));
   };
 
   const getTotalApprovedLimit = () => {
@@ -225,7 +229,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
 
   const getApprovalLimit = () => {
     // TODO check if user have that much amount to approved
-    let max = parseInt(proposalInfo.amount) - getTotalApprovedLimit();
+    let max = parseFloat(proposalInfo.amount) - getTotalApprovedLimit();
     if (max == 0) {
       return { min: 0, max: 0 };
     }
@@ -235,6 +239,30 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   const disabledApproveButton = () => {
     if (approvedAmountByUser() > 0) return false;
     if (approvalAmount === 0) return true;
+  };
+
+  const handleApprovalInputChange = (event) => {
+    const value = event.target.value;
+    if(value==="")
+    {
+      return setApprovalAmount("");
+
+    }
+       // Use regular expression to check for valid positive float numbers with 6 decimal points
+       const validNumberRegex = /^\d+(\.\d{1,6})?$/;
+
+       if (value === "" || validNumberRegex.test(value)) {
+         const intValue = parseFloat(value);
+         const min = getApprovalLimit().min;
+         const max = getApprovalLimit().max;
+
+         console.log("Min", min, "Max", max)
+
+         // Check if intValue is within the valid range
+         if (!isNaN(intValue) && intValue >= min && intValue <= max) {
+           setApprovalAmount(value);
+         }
+       }
   };
 
   return (
@@ -280,15 +308,14 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
           <div className={styles.approveButtonContainer}>
             {!isOwner && getApprovalLimit().min != getApprovalLimit().max && (
               <div className={styles.sliderContainer}>
-                <input
-                  type="range"
-                  id="approvalSlider"
-                  min={getApprovalLimit().min}
-                  max={getApprovalLimit().max}
+               Max Allowed Value: {getApprovalLimit().max} ETH <input
+                  type="number"
+                  id="approvalInput"
                   value={approvalAmount}
-                  onChange={handleSliderChange}
-                  style={{ marginRight: "10px", width: "20%", height: "20px" }}
-                />
+                  onChange={handleApprovalInputChange}
+                  placeholder="Enter Amount in ETH"
+                  className={styles.inputApproval}
+                /> 
 
                 <button
                   onClick={() => {
@@ -300,7 +327,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
                   Approve ({approvalAmount} ETH)
                 </button>
                 <label>
-                  {`You are approving  (${approvalAmount} Wei) with interest rate of  ${parseInt(
+                  {`You are approving  (${approvalAmount} ETH) with interest rate of  ${parseInt(
                     proposalInfo.monthlyInterestRate
                   )}%/Year`}
                 </label>

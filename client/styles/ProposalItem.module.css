@@ -52,3 +52,10 @@
     align-items: center;  
     /* margin: 10%; */
 }
+
+.inputApproval {
+    height: 40px;
+    margin-right: 10px;
+    width: 20%;
+    border-radius: 10px;
+}
