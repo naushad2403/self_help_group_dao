@@ -275,9 +275,9 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
         }}
       >
         <h4>Proposal id: {parseInt(proposalInfo.proposalId)}</h4>
-        <h4>Amount(Ether): {parseInt(proposalInfo.amount)}</h4>
+        <h4>Amount(ETH): {parseInt(proposalInfo.amount)}</h4>
         <h4>
-          Interest rate/Year(wei): {parseInt(proposalInfo.monthlyInterestRate)}
+          Interest rate/Year(ETH): {parseInt(proposalInfo.monthlyInterestRate)}
         </h4>
         {showTimer() && (
           <h4
