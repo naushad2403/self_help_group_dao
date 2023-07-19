@@ -24,7 +24,7 @@ let initialState = {
   proposalTime: 0,
 };
 
-const ProposalItem = ({ address, proposalId, onlyUser }) => {
+const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
   const [voterDetails, setVoter] = useState([]);
   const [remainingSecond, setRemainingSecond] = useState();
@@ -41,7 +41,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
 
   const accountInfo = useAccount();
 
-  useContractRead({
+  const { loading } = useContractRead({
     address: address,
     abi: shg_abi,
     functionName: "borrowProposal",
@@ -196,6 +196,9 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
 
   const getStatusText = () => {
     if (proposalInfo.currentStatus == 0 && remainingSecond < 0) {
+      if (onProposalExpired) {
+        onProposalExpired(proposalId);
+      }
       return statusVal[statusIdx.Expired];
     } else return statusVal[proposalInfo.currentStatus];
   };

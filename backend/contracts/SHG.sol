@@ -9,7 +9,7 @@ contract SHG {
     address[] members;
     mapping(address => uint256) public balances;
     mapping(uint256 => BorrowProposal) public borrowProposal;
-    mapping(address => uint256[]) public proposalId;
+    mapping(address => uint256[]) public proposalIds;
     uint256 public counter = 0;
     string public name;
     uint256 public proposalVotingPeriod = 300; // 72 hours in seconds
@@ -58,7 +58,7 @@ contract SHG {
     event ProposalCancelled(uint256 _proposalId);
     event ProposalClaimed(uint256 _proposalId);
     event MembersJoined(address _member);
-    event ProposalSubmitted(uint256 _proposalId);
+    event ProposalSubmitted(uint256 _proposalId, BorrowProposal proposal);
     event ApprovalUpdated(uint256 proposalId, address member, uint256 amount);
 
     event AmountRecievedFromLoanPayment(
@@ -166,8 +166,8 @@ contract SHG {
         proposal.purpose = _purpose;
         proposal.proposalTime = block.timestamp + proposalVotingPeriod;
         proposal.currentStatus = Status.Open;
-        proposalId[msg.sender].push(counter);
-        emit ProposalSubmitted(counter);
+        proposalIds[msg.sender].push(counter);
+        emit ProposalSubmitted(counter, proposal);
         counter = counter.add(1);
         return counter.sub(1);
     }
@@ -297,6 +297,17 @@ contract SHG {
         uint256 time
     ) internal pure returns (uint256) {
         return (principal.mul(interestRate ** time)).div(100).add(principal);
+    }
+
+    function getProposals(
+        address user
+    ) public view returns (BorrowProposal[] memory) {
+        uint length = proposalIds[user].length;
+        BorrowProposal[] memory bp = new BorrowProposal[](length);
+        for (uint i = 0; i < proposalIds[user].length; i++) {
+            bp[i] = borrowProposal[proposalIds[user][i]];
+        }
+        return bp;
     }
 
     receive() external payable onlyMember {
