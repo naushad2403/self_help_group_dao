@@ -6,7 +6,7 @@ import {
   useContractWrite,
   useContractEvent,
 } from "wagmi";
-import { shg_abi } from "../util";
+import { parseToEther, shg_abi } from "../util";
 import Timer from "./Timer";
 import { addToast } from "../state_management/slices/toast";
 import { useDispatch } from "react-redux";
@@ -24,7 +24,7 @@ let initialState = {
   proposalTime: 0,
 };
 
-const ProposalItem = ({ address, proposalId, onlyUser }) => {
+const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
   const [voterDetails, setVoter] = useState([]);
   const [remainingSecond, setRemainingSecond] = useState();
@@ -41,7 +41,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
 
   const accountInfo = useAccount();
 
-  useContractRead({
+  const { loading } = useContractRead({
     address: address,
     abi: shg_abi,
     functionName: "borrowProposal",
@@ -196,6 +196,9 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
 
   const getStatusText = () => {
     if (proposalInfo.currentStatus == 0 && remainingSecond < 0) {
+      if (onProposalExpired) {
+        onProposalExpired(proposalId);
+      }
       return statusVal[statusIdx.Expired];
     } else return statusVal[proposalInfo.currentStatus];
   };
@@ -208,7 +211,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     return null;
   }
   const handleSliderChange = (event) => {
-    setApprovalAmount((event.target.value));
+    setApprovalAmount(event.target.value);
   };
 
   const getTotalApprovedLimit = () => {
@@ -243,26 +246,24 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
 
   const handleApprovalInputChange = (event) => {
     const value = event.target.value;
-    if(value==="")
-    {
+    if (value === "") {
       return setApprovalAmount("");
-
     }
-       // Use regular expression to check for valid positive float numbers with 6 decimal points
-       const validNumberRegex = /^\d+(\.\d{1,6})?$/;
+    // Use regular expression to check for valid positive float numbers with 6 decimal points
+    const validNumberRegex = /^\d+(\.\d{1,6})?$/;
 
-       if (value === "" || validNumberRegex.test(value)) {
-         const intValue = parseFloat(value);
-         const min = getApprovalLimit().min;
-         const max = getApprovalLimit().max;
+    if (value === "" || validNumberRegex.test(value)) {
+      const intValue = parseFloat(value);
+      const min = getApprovalLimit().min;
+      const max = getApprovalLimit().max;
 
-         console.log("Min", min, "Max", max)
+      console.log("Min", min, "Max", max);
 
-         // Check if intValue is within the valid range
-         if (!isNaN(intValue) && intValue >= min && intValue <= max) {
-           setApprovalAmount(value);
-         }
-       }
+      // Check if intValue is within the valid range
+      if (!isNaN(intValue) && intValue >= min && intValue <= max) {
+        setApprovalAmount(value);
+      }
+    }
   };
 
   return (
@@ -277,9 +278,9 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
         }}
       >
         <h4>Proposal id: {parseInt(proposalInfo.proposalId)}</h4>
-        <h4>Amount(wei): {parseInt(proposalInfo.amount)}</h4>
+        <h4>Amount(ETH): {parseInt(proposalInfo.amount)}</h4>
         <h4>
-          Interest rate/Year(wei): {parseInt(proposalInfo.monthlyInterestRate)}
+          Interest rate/Year(ETH): {parseInt(proposalInfo.monthlyInterestRate)}
         </h4>
         {showTimer() && (
           <h4
@@ -300,7 +301,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
         )}
         <h4>Duration: {parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
         <h4>{getStatusText()}</h4>
-        <h4>Approved Limit: {getTotalApprovedLimit()} Wei</h4>
+        <h4>Approved Limit: {parseToEther(getTotalApprovedLimit())} ETH</h4>
       </div>
       {
         <div className={styles.purposeContainer}>
@@ -308,15 +309,15 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
           <div className={styles.approveButtonContainer}>
             {!isOwner && getApprovalLimit().min != getApprovalLimit().max && (
               <div className={styles.sliderContainer}>
-               Max Allowed Value: {getApprovalLimit().max} ETH <input
+                Max Allowed Value: {getApprovalLimit().max} ETH{" "}
+                <input
                   type="number"
                   id="approvalInput"
                   value={approvalAmount}
                   onChange={handleApprovalInputChange}
                   placeholder="Enter Amount in ETH"
                   className={styles.inputApproval}
-                /> 
-
+                />
                 <button
                   onClick={() => {
                     setApprovalAmount(0);

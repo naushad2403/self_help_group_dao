@@ -1,25 +1,61 @@
 import { useRouter } from "next/router";
 import styles from "./../../styles/GroupView.module.css";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { GroupDetails } from "../../components/GroupDetails";
 import { useContractEvent, useContractRead, useAccount } from "wagmi";
-import { parseToEther, shg_abi } from "../../util";
+import { shg_abi } from "../../util";
 import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
+import LoanDetails from "../../components/LoanDetails";
+import ProposalItem from "../../components/ProposalItem";
 
 export default function Group() {
   const router = useRouter();
   const [memberBal, setMemberBal] = useState();
   const [proposalCounter, setProposalCounter] = useState();
+  const [loanDetails, setDetails] = useState({
+    proposalId: 0,
+    amount: 0,
+    interestRate: 0,
+    date: 0,
+  });
+  const [proposal, setProposal] = useState([]);
+
+  const accountInfo = useAccount();
 
   useContractRead({
     address: router.query.address,
     abi: shg_abi,
     functionName: "counter",
     onSettled(data, error) {
-      console.log("counter", data);
       setProposalCounter(parseInt(data));
+    },
+  });
+
+  useContractRead({
+    address: router.query.address,
+    abi: shg_abi,
+    functionName: "getProposals",
+    args: [accountInfo.address],
+    onSuccess(data) {
+      setProposal(data);
+    },
+  });
+
+  useContractRead({
+    address: router.query.address,
+    abi: shg_abi,
+    functionName: "loanDetails",
+    args: [accountInfo.address],
+    onSettled(data, error) {
+      if (data) {
+        let ans = {};
+        let index = 0;
+        for (let key in loanDetails) {
+          ans[key] = parseInt(data[index++]);
+        }
+        setDetails(ans);
+      }
     },
   });
 
@@ -66,8 +102,6 @@ export default function Group() {
     },
   });
 
-  const accountInfo = useAccount();
-
   useEffect(() => {
     if (memberBal?.length > 0) {
       const isPresent = memberBal?.find(
@@ -86,7 +120,20 @@ export default function Group() {
   ) {
     return null;
   }
-   console.log(memberBal);
+
+  const hasLoan = false; //loanDetails.date === 0;
+  const openProposal = proposal?.filter((item) => item?.currentStatus === 0);
+
+  const onProposalExpired = (id) => {
+    console.log("onProposalExpired called");
+    let proposalCopy = [...proposal];
+    const index = proposalCopy.findIndex((item) => item.proposalId == id);
+    if (index != -1) {
+      proposalCopy[index] = { ...proposalCopy[index], currentStatus: 3 };
+    }
+    setProposal(proposalCopy);
+  };
+
   return (
     <>
       <div className={styles.container}>
@@ -120,11 +167,18 @@ export default function Group() {
                     <span> Available: 0</span>
                   )}
                 </h2>
-                {
-                  <CreateProposal
+                {hasLoan ? (
+                  <LoanDetails info={loanDetails} />
+                ) : openProposal.length > 0 ? (
+                  <ProposalItem
                     address={router.query.address}
-                  ></CreateProposal>
-                }
+                    proposalId={openProposal[0].proposalId}
+                    onlyUser={false}
+                    onProposalExpired={onProposalExpired}
+                  />
+                ) : (
+                  <CreateProposal address={router.query.address} />
+                )}
               </div>
               <MemberInfo membersInfo={memberBal} />
             </div>
