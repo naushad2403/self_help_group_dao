@@ -341,6 +341,71 @@ const shg_abi = [
         name: "_proposalId",
         type: "uint256",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "proposer",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "proposalId",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "purpose",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "monthlyInterestRate",
+            type: "uint256",
+          },
+          {
+            internalType: "enum SHG.Status",
+            name: "currentStatus",
+            type: "uint8",
+          },
+          {
+            internalType: "uint256",
+            name: "loanDurationInMonth",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "member",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct SHG.MemberApproval[]",
+            name: "approvers",
+            type: "tuple[]",
+          },
+          {
+            internalType: "uint256",
+            name: "proposalTime",
+            type: "uint256",
+          },
+        ],
+        indexed: false,
+        internalType: "struct SHG.BorrowProposal",
+        name: "proposal",
+        type: "tuple",
+      },
     ],
     name: "ProposalSubmitted",
     type: "event",
@@ -637,6 +702,84 @@ const shg_abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+    ],
+    name: "getProposals",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "proposer",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "proposalId",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "purpose",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "monthlyInterestRate",
+            type: "uint256",
+          },
+          {
+            internalType: "enum SHG.Status",
+            name: "currentStatus",
+            type: "uint8",
+          },
+          {
+            internalType: "uint256",
+            name: "loanDurationInMonth",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "member",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct SHG.MemberApproval[]",
+            name: "approvers",
+            type: "tuple[]",
+          },
+          {
+            internalType: "uint256",
+            name: "proposalTime",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct SHG.BorrowProposal[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "join",
     outputs: [
@@ -709,7 +852,7 @@ const shg_abi = [
         type: "uint256",
       },
     ],
-    name: "proposalId",
+    name: "proposalIds",
     outputs: [
       {
         internalType: "uint256",
