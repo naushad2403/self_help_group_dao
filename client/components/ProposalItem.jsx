@@ -282,8 +282,9 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
           marginTop: "0px",
         }}
       >
-        <h4>Proposal id: {parseInt(proposalInfo.proposalId)}</h4>
-        <h4>Amount(ETH): {parseInt(proposalInfo.amount)}</h4>
+        <h4>Id: {parseInt(proposalInfo.proposalId)}</h4>
+        <h4>Proposar: {proposalInfo.proposer.substring(14)}</h4>
+        <h4>Amount(wei): {parseInt(proposalInfo.amount)}</h4>
         <h4>
           Interest rate/Year(ETH): {parseInt(proposalInfo.monthlyInterestRate)}
         </h4>
