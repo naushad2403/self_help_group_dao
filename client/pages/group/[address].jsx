@@ -32,7 +32,12 @@ export default function Group() {
     },
   });
 
-  useContractRead({
+  const {
+    isLoading: purposeLoading,
+    refetch,
+    isFetching: purposeFetching,
+    data: purposeData,
+  } = useContractRead({
     address: router.query.address,
     abi: shg_abi,
     functionName: "getProposals",
@@ -85,6 +90,7 @@ export default function Group() {
     eventName: "ProposalSubmitted",
     listener(log) {
       setProposalCounter((prev) => prev + 1);
+      refetch();
     },
   });
 
@@ -122,16 +128,39 @@ export default function Group() {
   }
 
   const hasLoan = false; //loanDetails.date === 0;
-  const openProposal = proposal?.filter((item) => item?.currentStatus === 0);
+  const openProposal = proposal?.filter(
+    (item) =>
+      item?.currentStatus == 0 &&
+      parseInt(item.proposalTime) - Math.floor(Date.now() / 1000) > 0
+  );
 
   const onProposalExpired = (id) => {
-    console.log("onProposalExpired called");
     let proposalCopy = [...proposal];
     const index = proposalCopy.findIndex((item) => item.proposalId == id);
+    console.log("inside this", id, index);
     if (index != -1) {
       proposalCopy[index] = { ...proposalCopy[index], currentStatus: 3 };
     }
     setProposal(proposalCopy);
+  };
+
+  const getComponent = () => {
+    if (purposeLoading) {
+      return <p> Loading...</p>;
+    }
+
+    return hasLoan ? (
+      <LoanDetails info={loanDetails} />
+    ) : openProposal.length > 0 ? (
+      <ProposalItem
+        address={router.query.address}
+        proposalId={openProposal[0].proposalId}
+        onlyUser={false}
+        onProposalExpired={onProposalExpired}
+      />
+    ) : (
+      <CreateProposal address={router.query.address} />
+    );
   };
 
   return (
@@ -167,19 +196,9 @@ export default function Group() {
                     <span> Available: 0</span>
                   )}
                 </h2>
-                {hasLoan ? (
-                  <LoanDetails info={loanDetails} />
-                ) : openProposal.length > 0 ? (
-                  <ProposalItem
-                    address={router.query.address}
-                    proposalId={openProposal[0].proposalId}
-                    onlyUser={false}
-                    onProposalExpired={onProposalExpired}
-                  />
-                ) : (
-                  <CreateProposal address={router.query.address} />
-                )}
+                {getComponent()}
               </div>
+
               <MemberInfo membersInfo={memberBal} />
             </div>
           </>
