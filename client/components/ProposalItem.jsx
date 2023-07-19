@@ -41,7 +41,7 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
 
   const accountInfo = useAccount();
 
-  const { loading } = useContractRead({
+  const { data } = useContractRead({
     address: address,
     abi: shg_abi,
     functionName: "borrowProposal",
@@ -54,8 +54,8 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
           temp[key] = data[index];
           index++;
         }
-        setProposalInfo(temp);
         setRemainingSecond(parseInt(data[7]) - Math.floor(Date.now() / 1000));
+        setProposalInfo(temp);
       }
     },
   });
@@ -195,7 +195,12 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
   };
 
   const getStatusText = () => {
-    if (proposalInfo.currentStatus == 0 && remainingSecond < 0) {
+    console.log(
+      "inside this data is",
+      proposalInfo.currentStatus == 0,
+      remainingSecond
+    );
+    if (proposalInfo.currentStatus == 0 && remainingSecond <= 0) {
       if (onProposalExpired) {
         onProposalExpired(proposalId);
       }
@@ -293,10 +298,7 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
             }}
           >
             Voting closes in:{" "}
-            <Timer
-              seconds={remainingSecond}
-              timesUpCb={setRemainingSecond}
-            ></Timer>
+            <Timer seconds={remainingSecond} timesUpCb={setRemainingSecond} />
           </h4>
         )}
         <h4>Duration: {parseInt(proposalInfo.loanDurationInMonth)} Month</h4>

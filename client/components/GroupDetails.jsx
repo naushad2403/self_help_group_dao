@@ -7,9 +7,9 @@ import { addToast } from "../state_management/slices/toast";
 import { ethers } from "ethers";
 
 export const GroupDetails = ({ address }) => {
-  const [withdrawVal, setWithdrawVal] = useState(0);
-  const [depositVal, setDepositVal] = useState(0);
-  const [balance, setBalance] = useState(0);
+  const [withdrawVal, setWithdrawVal] = useState();
+  const [depositVal, setDepositVal] = useState();
+  const [balance, setBalance] = useState();
 
   const dispatch = useDispatch();
 
@@ -132,7 +132,7 @@ export const GroupDetails = ({ address }) => {
               depositObj.write();
               setDepositVal("");
             }}
-            disabled={depositObj.isLoading || withdrawVal.isLoading}
+            disabled={depositObj.isLoading || withdrawObj.isLoading}
           >
             Deposit {depositVal} ETH
           </button>

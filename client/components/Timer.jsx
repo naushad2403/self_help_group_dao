@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import styles from './../styles/Timer.module.css'
+import styles from "./../styles/Timer.module.css";
 
-const Timer = ({ seconds, timesUpCb}) => {
+const Timer = ({ seconds, timesUpCb }) => {
   const [countdown, setCountdown] = useState(seconds);
 
   useEffect(() => {
@@ -13,11 +13,10 @@ const Timer = ({ seconds, timesUpCb}) => {
       return () => {
         clearInterval(timer);
       };
-    }else{
+    } else {
       timesUpCb(countdown);
     }
   }, [countdown, timesUpCb]);
-
 
   const formatTime = (time) => {
     const hours = Math.floor(time / 3600)
@@ -29,7 +28,6 @@ const Timer = ({ seconds, timesUpCb}) => {
     const seconds = (time % 60).toString().padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   };
-
 
   return (
     <div>
