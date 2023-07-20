@@ -216,13 +216,13 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "address",
-        name: "_member",
+        name: "member",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "_amount",
+        name: "amount",
         type: "uint256",
       },
     ],
@@ -267,7 +267,7 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "address",
-        name: "_member",
+        name: "member",
         type: "address",
       },
     ],
@@ -312,7 +312,7 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "_proposalId",
+        name: "proposalId",
         type: "uint256",
       },
     ],
@@ -325,7 +325,7 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "_proposalId",
+        name: "proposalId",
         type: "uint256",
       },
     ],
@@ -338,7 +338,7 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "_proposalId",
+        name: "proposalId",
         type: "uint256",
       },
       {
@@ -435,13 +435,13 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "address",
-        name: "_member",
+        name: "member",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "_amount",
+        name: "amount",
         type: "uint256",
       },
     ],
@@ -684,6 +684,52 @@ const shg_abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_member",
+        type: "address",
+      },
+    ],
+    name: "getLoanDetails",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "proposalId",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "interestRate",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "date",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct SHG.Loan",
+        name: "loan",
+        type: "tuple",
+      },
+      {
+        internalType: "uint256",
+        name: "currBalance",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getMemberWithBalance",
     outputs: [
@@ -790,40 +836,6 @@ const shg_abi = [
       },
     ],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "loanDetails",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "proposalId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "interestRate",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "date",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -940,4 +952,18 @@ export const parseToEther = (amount) => {
   const value = ethers.formatEther(BigInt(amount || 0));
   return parseFloat(value).toFixed(3);
 };
-export { group_abi, shg_abi };
+
+// Convert timestamp (seconds) to datetime (JavaScript)
+const timestampToDateTime = (timestamp) => {
+  const date = new Date(timestamp * 1000);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+export { group_abi, shg_abi, timestampToDateTime};

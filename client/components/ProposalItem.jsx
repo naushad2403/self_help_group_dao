@@ -117,7 +117,12 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
     abi: shg_abi,
     eventName: "ProposalClaimed",
     listener(log) {
-      setProposalInfo((prev) => ({ ...prev, currentStatus: 1 }));
+        if (log.length > 0) {
+          const pid = parseInt(log[0].args.proposalId);
+          if (pid == proposalId) {
+              setProposalInfo((prev) => ({ ...prev, currentStatus: 1 }));
+          }
+        }
     },
   });
 
@@ -183,8 +188,9 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
   };
 
   const canOwnerClaim = () => {
+    console.log(BigInt(getTotalApprovedLimit()) == BigInt(proposalInfo.amount), BigInt(getTotalApprovedLimit()), BigInt(proposalInfo.amount) );
     return (
-      getTotalApprovedLimit() == parseInt(proposalInfo.amount) &&
+      BigInt(getTotalApprovedLimit()) == BigInt(proposalInfo.amount) &&
       isOwner &&
       proposalInfo.currentStatus == statusIdx.Open
     );
@@ -200,7 +206,8 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
       proposalInfo.currentStatus == 0,
       remainingSecond
     );
-    if (proposalInfo.currentStatus == 0 && remainingSecond <= 0) {
+    if (proposalInfo.currentStatus == 0 && remainingSecond <= 0 && 
+      BigInt(proposalInfo.amount) != BigInt(getTotalApprovedLimit()) ) {
       if (onProposalExpired) {
         onProposalExpired(proposalId);
       }
@@ -237,7 +244,7 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
 
   const getApprovalLimit = () => {
     // TODO check if user have that much amount to approved
-    let max = parseFloat(proposalInfo.amount) - getTotalApprovedLimit();
+    let max = BigInt(proposalInfo.amount) - BigInt(getTotalApprovedLimit());
     if (max == 0) {
       return { min: 0, max: 0 };
     }
@@ -249,6 +256,10 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
     if (approvalAmount === 0) return true;
   };
 
+  const showInputBox = () => {
+    return !isOwner && proposalInfo.currentStatus==statusIdx.Open
+  }
+
   const handleApprovalInputChange = (event) => {
     const value = event.target.value;
     if (value === "") {
@@ -259,8 +270,8 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
 
     if (value === "" || validNumberRegex.test(value)) {
       const intValue = parseFloat(value);
-      const min = getApprovalLimit().min;
-      const max = getApprovalLimit().max;
+      const min = parseToEther(getApprovalLimit().min);
+      const max = parseToEther(getApprovalLimit().max);
 
       console.log("Min", min, "Max", max);
 
@@ -283,8 +294,8 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
         }}
       >
         <h4>Id: {parseInt(proposalInfo.proposalId)}</h4>
-        <h4>Proposar: {proposalInfo.proposer.substring(14)}</h4>
-        <h4>Amount(wei): {parseInt(proposalInfo.amount)}</h4>
+        <h4>Proposar: {proposalInfo.proposer.substring(-1, 6)}</h4>
+        <h4>Amount(ETH): {parseToEther(proposalInfo.amount)}</h4>
         <h4>
           Interest rate/Year(ETH): {parseInt(proposalInfo.monthlyInterestRate)}
         </h4>
@@ -310,7 +321,7 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
         <div className={styles.purposeContainer}>
           <p>{proposalInfo.purpose}</p>
           <div className={styles.approveButtonContainer}>
-            {!isOwner && getApprovalLimit().min != getApprovalLimit().max && (
+            {showInputBox() && (
               <div className={styles.sliderContainer}>
                 Max Allowed Value: {getApprovalLimit().max} ETH{" "}
                 <input
