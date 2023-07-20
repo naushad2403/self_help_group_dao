@@ -8,6 +8,7 @@ import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
 import LoanDetails from "../../components/LoanDetails";
 import ProposalItem from "../../components/ProposalItem";
+import ErrorBoundary from "../../components/ErrorBoundary";
 
 export default function Group() {
   const router = useRouter();
@@ -200,10 +201,11 @@ export default function Group() {
                     <span> Available: 0</span>
                   )}
                 </h2>
-                {getComponent()}
+                <ErrorBoundary>{getComponent()}</ErrorBoundary>
               </div>
-
-              <MemberInfo membersInfo={memberBal} />
+              <ErrorBoundary>
+                <MemberInfo membersInfo={memberBal} />
+              </ErrorBoundary>
             </div>
           </>
         )}

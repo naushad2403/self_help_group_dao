@@ -6,7 +6,7 @@ export const Switch = ({ value, onChange, label }) => {
     <div className={styles.switchWrapper}>
       <div className={styles.switch}>
         <input type="checkbox" id="toggle" value={value} onChange={onChange} />
-        <label for="toggle"></label>
+        <label htmlFor="toggle"></label>
       </div>
       <span className={styles.labelText}>{label}</span>
     </div>
