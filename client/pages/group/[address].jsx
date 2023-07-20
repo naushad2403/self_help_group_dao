@@ -3,7 +3,7 @@ import styles from "./../../styles/GroupView.module.css";
 import { useEffect, useState } from "react";
 import { GroupDetails } from "../../components/GroupDetails";
 import { useContractEvent, useContractRead, useAccount } from "wagmi";
-import { shg_abi } from "../../util";
+import { parseToEther, shg_abi, timestampToDateTime } from "../../util";
 import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
 import LoanDetails from "../../components/LoanDetails";
@@ -17,7 +17,7 @@ export default function Group() {
     proposalId: 0,
     amount: 0,
     interestRate: 0,
-    date: 0,
+    date: 0
   });
   const [proposal, setProposal] = useState([]);
 
@@ -50,15 +50,17 @@ export default function Group() {
   useContractRead({
     address: router.query.address,
     abi: shg_abi,
-    functionName: "loanDetails",
+    functionName: "getLoanDetails",
     args: [accountInfo.address],
     onSettled(data, error) {
-      if (data) {
+      console.log("Res Loan details", data, error);
+      if (data[0]) {
         let ans = {};
         let index = 0;
         for (let key in loanDetails) {
-          ans[key] = parseInt(data[index++]);
+          ans[key] = data[0][key];
         }
+        ans["currentBalance"] = data[1];
         setDetails(ans);
       }
     },
@@ -127,7 +129,9 @@ export default function Group() {
     return null;
   }
 
-  const hasLoan = false; //loanDetails.date === 0;
+  console.log('loanDetails', loanDetails)
+
+  const hasLoan = loanDetails.amount != 0;
   const openProposal = proposal?.filter(
     (item) =>
       item?.currentStatus == 0 &&

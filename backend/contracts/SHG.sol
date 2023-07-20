@@ -13,7 +13,7 @@ contract SHG {
     uint256 public counter = 0;
     string public name;
     uint256 public proposalVotingPeriod = 300; // 72 hours in seconds
-    mapping(address => Loan) public loanDetails;
+    mapping(address => Loan) loanDetails;
     DistributionProposal public distributionProposal;
 
     enum Status {
@@ -51,14 +51,15 @@ contract SHG {
         bool isRunning;
     }
 
-    event Withdrawn(address _member, uint256 _amount);
-    event Deposited(address _member, uint256 _amount);
+
+    event Withdrawn(address member, uint256 amount);
+    event Deposited(address member, uint256 amount);
     event GroupBalanceUpdated(uint256 balance);
     event UserBalanceUpdated(address member, uint256 balance);
-    event ProposalCancelled(uint256 _proposalId);
-    event ProposalClaimed(uint256 _proposalId);
-    event MembersJoined(address _member);
-    event ProposalSubmitted(uint256 _proposalId, BorrowProposal proposal);
+    event ProposalCancelled(uint256 proposalId);
+    event ProposalClaimed(uint256 proposalId);
+    event MembersJoined(address member);
+    event ProposalSubmitted(uint256 proposalId, BorrowProposal proposal);
     event ApprovalUpdated(uint256 proposalId, address member, uint256 amount);
 
     event AmountRecievedFromLoanPayment(
@@ -69,6 +70,7 @@ contract SHG {
 
     event MoneyDistributed(address distributor);
     event MoneyDistributionShareSent(address member, uint256 amount);
+
 
     constructor(string memory _name) payable {
         members.push(tx.origin);
@@ -83,6 +85,12 @@ contract SHG {
         );
         distributionProposal.isRunning = true;
         distributionProposal.expiryTime = block.timestamp + 84400;
+    }
+
+    function getLoanDetails( address _member) external  view   returns(Loan memory loan, uint256 currBalance ) {
+        Loan memory l  = loanDetails[_member];
+        uint256 cb = calculateLoanWithInterest(l.amount, l.interestRate, l.date);
+        return (l, cb);
     }
 
     function rejectDistributionProposal() external onlyMember {
@@ -218,7 +226,7 @@ contract SHG {
     function approveLimit(
         uint256 _proposalId,
         uint256 _amount
-    ) external returns (bool) {
+    ) onlyMember external returns (bool) {
         MemberApproval[] storage approvers = borrowProposal[_proposalId]
             .approvers;
 
@@ -254,12 +262,10 @@ contract SHG {
             emit GroupBalanceUpdated(address(this).balance);
             return;
         }
-        uint256 currentTime = block.timestamp;
-        uint256 timeDiff = currentTime - loan.date;
         uint256 totalBalance = calculateLoanWithInterest(
             loan.amount,
             loan.interestRate,
-            timeDiff
+            loan.date
         );
 
         MemberApproval[] memory approvers = getApprovers(loan.proposalId);
@@ -283,7 +289,7 @@ contract SHG {
             loan.date = 0;
         } else {
             loan.amount = loan.amount.sub(totalBalance);
-            loan.date = currentTime;
+            loan.date = block.timestamp;
         }
 
         emit LoanUpdated(msg.sender, loan.amount);
@@ -294,9 +300,11 @@ contract SHG {
     function calculateLoanWithInterest(
         uint256 principal,
         uint256 interestRate,
-        uint256 time
-    ) internal pure returns (uint256) {
-        return (principal.mul(interestRate ** time)).div(100).add(principal);
+        uint256 date
+    ) internal view returns (uint256) {
+        uint256 currentTime = block.timestamp;
+        uint256 timeDiff = currentTime - date;
+        return (principal.mul(interestRate.div(100)).mul(timeDiff.div(31536000))).add(principal);
     }
 
     function getProposals(
