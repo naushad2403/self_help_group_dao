@@ -283,10 +283,11 @@ contract SHG {
             );
         }
 
-        balances[msg.sender] = balances[msg.sender].add(msg.value);
+       
         if (loan.amount <= msg.value) {
             loan.amount = 0;
             loan.date = 0;
+            balances[msg.sender] = balances[msg.sender].add(msg.value.sub(totalBalance));
         } else {
             loan.amount = loan.amount.sub(totalBalance);
             loan.date = block.timestamp;
