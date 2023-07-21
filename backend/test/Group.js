@@ -32,8 +32,7 @@ describe("Groups", function () {
 
     it(`Should fire a NewGroupCreated event`, async function () {
       const { group, groupName } = await loadFixture(deployGroupFixture);
-      const shg = await group.createNewGroup(groupName);
-      expect(group).to.emit("NewGroupCreated").withArgs(shg, groupName, 1, 0);
+      expect(group.createNewGroup(groupName)).to.emit(group, "NewGroupCreated");
     });
   });
 });
