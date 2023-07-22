@@ -18,7 +18,7 @@ export default function Group() {
     proposalId: 0,
     amount: 0,
     interestRate: 0,
-    date: 0
+    date: 0,
   });
   const [proposal, setProposal] = useState([]);
 
@@ -130,7 +130,7 @@ export default function Group() {
     return null;
   }
 
-  console.log('loanDetails', loanDetails)
+  console.log("loanDetails", loanDetails);
 
   const hasLoan = loanDetails.amount != 0;
   const openProposal = proposal?.filter(
@@ -201,7 +201,9 @@ export default function Group() {
                     <span> Available: 0</span>
                   )}
                 </h2>
-                <ErrorBoundary>{getComponent()}</ErrorBoundary>
+                <div className={styles.detailWrapper}>
+                  <ErrorBoundary>{getComponent()}</ErrorBoundary>
+                </div>
               </div>
               <ErrorBoundary>
                 <MemberInfo membersInfo={memberBal} />
