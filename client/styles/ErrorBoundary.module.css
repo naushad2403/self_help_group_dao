@@ -1,0 +1,13 @@
+.ErrorWrapper {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  background-color: rgb(0, 0, 0);
+  box-shadow: 0 4px 8px 0 rgba(241, 243, 244, 0.2),
+    0 6px 20px 0 rgba(246, 241, 241, 0.19);
+  justify-content: center;
+  align-items: center;
+  margin: 3rem auto;
+  width: 50%;
+  padding: 2rem;
+}

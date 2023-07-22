@@ -1,27 +1,27 @@
 import React from "react";
-import styles from "../styles/MemberInfo.module.css";
+import styles from "../styles/DepositorInfo.module.css";
 import { parseToEther } from "../util";
 
-const DepositerInfo = ({ memberInfo }) => {
-  console.log("inside this memeberInfo", memberInfo);
+const DepositerInfo = ({ depositorInfo }) => {
+  console.log("inside this memeberInfo", depositorInfo);
   return (
-    <div className={styles.memberInfoWrapper}>
-      <h2 className={styles.memberHeading}>Depositors</h2>
-      <div className={styles.memberInfo}>
+    <div className={styles.depositorInfoWrapper}>
+      <h2 className={styles.depositorHeading}>Depositors</h2>
+      <div className={styles.depositorInfo}>
         <span>Accounts</span>
         <span> Amount</span>
       </div>
 
       <div>
-        {(memberInfo || []).map((x) => {
+        {(depositorInfo || []).map((x) => {
           return (
-            <div className={styles.memberInfo} key={x.address}>
+            <div className={styles.depositorInfo} key={x.address}>
               {" "}
               <a
                 target="_blank"
                 rel="noreferrer"
-                className={styles.memberInfoAnchor}
-                href={`${process.env.NEXT_PUBLIC_BLOXPLORER}address/${x.member}`}
+                className={styles.depositorInfoAnchor}
+                href={`${process.env.NEXT_PUBLIC_BLOXPLORER}address/${x.depositor}`}
               >
                 {x.member}
               </a>{" "}

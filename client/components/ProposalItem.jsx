@@ -41,7 +41,7 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
 
   const accountInfo = useAccount();
 
-  const { data } = useContractRead({
+  useContractRead({
     address: address,
     abi: shg_abi,
     functionName: "borrowProposal",
@@ -117,12 +117,12 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
     abi: shg_abi,
     eventName: "ProposalClaimed",
     listener(log) {
-        if (log.length > 0) {
-          const pid = parseInt(log[0].args.proposalId);
-          if (pid == proposalId) {
-              setProposalInfo((prev) => ({ ...prev, currentStatus: 1 }));
-          }
+      if (log.length > 0) {
+        const pid = parseInt(log[0].args.proposalId);
+        if (pid == proposalId) {
+          setProposalInfo((prev) => ({ ...prev, currentStatus: 1 }));
         }
+      }
     },
   });
 
@@ -188,7 +188,11 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
   };
 
   const canOwnerClaim = () => {
-    console.log(BigInt(getTotalApprovedLimit()) == BigInt(proposalInfo.amount), BigInt(getTotalApprovedLimit()), BigInt(proposalInfo.amount) );
+    console.log(
+      BigInt(getTotalApprovedLimit()) == BigInt(proposalInfo.amount),
+      BigInt(getTotalApprovedLimit()),
+      BigInt(proposalInfo.amount)
+    );
     return (
       BigInt(getTotalApprovedLimit()) == BigInt(proposalInfo.amount) &&
       isOwner &&
@@ -206,8 +210,11 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
       proposalInfo.currentStatus == 0,
       remainingSecond
     );
-    if (proposalInfo.currentStatus == 0 && remainingSecond <= 0 && 
-      BigInt(proposalInfo.amount) != BigInt(getTotalApprovedLimit()) ) {
+    if (
+      proposalInfo.currentStatus == 0 &&
+      remainingSecond <= 0 &&
+      BigInt(proposalInfo.amount) != BigInt(getTotalApprovedLimit())
+    ) {
       if (onProposalExpired) {
         onProposalExpired(proposalId);
       }
@@ -257,8 +264,8 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
   };
 
   const showInputBox = () => {
-    return !isOwner && proposalInfo.currentStatus==statusIdx.Open
-  }
+    return !isOwner && proposalInfo.currentStatus == statusIdx.Open;
+  };
 
   const handleApprovalInputChange = (event) => {
     const value = event.target.value;
@@ -273,9 +280,6 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
       const min = parseToEther(getApprovalLimit().min);
       const max = parseToEther(getApprovalLimit().max);
 
-      console.log("Min", min, "Max", max);
-
-      // Check if intValue is within the valid range
       if (!isNaN(intValue) && intValue >= min && intValue <= max) {
         setApprovalAmount(value);
       }
@@ -302,7 +306,6 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
         {showTimer() && (
           <h4
             style={{
-              // marginLeft: "40px",
               border: "1px solid",
               borderRadius: "5px",
               padding: "10px",
@@ -363,9 +366,8 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
               </button>
             )}
           </div>
-
-          {!isOwner && approvedAmountByUser() > 0 && (
-            <DepositerInfo memberInfo={voterDetails} />
+          {voterDetails.length > 0 && (
+            <DepositerInfo depositorInfo={voterDetails} />
           )}
         </div>
       }

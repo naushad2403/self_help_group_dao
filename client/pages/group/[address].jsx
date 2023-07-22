@@ -8,6 +8,7 @@ import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
 import LoanDetails from "../../components/LoanDetails";
 import ProposalItem from "../../components/ProposalItem";
+import ErrorBoundary from "../../components/ErrorBoundary";
 
 export default function Group() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function Group() {
     proposalId: 0,
     amount: 0,
     interestRate: 0,
-    date: 0
+    date: 0,
   });
   const [proposal, setProposal] = useState([]);
 
@@ -129,7 +130,7 @@ export default function Group() {
     return null;
   }
 
-  console.log('loanDetails', loanDetails)
+  console.log("loanDetails", loanDetails);
 
   const hasLoan = loanDetails.amount != 0;
   const openProposal = proposal?.filter(
@@ -200,10 +201,13 @@ export default function Group() {
                     <span> Available: 0</span>
                   )}
                 </h2>
-                {getComponent()}
+                <div className={styles.detailWrapper}>
+                  <ErrorBoundary>{getComponent()}</ErrorBoundary>
+                </div>
               </div>
-
-              <MemberInfo membersInfo={memberBal} />
+              <ErrorBoundary>
+                <MemberInfo membersInfo={memberBal} />
+              </ErrorBoundary>
             </div>
           </>
         )}
