@@ -192,7 +192,7 @@ contract SHG {
         for (uint256 i = 0; i < approvers.length; i++) {
             require(
                 balances[approvers[i].member] >= approvers[i].amount,
-                "Insufficient balance for the approved percentage"
+                "Insufficient balance in any approver account"
             );
             balances[approvers[i].member] = balances[approvers[i].member].sub(
                 approvers[i].amount
@@ -257,7 +257,7 @@ contract SHG {
         Loan storage loan = loanDetails[msg.sender];
         if (loan.amount == 0) {
             balances[msg.sender] = balances[msg.sender].add(msg.value);
-            emit Deposited(msg.sender, msg.value);
+            // Deposited(msg.sender, msg.value);
             emit UserBalanceUpdated(msg.sender, balances[msg.sender]);
             emit GroupBalanceUpdated(address(this).balance);
             return;
