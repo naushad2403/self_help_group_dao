@@ -2,6 +2,11 @@ This is a [RainbowKit](https://rainbowkit.com) + [wagmi](https://wagmi.sh) + [Ne
 
 ## Getting Started
 
+
+This application is inspired by  Self help group (https://www.drishtiias.com/to-the-points/Paper2/self-help-groups-shgs). 
+It's based on Ethereum blockchain. People can create group, join them, deposite money into it and lend that money to peer on interest.
+
+
 First, run the development server:
 
 ```
