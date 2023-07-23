@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-import { useContractRead, useContractEvent } from "wagmi";
+import { useContractRead, useContractEvent, useAccount } from "wagmi";
 import { shg_abi } from "../../util";
 import ProposalItem from "../../components/ProposalItem";
 import { useRouter } from "next/router";
@@ -12,6 +12,8 @@ const Proposals = () => {
   const [count, setCount] = useState(0);
   const router = useRouter();
   const [onlyUser, setOnlyUser] = useState(false);
+  const [memberBal, setMemberBal] = useState();
+  const accountInfo = useAccount();
 
   useContractRead({
     address: router.query.address,
@@ -34,6 +36,35 @@ const Proposals = () => {
   const onChange = (e) => {
     setOnlyUser(e.target.checked);
   };
+
+  const { isFetching, isLoading, data } = useContractRead({
+    address: router.query.address,
+    abi: shg_abi,
+    functionName: "getMemberWithBalance",
+    onSettled(data, error) {
+      if (!data) return;
+      setMemberBal(
+        data[0].map((addr, balIdx) => {
+          return { address: addr, balance: parseInt(data[1][balIdx]) };
+        })
+      );
+    },
+  });
+
+  useEffect(() => {
+    if (memberBal?.length > 0) {
+      const isPresent = memberBal?.find(
+        (item) => item.address === accountInfo.address
+      );
+      if (!isPresent) {
+        router.replace("/");
+      }
+    }
+  }, [memberBal, accountInfo]);
+
+  if (isFetching || isLoading) {
+    return "Loading....";
+  }
 
   return (
     <div>
