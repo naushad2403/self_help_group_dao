@@ -15,7 +15,9 @@ export default function CreateGroup() {
       dispatch(addToast({ title: "Group Created", body: data.hash }));
     },
     onError: (error) => {
-      dispatch(addToast({ title: "Error ", body: JSON.stringify(error) }));
+      dispatch(
+        addToast({ title: "Error ", body: JSON.stringify(error?.details) })
+      );
     },
   });
 

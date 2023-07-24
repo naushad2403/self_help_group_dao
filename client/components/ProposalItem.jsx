@@ -6,10 +6,12 @@ import {
   useContractWrite,
   useContractEvent,
 } from "wagmi";
-import { shg_abi } from "../util";
+import { parseToEther, shg_abi } from "../util";
 import Timer from "./Timer";
 import { addToast } from "../state_management/slices/toast";
 import { useDispatch } from "react-redux";
+import DepositerInfo from "./DepositorInfo";
+import { ethers } from "ethers";
 
 let initialState = {
   amount: 0,
@@ -22,7 +24,7 @@ let initialState = {
   proposalTime: 0,
 };
 
-const ProposalItem = ({ address, proposalId, onlyUser }) => {
+const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
   const [proposalInfo, setProposalInfo] = useState(initialState);
   const [voterDetails, setVoter] = useState([]);
   const [remainingSecond, setRemainingSecond] = useState();
@@ -52,8 +54,8 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
           temp[key] = data[index];
           index++;
         }
-        setProposalInfo(temp);
         setRemainingSecond(parseInt(data[7]) - Math.floor(Date.now() / 1000));
+        setProposalInfo(temp);
       }
     },
   });
@@ -115,7 +117,12 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     abi: shg_abi,
     eventName: "ProposalClaimed",
     listener(log) {
-      setProposalInfo((prev) => ({ ...prev, currentStatus: 1 }));
+      if (log.length > 0) {
+        const pid = parseInt(log[0].args.proposalId);
+        if (pid == proposalId) {
+          setProposalInfo((prev) => ({ ...prev, currentStatus: 1 }));
+        }
+      }
     },
   });
 
@@ -142,7 +149,10 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     address: address,
     abi: shg_abi,
     functionName: "approveLimit",
-    args: [proposalId, approvalAmount],
+    args: [
+      proposalId,
+      approvalAmount ? ethers.parseEther(approvalAmount.toString()) : "0",
+    ],
     onSuccess(data) {
       dispatch(addToast({ title: "Approval equest", body: data.hash }));
     },
@@ -178,8 +188,13 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   };
 
   const canOwnerClaim = () => {
+    console.log(
+      BigInt(getTotalApprovedLimit()) == BigInt(proposalInfo.amount),
+      BigInt(getTotalApprovedLimit()),
+      BigInt(proposalInfo.amount)
+    );
     return (
-      getTotalApprovedLimit() == parseInt(proposalInfo.amount) &&
+      BigInt(getTotalApprovedLimit()) == BigInt(proposalInfo.amount) &&
       isOwner &&
       proposalInfo.currentStatus == statusIdx.Open
     );
@@ -190,7 +205,19 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
   };
 
   const getStatusText = () => {
-    if (proposalInfo.currentStatus == 0 && remainingSecond < 0) {
+    console.log(
+      "inside this data is",
+      proposalInfo.currentStatus == 0,
+      remainingSecond
+    );
+    if (
+      proposalInfo.currentStatus == 0 &&
+      remainingSecond <= 0 &&
+      BigInt(proposalInfo.amount) != BigInt(getTotalApprovedLimit())
+    ) {
+      if (onProposalExpired) {
+        onProposalExpired(proposalId);
+      }
       return statusVal[statusIdx.Expired];
     } else return statusVal[proposalInfo.currentStatus];
   };
@@ -203,7 +230,7 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
     return null;
   }
   const handleSliderChange = (event) => {
-    setApprovalAmount(parseInt(event.target.value));
+    setApprovalAmount(event.target.value);
   };
 
   const getTotalApprovedLimit = () => {
@@ -224,9 +251,39 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
 
   const getApprovalLimit = () => {
     // TODO check if user have that much amount to approved
-    let max = parseInt(proposalInfo.amount) - getTotalApprovedLimit();
-    let min = Math.min(5, max);
-    return { min, max };
+    let max = BigInt(proposalInfo.amount) - BigInt(getTotalApprovedLimit());
+    if (max == 0) {
+      return { min: 0, max: 0 };
+    }
+    return { min: 0, max: max };
+  };
+
+  const disabledApproveButton = () => {
+    if (approvedAmountByUser() > 0) return false;
+    if (approvalAmount === 0) return true;
+  };
+
+  const showInputBox = () => {
+    return !isOwner && proposalInfo.currentStatus == statusIdx.Open;
+  };
+
+  const handleApprovalInputChange = (event) => {
+    const value = event.target.value;
+    if (value === "") {
+      return setApprovalAmount("");
+    }
+    // Use regular expression to check for valid positive float numbers with 6 decimal points
+    const validNumberRegex = /^\d+(\.\d{1,6})?$/;
+
+    if (value === "" || validNumberRegex.test(value)) {
+      const intValue = parseFloat(value);
+      const min = parseToEther(getApprovalLimit().min);
+      const max = parseToEther(getApprovalLimit().max);
+
+      if (!isNaN(intValue) && intValue >= min && intValue <= max) {
+        setApprovalAmount(value);
+      }
+    }
   };
 
   return (
@@ -240,15 +297,15 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
           marginTop: "0px",
         }}
       >
-        <h4>Proposal id: {parseInt(proposalInfo.proposalId)}</h4>
-        <h4>Amount(wei): {parseInt(proposalInfo.amount)}</h4>
+        <h4>Id: {parseInt(proposalInfo.proposalId)}</h4>
+        <h4>Proposar: {proposalInfo.proposer.substring(-1, 6)}</h4>
+        <h4>Amount(ETH): {parseToEther(proposalInfo.amount)}</h4>
         <h4>
-          Interest rate/Year(wei): {parseInt(proposalInfo.monthlyInterestRate)}
+          Interest rate/Year(ETH): {parseInt(proposalInfo.monthlyInterestRate)}
         </h4>
         {showTimer() && (
           <h4
             style={{
-              // marginLeft: "40px",
               border: "1px solid",
               borderRadius: "5px",
               padding: "10px",
@@ -256,40 +313,39 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
             }}
           >
             Voting closes in:{" "}
-            <Timer
-              seconds={remainingSecond}
-              timesUpCb={setRemainingSecond}
-            ></Timer>
+            <Timer seconds={remainingSecond} timesUpCb={setRemainingSecond} />
           </h4>
         )}
         <h4>Duration: {parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
         <h4>{getStatusText()}</h4>
-        <h4>Approved Limit: {getTotalApprovedLimit()} Wei</h4>
+        <h4>Approved Limit: {parseToEther(getTotalApprovedLimit())} ETH</h4>
       </div>
       {
         <div className={styles.purposeContainer}>
           <p>{proposalInfo.purpose}</p>
           <div className={styles.approveButtonContainer}>
-            {!isOwner && (
+            {showInputBox() && (
               <div className={styles.sliderContainer}>
+                Max Allowed Value: {getApprovalLimit().max} ETH{" "}
                 <input
-                  type="range"
-                  id="approvalSlider"
-                  min={getApprovalLimit().min}
-                  max={getApprovalLimit().max}
+                  type="number"
+                  id="approvalInput"
                   value={approvalAmount}
-                  onChange={handleSliderChange}
-                  style={{ marginRight: "10px", width: "20%", height: "20px" }}
+                  onChange={handleApprovalInputChange}
+                  placeholder="Enter Amount in ETH"
+                  className={styles.inputApproval}
                 />
-
                 <button
-                  onClick={approveReq.write}
-                  disabled={approvalAmount === 0}
+                  onClick={() => {
+                    setApprovalAmount(0);
+                    approveReq.write();
+                  }}
+                  disabled={disabledApproveButton()}
                 >
-                  Approve ({approvalAmount} Wei)
+                  Approve ({approvalAmount} ETH)
                 </button>
                 <label>
-                  {`You are approving  (${approvalAmount} Wei) with interest rate of  ${parseInt(
+                  {`You are approving  (${approvalAmount} ETH) with interest rate of  ${parseInt(
                     proposalInfo.monthlyInterestRate
                   )}%/Year`}
                 </label>
@@ -309,12 +365,10 @@ const ProposalItem = ({ address, proposalId, onlyUser }) => {
                 Claim
               </button>
             )}
-            {!isOwner && approvedAmountByUser() > 0 && (
-              <h3 style={{ color: "white" }}>
-                You've approved ({approvedAmountByUser()} Wei)
-              </h3>
-            )}
           </div>
+          {voterDetails.length > 0 && (
+            <DepositerInfo depositorInfo={voterDetails} />
+          )}
         </div>
       }
     </div>

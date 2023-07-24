@@ -216,13 +216,13 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "address",
-        name: "_member",
+        name: "member",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "_amount",
+        name: "amount",
         type: "uint256",
       },
     ],
@@ -267,7 +267,7 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "address",
-        name: "_member",
+        name: "member",
         type: "address",
       },
     ],
@@ -312,7 +312,7 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "_proposalId",
+        name: "proposalId",
         type: "uint256",
       },
     ],
@@ -325,7 +325,7 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "_proposalId",
+        name: "proposalId",
         type: "uint256",
       },
     ],
@@ -338,8 +338,73 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "_proposalId",
+        name: "proposalId",
         type: "uint256",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "proposer",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "proposalId",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "purpose",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "monthlyInterestRate",
+            type: "uint256",
+          },
+          {
+            internalType: "enum SHG.Status",
+            name: "currentStatus",
+            type: "uint8",
+          },
+          {
+            internalType: "uint256",
+            name: "loanDurationInMonth",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "member",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct SHG.MemberApproval[]",
+            name: "approvers",
+            type: "tuple[]",
+          },
+          {
+            internalType: "uint256",
+            name: "proposalTime",
+            type: "uint256",
+          },
+        ],
+        indexed: false,
+        internalType: "struct SHG.BorrowProposal",
+        name: "proposal",
+        type: "tuple",
       },
     ],
     name: "ProposalSubmitted",
@@ -370,13 +435,13 @@ const shg_abi = [
       {
         indexed: false,
         internalType: "address",
-        name: "_member",
+        name: "member",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "_amount",
+        name: "amount",
         type: "uint256",
       },
     ],
@@ -619,6 +684,52 @@ const shg_abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_member",
+        type: "address",
+      },
+    ],
+    name: "getLoanDetails",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "proposalId",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "interestRate",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "date",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct SHG.Loan",
+        name: "loan",
+        type: "tuple",
+      },
+      {
+        internalType: "uint256",
+        name: "currBalance",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getMemberWithBalance",
     outputs: [
@@ -631,6 +742,84 @@ const shg_abi = [
         internalType: "uint256[]",
         name: "",
         type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+    ],
+    name: "getProposals",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "proposer",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "proposalId",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "purpose",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "monthlyInterestRate",
+            type: "uint256",
+          },
+          {
+            internalType: "enum SHG.Status",
+            name: "currentStatus",
+            type: "uint8",
+          },
+          {
+            internalType: "uint256",
+            name: "loanDurationInMonth",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "member",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct SHG.MemberApproval[]",
+            name: "approvers",
+            type: "tuple[]",
+          },
+          {
+            internalType: "uint256",
+            name: "proposalTime",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct SHG.BorrowProposal[]",
+        name: "",
+        type: "tuple[]",
       },
     ],
     stateMutability: "view",
@@ -650,40 +839,6 @@ const shg_abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "loanDetails",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "proposalId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "interestRate",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "date",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "name",
     outputs: [
@@ -691,6 +846,30 @@ const shg_abi = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "proposalIds",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -773,4 +952,18 @@ export const parseToEther = (amount) => {
   const value = ethers.formatEther(BigInt(amount || 0));
   return parseFloat(value).toFixed(3);
 };
-export { group_abi, shg_abi};
+
+// Convert timestamp (seconds) to datetime (JavaScript)
+const timestampToDateTime = (timestamp) => {
+  const date = new Date(timestamp * 1000);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+export { group_abi, shg_abi, timestampToDateTime};

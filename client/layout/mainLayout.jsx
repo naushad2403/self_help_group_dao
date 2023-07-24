@@ -5,6 +5,8 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { removeToast } from "../state_management/slices/toast";
+import ErrorBoundary from "../components/ErrorBoundary";
+
 export default function MainLayout({ children }) {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -62,7 +64,7 @@ export default function MainLayout({ children }) {
               <ConnectButton />
             </div>
           </div>
-          {children}
+          <ErrorBoundary>{children}</ErrorBoundary>
         </main>
         {/* 
       <footer className={styles.footer}>

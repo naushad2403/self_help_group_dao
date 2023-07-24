@@ -4,12 +4,13 @@ import { shg_abi } from "../util";
 import { useContractWrite } from "wagmi";
 import { useDispatch } from "react-redux";
 import { addToast } from "../state_management/slices/toast";
+import { ethers } from "ethers";
 
 const CreateProposal = ({ address }) => {
-  const [amount, setAmount] = useState("");
-  const [duration, setDuration] = useState("");
-  const [interestRate, setInterestRate] = useState("");
-  const [purpose, setPurpose] = useState("");
+  const [amount, setAmount] = useState(10);
+  const [duration, setDuration] = useState(10);
+  const [interestRate, setInterestRate] = useState(10);
+  const [purpose, setPurpose] = useState("KL;DFSAAKJL;FASKJFSJKJKJSFKAAFKL;S");
 
   const dispatch = useDispatch();
 
@@ -17,7 +18,12 @@ const CreateProposal = ({ address }) => {
     address: address,
     abi: shg_abi,
     functionName: "submitLoanProposal",
-    args: [amount, purpose, interestRate, duration],
+    args: [
+      amount ? ethers.parseEther(amount.toString()) : "0",
+      purpose,
+      interestRate,
+      duration,
+    ],
     onSuccess(data) {
       dispatch(
         addToast({ title: "Proposal Transaction sent", body: data.hash })
@@ -80,6 +86,7 @@ const CreateProposal = ({ address }) => {
       <div className={styles.inputContainer}>
         <h5>Enter amount:</h5>
         <input
+          type="number"
           placeholder="Enter amount"
           value={amount}
           onChange={handleAmountChange}
@@ -89,6 +96,7 @@ const CreateProposal = ({ address }) => {
       <div className={styles.inputContainer}>
         <h5>Enter duration on loan:</h5>
         <input
+          type="number"
           placeholder="Enter duration in month"
           value={duration}
           onChange={handleDurationChange}
@@ -98,6 +106,7 @@ const CreateProposal = ({ address }) => {
       <div className={styles.inputContainer}>
         <h5>Enter interest rate percentage per month:</h5>
         <input
+          type="number"
           placeholder="Enter interest rate percentage"
           value={interestRate}
           onChange={handleInterestRateChange}

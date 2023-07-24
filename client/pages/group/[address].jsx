@@ -1,25 +1,69 @@
 import { useRouter } from "next/router";
 import styles from "./../../styles/GroupView.module.css";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { GroupDetails } from "../../components/GroupDetails";
 import { useContractEvent, useContractRead, useAccount } from "wagmi";
-import { parseToEther, shg_abi } from "../../util";
+import { parseToEther, shg_abi, timestampToDateTime } from "../../util";
 import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
+import LoanDetails from "../../components/LoanDetails";
+import ProposalItem from "../../components/ProposalItem";
+import ErrorBoundary from "../../components/ErrorBoundary";
 
 export default function Group() {
   const router = useRouter();
   const [memberBal, setMemberBal] = useState();
   const [proposalCounter, setProposalCounter] = useState();
+  const [loanDetails, setDetails] = useState({
+    proposalId: 0,
+    amount: 0,
+    interestRate: 0,
+    date: 0,
+  });
+  const [proposal, setProposal] = useState([]);
+
+  const accountInfo = useAccount();
 
   useContractRead({
     address: router.query.address,
     abi: shg_abi,
     functionName: "counter",
     onSettled(data, error) {
-      console.log("counter", data);
       setProposalCounter(parseInt(data));
+    },
+  });
+
+  const {
+    isLoading: purposeLoading,
+    refetch,
+    isFetching: purposeFetching,
+    data: purposeData,
+  } = useContractRead({
+    address: router.query.address,
+    abi: shg_abi,
+    functionName: "getProposals",
+    args: [accountInfo.address],
+    onSuccess(data) {
+      setProposal(data);
+    },
+  });
+
+  useContractRead({
+    address: router.query.address,
+    abi: shg_abi,
+    functionName: "getLoanDetails",
+    args: [accountInfo.address],
+    onSettled(data, error) {
+      console.log("Res Loan details", data, error);
+      if (data[0]) {
+        let ans = {};
+        let index = 0;
+        for (let key in loanDetails) {
+          ans[key] = data[0][key];
+        }
+        ans["currentBalance"] = data[1];
+        setDetails(ans);
+      }
     },
   });
 
@@ -49,6 +93,7 @@ export default function Group() {
     eventName: "ProposalSubmitted",
     listener(log) {
       setProposalCounter((prev) => prev + 1);
+      refetch();
     },
   });
 
@@ -65,8 +110,6 @@ export default function Group() {
       );
     },
   });
-
-  const accountInfo = useAccount();
 
   useEffect(() => {
     if (memberBal?.length > 0) {
@@ -86,7 +129,45 @@ export default function Group() {
   ) {
     return null;
   }
-   console.log(memberBal);
+
+  console.log("loanDetails", loanDetails);
+
+  const hasLoan = loanDetails.amount != 0;
+  const openProposal = proposal?.filter(
+    (item) =>
+      item?.currentStatus == 0 &&
+      parseInt(item.proposalTime) - Math.floor(Date.now() / 1000) > 0
+  );
+
+  const onProposalExpired = (id) => {
+    let proposalCopy = [...proposal];
+    const index = proposalCopy.findIndex((item) => item.proposalId == id);
+    console.log("inside this", id, index);
+    if (index != -1) {
+      proposalCopy[index] = { ...proposalCopy[index], currentStatus: 3 };
+    }
+    setProposal(proposalCopy);
+  };
+
+  const getComponent = () => {
+    if (purposeLoading) {
+      return <p> Loading...</p>;
+    }
+
+    return hasLoan ? (
+      <LoanDetails info={loanDetails} />
+    ) : openProposal.length > 0 ? (
+      <ProposalItem
+        address={router.query.address}
+        proposalId={openProposal[0].proposalId}
+        onlyUser={false}
+        onProposalExpired={onProposalExpired}
+      />
+    ) : (
+      <CreateProposal address={router.query.address} />
+    );
+  };
+
   return (
     <>
       <div className={styles.container}>
@@ -120,13 +201,13 @@ export default function Group() {
                     <span> Available: 0</span>
                   )}
                 </h2>
-                {
-                  <CreateProposal
-                    address={router.query.address}
-                  ></CreateProposal>
-                }
+                <div className={styles.detailWrapper}>
+                  <ErrorBoundary>{getComponent()}</ErrorBoundary>
+                </div>
               </div>
-              <MemberInfo membersInfo={memberBal} />
+              <ErrorBoundary>
+                <MemberInfo membersInfo={memberBal} />
+              </ErrorBoundary>
             </div>
           </>
         )}

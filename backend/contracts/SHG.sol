@@ -9,10 +9,11 @@ contract SHG {
     address[] members;
     mapping(address => uint256) public balances;
     mapping(uint256 => BorrowProposal) public borrowProposal;
+    mapping(address => uint256[]) public proposalIds;
     uint256 public counter = 0;
     string public name;
     uint256 public proposalVotingPeriod = 300; // 72 hours in seconds
-    mapping(address => Loan) public loanDetails;
+    mapping(address => Loan) loanDetails;
     DistributionProposal public distributionProposal;
 
     enum Status {
@@ -50,19 +51,16 @@ contract SHG {
         bool isRunning;
     }
 
-    event Withdrawn(address _member, uint256 _amount);
-    event Deposited(address _member, uint256 _amount);
+
+    event Withdrawn(address member, uint256 amount);
+    event Deposited(address member, uint256 amount);
     event GroupBalanceUpdated(uint256 balance);
     event UserBalanceUpdated(address member, uint256 balance);
-    event ProposalCancelled(uint256 _proposalId);
-    event ProposalClaimed(uint256 _proposalId);
-    event MembersJoined(address _member);
-    event ProposalSubmitted(uint256 _proposalId);
-    event ApprovalUpdated(
-        uint256 proposalId,
-        address member,
-        uint256 amount
-    );
+    event ProposalCancelled(uint256 proposalId);
+    event ProposalClaimed(uint256 proposalId);
+    event MembersJoined(address member);
+    event ProposalSubmitted(uint256 proposalId, BorrowProposal proposal);
+    event ApprovalUpdated(uint256 proposalId, address member, uint256 amount);
 
     event AmountRecievedFromLoanPayment(
         address member,
@@ -73,13 +71,14 @@ contract SHG {
     event MoneyDistributed(address distributor);
     event MoneyDistributionShareSent(address member, uint256 amount);
 
+
     constructor(string memory _name) payable {
         members.push(tx.origin);
         balances[tx.origin] = msg.value;
         name = _name;
     }
 
-    function createDistributionProposal() external {
+    function createDistributionProposal() external onlyMember {
         require(
             !distributionProposal.isRunning,
             "Already a proposal is running"
@@ -88,7 +87,13 @@ contract SHG {
         distributionProposal.expiryTime = block.timestamp + 84400;
     }
 
-    function rejectDistributionProposal() external {
+    function getLoanDetails( address _member) external  view   returns(Loan memory loan, uint256 currBalance ) {
+        Loan memory l  = loanDetails[_member];
+        uint256 cb = calculateLoanWithInterest(l.amount, l.interestRate, l.date);
+        return (l, cb);
+    }
+
+    function rejectDistributionProposal() external onlyMember {
         require(
             distributionProposal.isRunning &&
                 block.timestamp < distributionProposal.expiryTime,
@@ -97,7 +102,7 @@ contract SHG {
         distributionProposal.isRunning = false;
     }
 
-    function distributeMoney() external {
+    function distributeMoney() external onlyMember {
         require(
             distributionProposal.isRunning &&
                 block.timestamp > distributionProposal.expiryTime,
@@ -134,7 +139,7 @@ contract SHG {
 
     event LoanUpdated(address member, uint256 amount);
 
-    function withdrawAmount(uint256 _amount) public {
+    function withdrawAmount(uint256 _amount) public onlyMember {
         require(
             _amount <= balances[msg.sender],
             "Insufficient balance, please create a borrow proposal"
@@ -153,12 +158,13 @@ contract SHG {
         return true;
     }
 
+    //TODO Only if not any loan is running
     function submitLoanProposal(
         uint256 _amount,
         string memory _purpose,
         uint256 _interestRatePerMonth,
         uint256 _loanDurationInMonth
-    ) external returns (uint256) {
+    ) external onlyMember noLoanRunning returns (uint256) {
         BorrowProposal storage proposal = borrowProposal[counter];
         proposal.amount = _amount;
         proposal.proposer = msg.sender;
@@ -168,26 +174,25 @@ contract SHG {
         proposal.purpose = _purpose;
         proposal.proposalTime = block.timestamp + proposalVotingPeriod;
         proposal.currentStatus = Status.Open;
+        proposalIds[msg.sender].push(counter);
+        emit ProposalSubmitted(counter, proposal);
         counter = counter.add(1);
-        emit ProposalSubmitted(counter.sub(1));
         return counter.sub(1);
     }
 
-    function getApprovers(uint256 _proposalId)
-        public
-        view
-        returns (MemberApproval[] memory)
-    {
+    function getApprovers(
+        uint256 _proposalId
+    ) public view returns (MemberApproval[] memory) {
         return (borrowProposal[_proposalId].approvers);
     }
 
     function claimApprovedAmount(uint256 _proposalId) public returns (bool) {
-        (MemberApproval[] memory approvers) = getApprovers(_proposalId);
+        MemberApproval[] memory approvers = getApprovers(_proposalId);
         uint256 totalAmount = 0;
         for (uint256 i = 0; i < approvers.length; i++) {
             require(
                 balances[approvers[i].member] >= approvers[i].amount,
-                "Insufficient balance for the approved percentage"
+                "Insufficient balance in any approver account"
             );
             balances[approvers[i].member] = balances[approvers[i].member].sub(
                 approvers[i].amount
@@ -218,10 +223,10 @@ contract SHG {
         return success;
     }
 
-    function approveLimit(uint256 _proposalId, uint256 _amount)
-        external
-        returns (bool)
-    {
+    function approveLimit(
+        uint256 _proposalId,
+        uint256 _amount
+    ) onlyMember external returns (bool) {
         MemberApproval[] storage approvers = borrowProposal[_proposalId]
             .approvers;
 
@@ -240,7 +245,9 @@ contract SHG {
         return true;
     }
 
-    function cancelProposal(uint256 _proposalId) external returns (bool) {
+    function cancelProposal(
+        uint256 _proposalId
+    ) external onlyMember onlyOpenProposal(_proposalId) returns (bool) {
         borrowProposal[_proposalId].currentStatus = Status.Cancelled;
         emit ProposalCancelled(_proposalId);
         return true;
@@ -250,20 +257,18 @@ contract SHG {
         Loan storage loan = loanDetails[msg.sender];
         if (loan.amount == 0) {
             balances[msg.sender] = balances[msg.sender].add(msg.value);
-            emit Deposited(msg.sender, msg.value);
+            // Deposited(msg.sender, msg.value);
             emit UserBalanceUpdated(msg.sender, balances[msg.sender]);
             emit GroupBalanceUpdated(address(this).balance);
             return;
         }
-        uint256 currentTime = block.timestamp;
-        uint256 timeDiff = currentTime - loan.date;
         uint256 totalBalance = calculateLoanWithInterest(
             loan.amount,
             loan.interestRate,
-            timeDiff
+            loan.date
         );
 
-        (MemberApproval[] memory approvers) = getApprovers(loan.proposalId);
+        MemberApproval[] memory approvers = getApprovers(loan.proposalId);
         for (uint256 i = 0; i < approvers.length; i++) {
             uint256 memberShare = (msg.value.mul(approvers[i].amount)).div(
                 loan.amount
@@ -278,13 +283,14 @@ contract SHG {
             );
         }
 
-        balances[msg.sender] = balances[msg.sender].add(msg.value);
+       
         if (loan.amount <= msg.value) {
             loan.amount = 0;
             loan.date = 0;
+            balances[msg.sender] = balances[msg.sender].add(msg.value.sub(totalBalance));
         } else {
             loan.amount = loan.amount.sub(totalBalance);
-            loan.date = currentTime;
+            loan.date = block.timestamp;
         }
 
         emit LoanUpdated(msg.sender, loan.amount);
@@ -295,24 +301,72 @@ contract SHG {
     function calculateLoanWithInterest(
         uint256 principal,
         uint256 interestRate,
-        uint256 time
-    ) internal pure returns (uint256) {
-        return
-            (principal.mul(interestRate ** time)).div(100).add(principal);
+        uint256 date
+    ) internal view returns (uint256) {
+        uint256 currentTime = block.timestamp;
+        uint256 timeDiff = currentTime - date;
+        return (principal.mul(interestRate.div(100)).mul(timeDiff.div(31536000))).add(principal);
     }
 
-    receive() external payable {
+    function getProposals(
+        address user
+    ) public view returns (BorrowProposal[] memory) {
+        uint length = proposalIds[user].length;
+        BorrowProposal[] memory bp = new BorrowProposal[](length);
+        for (uint i = 0; i < proposalIds[user].length; i++) {
+            bp[i] = borrowProposal[proposalIds[user][i]];
+        }
+        return bp;
+    }
+
+    receive() external payable onlyMember {
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
 
-    fallback() external payable {
+    fallback() external payable onlyMember {
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
     }
 
-    function deposit() external payable {
+    function deposit() external payable onlyMember {
         handleDeposit();
         emit Deposited(msg.sender, msg.value);
+    }
+
+    function isMember() internal view returns (bool) {
+        for (uint i = 0; i < members.length; i++) {
+            if (members[i] == msg.sender) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    modifier onlyMember() {
+        require(isMember(), "You're not member of the group, Please join");
+        _;
+    }
+
+    modifier onlyOpenProposal(uint256 _proposalId) {
+        require(
+            borrowProposal[_proposalId].currentStatus == Status.Open,
+            "Application is close/expired"
+        );
+        _;
+    }
+
+    modifier onlyWithInProposalTime(uint256 _proposalId) {
+        require(
+            borrowProposal[_proposalId].proposalTime >= block.timestamp,
+            "Approving time has been expired"
+        );
+        _;
+    }
+
+    modifier noLoanRunning() {
+        Loan storage loan = loanDetails[msg.sender];
+        require(loan.amount == 0, "Already a loan in running");
+        _;
     }
 }

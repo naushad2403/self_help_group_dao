@@ -32,7 +32,6 @@ export default function MyGroupItem({ address, forJoined }) {
     address: address,
     abi: shg_abi,
     functionName: "getAllMembers",
-
     onSuccess(data) {
       setMembers(data);
     },
@@ -67,7 +66,7 @@ export default function MyGroupItem({ address, forJoined }) {
     eventName: "MembersJoined",
     listener(log) {
       if (log.length > 0) {
-        setMembers((prev) => [...prev, log[0].args._member]);
+        setMembers((prev) => [...prev, log[0].args.member]);
       }
     },
   });

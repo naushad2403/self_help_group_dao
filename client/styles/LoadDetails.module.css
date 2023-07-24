@@ -1,0 +1,12 @@
+.loanDetailsWrapper {
+  margin-left: 20;
+  padding: 10px 0px;
+
+  box-shadow: 0 4px 8px 0 rgba(241, 243, 244, 0.2),
+    0 6px 20px 0 rgba(246, 241, 241, 0.19);
+}
+
+.loanDetailsData {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
