@@ -1,12 +1,13 @@
 {
-  "name": "my-rainbowkit-app",
+  "name": "Self_Help_Group",
   "private": true,
   "version": "0.1.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "shg_abi": "node copyabi.js"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^1.0.0",
