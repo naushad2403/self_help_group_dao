@@ -17,16 +17,6 @@ This application is inspired by  Self help group (https://www.drishtiias.com/to-
 It's based on Ethereum blockchain. People can create group, join them, deposite money into it and lend that money to peer on interest.
 
 
-
-First, run the development server:
-
-```
-Steps to run Backend, Run following commands step by step
-1. npm i
-2. npx hardhat node
-3. npx hardhat run scripts/deploy.js --network localhost
-
-Copy produced contract address and paste into client/env.local NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS=address  
 ```
 
 
@@ -34,6 +24,7 @@ Copy produced contract address and paste into client/env.local NEXT_PUBLIC_GROUP
 Steps to run Client, Run following commands step by step
 1. npm i
 2. npm run dev
+4. npm run shg_abi 
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
