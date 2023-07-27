@@ -3,7 +3,7 @@ import styles from "./../../styles/GroupView.module.css";
 import { useEffect, useState } from "react";
 import { GroupDetails } from "../../components/GroupDetails";
 import { useContractEvent, useContractRead, useAccount } from "wagmi";
-import { parseToEther, shg_abi, timestampToDateTime } from "../../util";
+import { shg_abi } from "../../util";
 import CreateProposal from "../../components/CreateProposal";
 import MemberInfo from "../../components/MemberInfo";
 import LoanDetails from "../../components/LoanDetails";
