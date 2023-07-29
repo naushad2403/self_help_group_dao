@@ -23,8 +23,9 @@ It's based on Ethereum blockchain. People can create group, join them, deposite 
 ```
 Steps to run Client, Run following commands step by step
 1. npm i
-2. npm run dev
-4. npm run shg_abi 
+2. npm run shg_abi 
+3. npm run dev
+
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

@@ -31,8 +31,8 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 console.log("Test network", process.env.NEXT_PUBLIC_ENABLE_TESTNETS);
 
 const { connectors } = getDefaultWallets({
-  appName: "RainbowKit App",
-  projectId: "YOUR_PROJECT_ID",
+  appName: "SHG",
+  projectId: "SHG",
   chains,
 });
 
