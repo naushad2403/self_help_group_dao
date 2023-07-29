@@ -2,22 +2,30 @@ This is a [RainbowKit](https://rainbowkit.com) + [wagmi](https://wagmi.sh) + [Ne
 
 ## Getting Started
 
-First, run the development server:
 
-```
-Steps to run Backend, Run following commands step by step
-1. npm i
-2. npx hardhat node
-3. npx hardhat run scripts/deploy.js --network localhost
 
-Copy produced contract address and paste into client/env.local NEXT_PUBLIC_GROUP_CONTRACT_ADDRESS=address  
+Problem Statement:
+
+A group comprising approximately 10 individuals seeks to facilitate lending and borrowing money among themselves for personal use. The borrowers have the freedom to negotiate the interest rate for their loans.
+
+Solution:
+
+To address this, a system is proposed wherein any member of the group can initiate the formation of a lending/borrowing group and invite others to join. Within this group, members can deposit funds at their convenience and withdraw them as needed. When a member wishes to borrow money, they must create a borrow proposal detailing the desired amount, loan duration, interest rate, and purpose. Other group members willing to lend money can then approve the proposal, allowing the borrower to claim the approved amount. Upon receiving the funds, the borrower will be responsible for depositing the borrowed sum along with the agreed-upon interest, which will be credited to the lender's account.
+
+
+This application is inspired by  Self help group (https://www.drishtiias.com/to-the-points/Paper2/self-help-groups-shgs). 
+It's based on Ethereum blockchain. People can create group, join them, deposite money into it and lend that money to peer on interest.
+
+
 ```
 
 
 ```
 Steps to run Client, Run following commands step by step
 1. npm i
-2. npm run dev
+2. npm run shg_abi 
+3. npm run dev
+
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
