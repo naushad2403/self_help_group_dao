@@ -93,11 +93,12 @@
   margin-left: 1%;
   margin-top: 2%;
   width: 98%;
-  box-shadow: 0 4px 8px 0 rgba(241, 243, 244, 0.2), 0 6px 20px 0 rgba(246, 241, 241, 0.19);
-    height: 10vh;
+  box-shadow: 0 4px 8px 0 rgba(241, 243, 244, 0.2),
+    0 6px 20px 0 rgba(246, 241, 241, 0.19);
+  height: 10vh;
   border-radius: 10px;
   flex-direction: row;
-    justify-content: space-between;
+  justify-content: space-between;
   align-content: center;
   align-items: center;
 }
@@ -119,4 +120,15 @@
 }
 
 .createGroup {
+}
+
+.modal {
+  box-shadow: 0 4px 8px 0 rgba(241, 243, 244, 0.2),
+    0 6px 20px 0 rgba(246, 241, 241, 0.19);
+  color: white;
+  border-radius: 1px solid;
+  margin: auto;
+  width: 50%;
+  padding: 3rem;
+  margin-top: 3rem;
 }
