@@ -12,7 +12,7 @@ contract SHG {
     mapping(address => uint256[]) public proposalIds;
     uint256 public counter = 0;
     string public name;
-    uint256 public proposalVotingPeriod = 300; // 72 hours in seconds
+    uint256 public proposalVotingPeriod = 72 hours;
     mapping(address => Loan) loanDetails;
     DistributionProposal public distributionProposal;
 
@@ -51,7 +51,6 @@ contract SHG {
         bool isRunning;
     }
 
-
     event Withdrawn(address member, uint256 amount);
     event Deposited(address member, uint256 amount);
     event GroupBalanceUpdated(uint256 balance);
@@ -71,7 +70,6 @@ contract SHG {
     event MoneyDistributed(address distributor);
     event MoneyDistributionShareSent(address member, uint256 amount);
 
-
     constructor(string memory _name) payable {
         members.push(tx.origin);
         balances[tx.origin] = msg.value;
@@ -87,9 +85,15 @@ contract SHG {
         distributionProposal.expiryTime = block.timestamp + 84400;
     }
 
-    function getLoanDetails( address _member) external  view   returns(Loan memory loan, uint256 currBalance ) {
-        Loan memory l  = loanDetails[_member];
-        uint256 cb = calculateLoanWithInterest(l.amount, l.interestRate, l.date);
+    function getLoanDetails(
+        address _member
+    ) external view returns (Loan memory loan, uint256 currBalance) {
+        Loan memory l = loanDetails[_member];
+        uint256 cb = calculateLoanWithInterest(
+            l.amount,
+            l.interestRate,
+            l.date
+        );
         return (l, cb);
     }
 
@@ -226,7 +230,7 @@ contract SHG {
     function approveLimit(
         uint256 _proposalId,
         uint256 _amount
-    ) onlyMember external returns (bool) {
+    ) external onlyMember returns (bool) {
         MemberApproval[] storage approvers = borrowProposal[_proposalId]
             .approvers;
 
@@ -283,11 +287,12 @@ contract SHG {
             );
         }
 
-       
         if (loan.amount <= msg.value) {
             loan.amount = 0;
             loan.date = 0;
-            balances[msg.sender] = balances[msg.sender].add(msg.value.sub(totalBalance));
+            balances[msg.sender] = balances[msg.sender].add(
+                msg.value.sub(totalBalance)
+            );
         } else {
             loan.amount = loan.amount.sub(totalBalance);
             loan.date = block.timestamp;
@@ -305,7 +310,9 @@ contract SHG {
     ) internal view returns (uint256) {
         uint256 currentTime = block.timestamp;
         uint256 timeDiff = currentTime - date;
-        return (principal.mul(interestRate.div(100)).mul(timeDiff.div(31536000))).add(principal);
+        return
+            (principal.mul(interestRate.div(100)).mul(timeDiff.div(31536000)))
+                .add(principal);
     }
 
     function getProposals(

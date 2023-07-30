@@ -13,6 +13,7 @@ export default function MainLayout({ children }) {
   const dispatch = useDispatch();
 
   const { chain } = useNetwork();
+  // console.log("inside this chain", chain)
 
   const toasts = useSelector((state) => state.toast.toasts);
   const onClose = (toast) => {
@@ -67,14 +68,14 @@ export default function MainLayout({ children }) {
               <ConnectButton />
             </div>
           </div>
-          {chain?.id === 11155111 ? (
-            <ErrorBoundary>{children}</ErrorBoundary>
-          ) : (
+          {/* {chain?.id === 11155111 ? ( */}
+          <ErrorBoundary>{children}</ErrorBoundary>
+          {/* ) : (
             <div className={styles.modal}>
               Currntly SHG only supports Sepolia testnet. Please Switch your
               network to continue.
             </div>
-          )}
+          )} */}
         </main>
         {/* 
       <footer className={styles.footer}>
