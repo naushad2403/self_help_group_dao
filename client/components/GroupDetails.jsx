@@ -116,7 +116,7 @@ export const GroupDetails = ({ address }) => {
           </a>
         </h3>
         <h3>Name: G1</h3>
-        <h3>Balance: {parseToEther(balance)} Ether</h3>
+        <h3>Balance: {parseToEther(balance)} SEP</h3>
         <div className={styles.balanceDetail}>
           <input
             type="number"
@@ -134,7 +134,7 @@ export const GroupDetails = ({ address }) => {
             }}
             disabled={depositObj.isLoading || withdrawObj.isLoading}
           >
-            Deposit {depositVal} ETH
+            Deposit {depositVal} SEP
           </button>
           <input
             type="number"
@@ -152,7 +152,7 @@ export const GroupDetails = ({ address }) => {
             }}
             disabled={withdrawObj.isLoading || depositObj.isLoading}
           >
-            Withdraw {withdrawVal} ETH
+            Withdraw {withdrawVal} SEP
           </button>
         </div>
       </div>

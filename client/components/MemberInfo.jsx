@@ -24,7 +24,7 @@ const MemberInfo = ({ membersInfo }) => {
               >
                 {x.address}:
               </a>{" "}
-              <span style={{}}>{parseToEther(x.balance)} ETH </span>
+              <span style={{}}>{parseToEther(x.balance)} SEP </span>
             </div>
           );
         })}
