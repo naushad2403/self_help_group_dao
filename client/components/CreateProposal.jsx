@@ -7,10 +7,10 @@ import { addToast } from "../state_management/slices/toast";
 import { ethers } from "ethers";
 
 const CreateProposal = ({ address }) => {
-  const [amount, setAmount] = useState(10);
-  const [duration, setDuration] = useState(10);
-  const [interestRate, setInterestRate] = useState(10);
-  const [purpose, setPurpose] = useState("KL;DFSAAKJL;FASKJFSJKJKJSFKAAFKL;S");
+  const [amount, setAmount] = useState();
+  const [duration, setDuration] = useState();
+  const [interestRate, setInterestRate] = useState();
+  const [purpose, setPurpose] = useState();
 
   const dispatch = useDispatch();
 
@@ -76,7 +76,7 @@ const CreateProposal = ({ address }) => {
     !(amount > 0) ||
     !(duration > 0) ||
     !(interestRate > 0) ||
-    !(purpose.length > 0);
+    !(purpose?.length > 0);
 
   const buttonStyle = isSubmitDisabled ? { opacity: 0.5 } : {};
 

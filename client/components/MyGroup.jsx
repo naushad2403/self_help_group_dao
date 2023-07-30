@@ -31,7 +31,7 @@ export default function MyGroup() {
   };
 
   if (isFetching) {
-    return <p className={Styles.textColor}> ...Loading</p>;
+    return <h1 className={Styles.textColor}> Loading...</h1>;
   }
 
   if (groups.length == 0) {

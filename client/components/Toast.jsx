@@ -21,7 +21,7 @@ function Toast({ title, onClose, duration = 20000, body, id }) {
         <a
           className={styles.toastAnchor}
           target="_blank"
-          href={`https://etherscan.io/tx/${body}`}
+          href={`${process.env.NEXT_PUBLIC_BLOXPLORER}/tx/${body}`}
           rel="noreferrer"
         >
           {" "}
