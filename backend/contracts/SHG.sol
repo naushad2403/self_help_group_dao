@@ -269,8 +269,9 @@ contract SHG {
         );
 
         MemberApproval[] memory approvers = getApprovers(loan.proposalId);
+        uint sharingAmount = msg.value <= totalBalance ? msg.value : totalBalance;
         for (uint256 i = 0; i < approvers.length; i++) {
-            uint256 memberShare = (msg.value.mul(approvers[i].amount)).div(
+            uint256 memberShare = (sharingAmount.mul(approvers[i].amount)).div(
                 loan.amount
             );
             balances[approvers[i].member] = balances[approvers[i].member].add(
@@ -281,6 +282,7 @@ contract SHG {
                 loan.proposalId,
                 memberShare
             );
+            emit UserBalanceUpdated(approvers[i].member, balances[approvers[i].member]);
         }
 
        
