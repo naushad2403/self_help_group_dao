@@ -12,7 +12,7 @@ export default function MainLayout({ children }) {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const { chain, chains } = useNetwork();
+  const { chain } = useNetwork();
 
   const toasts = useSelector((state) => state.toast.toasts);
   const onClose = (toast) => {
