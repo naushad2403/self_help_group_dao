@@ -25,7 +25,7 @@ const DepositerInfo = ({ depositorInfo }) => {
               >
                 {x.member}
               </a>{" "}
-              <span style={{}}>{parseToEther(x.amount)} ETH </span>
+              <span style={{}}>{parseToEther(x.amount)} SEP </span>
             </div>
           );
         })}
