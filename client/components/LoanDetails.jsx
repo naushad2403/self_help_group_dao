@@ -1,14 +1,14 @@
 import React from "react";
 import styles from "../styles/LoadDetails.module.css";
-import { timestampToDateTime , parseToEther} from "../util";
+import { timestampToDateTime, parseToEther } from "../util";
 
 const LoanDetails = ({ info }) => {
-    let ans = {};
-    ans.Date = timestampToDateTime(parseInt(info.date)); 
-    ans.Amount = `${parseToEther(info.amount)} ETH`; 
-    ans.InterestRate = `${parseFloat(info.interestRate)}%/ Year`;
-    ans.ProposalId = parseInt(info.proposalId);
-    ans.CurrentBalance = `${parseToEther(info.currentBalance)} ETH`; 
+  let ans = {};
+  ans.Date = timestampToDateTime(parseInt(info.date));
+  ans.Amount = `${parseToEther(info.amount)} SEP`;
+  ans.InterestRate = `${parseFloat(info.interestRate)}%/ Year`;
+  ans.ProposalId = parseInt(info.proposalId);
+  ans.CurrentBalance = `${parseToEther(info.currentBalance)} SEP`;
 
   return (
     <div className={styles.loanDetailsWrapper}>
@@ -21,7 +21,6 @@ const LoanDetails = ({ info }) => {
           </div>
         );
       })}
-      
     </div>
   );
 };

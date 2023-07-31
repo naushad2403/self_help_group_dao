@@ -54,7 +54,6 @@ export default function Group() {
     functionName: "getLoanDetails",
     args: [accountInfo.address],
     onSettled(data, error) {
-      console.log("Res Loan details", data, error);
       if (data[0]) {
         let ans = {};
         let index = 0;

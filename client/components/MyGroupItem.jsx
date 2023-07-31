@@ -101,7 +101,7 @@ export default function MyGroupItem({ address, forJoined }) {
           {"..." + address.substr(-5)}
         </a>
         <p>{nameInfo?.data}</p>
-        <p>{parseToEther(balance)} ETH</p>
+        <p>{parseToEther(balance)} SEP</p>
         <p>{members.length}</p>
         {!isMember() ? (
           <button

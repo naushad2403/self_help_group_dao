@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import styles from "./../styles/Home.module.css";
 import { ToastGroup } from "../components/ToastGroup";
 import { useSelector, useDispatch } from "react-redux";
+import { useNetwork } from "wagmi";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { removeToast } from "../state_management/slices/toast";
@@ -10,6 +11,9 @@ import ErrorBoundary from "../components/ErrorBoundary";
 export default function MainLayout({ children }) {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const { chain } = useNetwork();
+  // console.log("inside this chain", chain)
 
   const toasts = useSelector((state) => state.toast.toasts);
   const onClose = (toast) => {
@@ -49,14 +53,14 @@ export default function MainLayout({ children }) {
                   fontSize: "smaller",
                 }}
               >
-                S
+                H
                 <sup
                   style={{
                     verticalAlign: "super",
                     fontSize: "smaller",
                   }}
                 >
-                  s
+                  G
                 </sup>
               </sup>
             </h1>
@@ -64,7 +68,14 @@ export default function MainLayout({ children }) {
               <ConnectButton />
             </div>
           </div>
-          <ErrorBoundary>{children}</ErrorBoundary>
+          {chain?.id === 11155111 ? (
+            <ErrorBoundary>{children}</ErrorBoundary>
+          ) : (
+            <div className={styles.modal}>
+              Currntly SHG only supports Sepolia testnet. Please Switch your
+              network to continue.
+            </div>
+          )}
         </main>
         {/* 
       <footer className={styles.footer}>

@@ -299,9 +299,9 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
       >
         <h4>Id: {parseInt(proposalInfo.proposalId)}</h4>
         <h4>Proposar: {proposalInfo.proposer.substring(-1, 6)}</h4>
-        <h4>Amount(ETH): {parseToEther(proposalInfo.amount)}</h4>
+        <h4>Amount(SEP): {parseToEther(proposalInfo.amount)}</h4>
         <h4>
-          Interest rate/Year(ETH): {parseInt(proposalInfo.monthlyInterestRate)}
+          Interest rate/Year(SEP): {parseInt(proposalInfo.monthlyInterestRate)}
         </h4>
         {showTimer() && (
           <h4
@@ -318,7 +318,7 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
         )}
         <h4>Duration: {parseInt(proposalInfo.loanDurationInMonth)} Month</h4>
         <h4>{getStatusText()}</h4>
-        <h4>Approved Limit: {parseToEther(getTotalApprovedLimit())} ETH</h4>
+        <h4>Approved Limit: {parseToEther(getTotalApprovedLimit())} SEP</h4>
       </div>
       {
         <div className={styles.purposeContainer}>
@@ -326,13 +326,13 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
           <div className={styles.approveButtonContainer}>
             {showInputBox() && (
               <div className={styles.sliderContainer}>
-                Max Allowed Value: {getApprovalLimit().max} ETH{" "}
+                Max Allowed Value: {getApprovalLimit().max} SEP{" "}
                 <input
                   type="number"
                   id="approvalInput"
                   value={approvalAmount}
                   onChange={handleApprovalInputChange}
-                  placeholder="Enter Amount in ETH"
+                  placeholder="Enter Amount in SEP"
                   className={styles.inputApproval}
                 />
                 <button
@@ -342,10 +342,10 @@ const ProposalItem = ({ address, proposalId, onlyUser, onProposalExpired }) => {
                   }}
                   disabled={disabledApproveButton()}
                 >
-                  Approve ({approvalAmount} ETH)
+                  Approve ({approvalAmount} SEP)
                 </button>
                 <label>
-                  {`You are approving  (${approvalAmount} ETH) with interest rate of  ${parseInt(
+                  {`You are approving  (${approvalAmount} SEP) with interest rate of  ${parseInt(
                     proposalInfo.monthlyInterestRate
                   )}%/Year`}
                 </label>
