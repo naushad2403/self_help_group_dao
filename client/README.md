@@ -17,6 +17,7 @@ There is approval time for 72 hours, if no one approve the borrow proposal, it'l
 
 This application is inspired by  Self help group (https://www.drishtiias.com/to-the-points/Paper2/self-help-groups-shgs). 
 It's based on Ethereum blockchain. People can create group, join them, deposite money into it and lend that money to peer on interest.
+Members can withdraw their amount any time but if they want to borrow then borrow proposal needs to be created.
 
 
 ```
