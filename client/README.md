@@ -36,5 +36,5 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ###TODO
 1. Add SubGraph for user transation history
-2. User profile screen
-3. Proper documentation 
+2. User profile screen.
+3. UI redesigning.
