@@ -34,7 +34,7 @@ describe("SHG", function () {
     });
   });
 
-  describe("Deposite with No load", function () {
+  describe("Deposite with No loan", function () {
     it(`Member balance should increase on deposite`, async function () {
       const { shg, owner } = await loadFixture(deploySHGFixture);
       await shg.deposit({ value: ethers.utils.parseEther("10") });
@@ -73,4 +73,15 @@ describe("SHG", function () {
       ).to.emit(shg, "UserBalanceUpdated");
     });
   });
+
+  describe("Withdraw ", function(){
+    it(`Member balance should decrease on withdraw`, async function () {
+      const { shg, owner } = await loadFixture(deploySHGFixture);
+      await shg.deposit({ value: ethers.utils.parseEther("20") });
+      await shg.withdrawAmount(ethers.utils.parseEther("10"));
+      const balance = await shg.balances(owner.address);
+      expect(ethers.utils.formatEther(balance)).to.equal("10.0");
+    });
+
+  })
 });
